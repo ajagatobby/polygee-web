@@ -146,21 +146,24 @@ export default function PredictionDetailPage({
                     <PriceButton
                       label={prediction.homeTeam.shortName}
                       price={prediction.moneyline.home}
-                      color={prediction.homeTeam.color}
-                      className="w-full"
+                      color="custom"
+                      customColor={prediction.homeTeam.color}
+                      size="md"
                     />
                     <PriceButton
                       label="DRAW"
                       price={prediction.moneyline.draw}
-                      color="#808080"
-                      variant="outline"
-                      className="w-full"
+                      color="gray"
+                      size="md"
+                      dimmed
                     />
                     <PriceButton
                       label={prediction.awayTeam.shortName}
                       price={prediction.moneyline.away}
-                      color={prediction.awayTeam.color}
-                      className="w-full"
+                      color="custom"
+                      customColor={prediction.awayTeam.color}
+                      size="md"
+                      dimmed
                     />
                   </div>
                 </div>
@@ -174,14 +177,16 @@ export default function PredictionDetailPage({
                     <PriceButton
                       label={prediction.spread.homeLabel}
                       price={prediction.spread.homePrice}
-                      variant="outline"
-                      className="w-full"
+                      color="gray"
+                      size="lg"
+                      dimmed
                     />
                     <PriceButton
                       label={prediction.spread.awayLabel}
                       price={prediction.spread.awayPrice}
-                      variant="outline"
-                      className="w-full"
+                      color="gray"
+                      size="lg"
+                      dimmed
                     />
                   </div>
                 </div>
@@ -195,14 +200,16 @@ export default function PredictionDetailPage({
                     <PriceButton
                       label={prediction.total.overLabel}
                       price={prediction.total.overPrice}
-                      variant="outline"
-                      className="w-full"
+                      color="gray"
+                      size="lg"
+                      dimmed
                     />
                     <PriceButton
                       label={prediction.total.underLabel}
                       price={prediction.total.underPrice}
-                      variant="outline"
-                      className="w-full"
+                      color="gray"
+                      size="lg"
+                      dimmed
                     />
                   </div>
                 </div>

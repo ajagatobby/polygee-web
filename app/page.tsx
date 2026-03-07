@@ -79,26 +79,28 @@ export default function HomePage() {
 
           {/* Column headers */}
           {filteredPredictions.length > 0 && (
-            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-3 px-4 py-2 border-b border-[#f0f0f0] bg-white sticky top-0 z-10">
-              <div />
-              <div className="min-w-[100px] text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
-                Moneyline
-              </div>
-              <div className="min-w-[105px] text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
-                Spread
-              </div>
-              <div className="min-w-[90px] text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
-                Total
+            <div className="flex items-center justify-end gap-2 px-4 py-2 border-b border-[#f0f0f0] bg-white sticky top-0 z-10">
+              <div className="flex-1" />
+              <div className="grid grid-cols-3 gap-2 lg:w-[372px]">
+                <div className="text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
+                  Moneyline
+                </div>
+                <div className="text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
+                  Spread
+                </div>
+                <div className="text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
+                  Total
+                </div>
               </div>
             </div>
           )}
 
           {/* Grouped predictions */}
-          <div>
+          <div className="px-3 pt-2">
             {groupedPredictions.map(([date, preds]) => (
               <div key={date}>
                 {/* Date header */}
-                <div className="px-4 py-2.5 bg-white border-b border-[#f0f0f0]">
+                <div className="px-1 py-2.5">
                   <h2 className="text-[14px] font-bold text-[#1a1a2e]">
                     {formatDateLong(date)}
                   </h2>
