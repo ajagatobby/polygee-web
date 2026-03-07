@@ -207,9 +207,20 @@ export function Header() {
             transition={{ duration: duration.medium, ease: easing.easeOut }}
           >
             <div className="px-6 pt-6 pb-2 text-center">
-              <div className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-red-50 mx-auto mb-3">
-                <LogOut className="w-5 h-5 text-[#ff3b30]" />
-              </div>
+              <motion.div
+                className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-red-50 mx-auto mb-3"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", duration: 0.5, bounce: 0.25, delay: 0.1 }}
+              >
+                <motion.div
+                  initial={{ x: 0 }}
+                  animate={{ x: [0, 3, 0] }}
+                  transition={{ duration: 0.4, delay: 0.35, ease: easing.easeOut }}
+                >
+                  <LogOut className="w-5 h-5 text-[#ff3b30]" />
+                </motion.div>
+              </motion.div>
               <h2 className="text-[17px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
                 Log out?
               </h2>
