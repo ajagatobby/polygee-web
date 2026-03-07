@@ -9,6 +9,8 @@ import { PredictionCard } from "@/components/predictions/prediction-card";
 import { predictions, formatDateLong } from "@/lib/mock-data";
 import { Prediction } from "@/types";
 import { dropdownVariants, duration, easing } from "@/lib/animations";
+import { useAuth } from "@/lib/auth-context";
+import { Lock } from "lucide-react";
 
 const weeks = Array.from({ length: 38 }, (_, i) => `Week ${i + 1}`);
 
@@ -18,6 +20,7 @@ export default function HomePage() {
   const [weekDropdownOpen, setWeekDropdownOpen] = useState(false);
   const weekDropdownRef = useRef<HTMLDivElement>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -166,7 +169,7 @@ export default function HomePage() {
           </div>
 
           {/* Predictions list grouped by date */}
-          <div className="px-10 pt-2">
+          <div className="px-10 pt-2 relative">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeLeague}
@@ -175,25 +178,77 @@ export default function HomePage() {
                 exit={{ opacity: 0, filter: "blur(4px)" }}
                 transition={{ duration: duration.normal, ease: easing.easeOut }}
               >
-                {groupedPredictions.map(([date, preds]) => (
-                  <div key={date}>
-                    {/* Date header */}
-                    <div className="px-1 py-2.5">
-                      <h2 className="text-[14px] font-bold text-[#1a1a2e]">
-                        {formatDateLong(date)}
-                      </h2>
-                    </div>
+                {(() => {
+                  let cardCount = 0;
+                  return groupedPredictions.map(([date, preds]) => {
+                    const dateCards = preds.map((pred) => {
+                      const index = cardCount++;
+                      const isBlurred = !isAuthenticated && index >= 2;
+                      return (
+                        <div
+                          key={pred.id}
+                          className={isBlurred ? "select-none pointer-events-none" : ""}
+                          style={isBlurred ? { filter: "blur(8px)", opacity: 0.6 } : undefined}
+                        >
+                          <PredictionCard prediction={pred} />
+                        </div>
+                      );
+                    });
 
-                    {/* 2-column grid of prediction cards */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
-                      {preds.map((pred) => (
-                        <PredictionCard key={pred.id} prediction={pred} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                    return (
+                      <div key={date}>
+                        <div className="px-1 py-2.5">
+                          <h2 className="text-[14px] font-bold text-[#1a1a2e]">
+                            {formatDateLong(date)}
+                          </h2>
+                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
+                          {dateCards}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
               </motion.div>
             </AnimatePresence>
+
+            {/* Sign up overlay */}
+            {!isAuthenticated && filteredPredictions.length > 2 && (
+              <div className="sticky bottom-0 left-0 right-0 z-10 -mt-32">
+                <div
+                  className="h-40 pointer-events-none"
+                  style={{
+                    background: "linear-gradient(to bottom, transparent 0%, white 70%)",
+                  }}
+                />
+                <div className="bg-white pb-10 pt-2 flex flex-col items-center text-center">
+                  <div className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#e7edfe] mb-3">
+                    <Lock className="w-5 h-5 text-[#1552f0]" />
+                  </div>
+                  <h3 className="text-[17px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
+                    Sign up to see all predictions
+                  </h3>
+                  <p className="text-[13px] text-[#808080] mt-1 max-w-[340px]">
+                    Create a free account to unlock every AI prediction, live
+                    odds, and trading insights.
+                  </p>
+                  <div className="flex items-center gap-2.5 mt-4">
+                    <button
+                      onClick={() => setIsAuthenticated(true)}
+                      className="h-[38px] px-5 text-[13px] font-medium text-[#1a1a2e] bg-[#f5f5f5] rounded-[8px] hover:bg-[#ebebeb] transition-colors cursor-pointer"
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={() => setIsAuthenticated(true)}
+                      className="h-[38px] px-5 text-[13px] font-bold text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+                    >
+                      Sign Up Free
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {filteredPredictions.length === 0 && (

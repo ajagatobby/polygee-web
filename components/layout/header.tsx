@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { duration, easing } from "@/lib/animations";
 import { ConnectPolymarketModal } from "@/components/ui/connect-polymarket-modal";
 import { DepositModal } from "@/components/ui/deposit-modal";
+import { useAuth } from "@/lib/auth-context";
 
 const navLinks = [
   { href: "/", label: "Predictions", icon: BarChart3 },
@@ -19,7 +20,7 @@ export function Header() {
   const pathname = usePathname();
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [depositModalOpen, setDepositModalOpen] = useState(false);
   const [isPolymarketConnected, setIsPolymarketConnected] = useState(false);
