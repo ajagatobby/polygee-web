@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { Brain } from "lucide-react";
+import { motion } from "motion/react";
 import { PriceButton } from "@/components/ui/price-button";
 import { Sparkline } from "@/components/ui/sparkline";
 import { Prediction } from "@/types";
 import { formatVolume } from "@/lib/mock-data";
+import { duration, easing } from "@/lib/animations";
 
 interface PredictionCardProps {
   prediction: Prediction;
@@ -32,7 +34,15 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
 
   return (
     <div className="pb-2 w-full">
-      <div className="w-full bg-white rounded-xl border border-[#e8e8e8] overflow-hidden hover:bg-[#fafafa]/50 transition-colors">
+      <motion.div
+        className="w-full bg-white rounded-xl border border-[#e8e8e8] overflow-hidden"
+        whileHover={{
+          y: -2,
+          boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+          borderColor: "#ddd",
+        }}
+        transition={{ duration: duration.fast, ease: easing.ease }}
+      >
         <div className="flex flex-col w-full p-3">
           {/* Top row: status + volume + AI pick + sparkline + Game View */}
           <div className="flex flex-1 justify-between items-center h-[32px] min-h-[32px] gap-2 mb-3">
@@ -210,7 +220,7 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

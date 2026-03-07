@@ -12,9 +12,11 @@ import {
   Brain,
   Share2,
 } from "lucide-react";
+import { motion } from "motion/react";
 import { Header } from "@/components/layout/header";
 import { PriceButton } from "@/components/ui/price-button";
 import { getPredictionById, formatVolume, formatFullDate } from "@/lib/mock-data";
+import { duration, easing } from "@/lib/animations";
 
 export default function PredictionDetailPage({
   params,
@@ -133,7 +135,11 @@ export default function PredictionDetailPage({
 
           <div className="grid grid-cols-3 gap-3">
             {/* Moneyline */}
-            <div className="p-4 bg-white border border-[#f0f0f0] rounded-[12px]">
+            <motion.div
+              className="p-4 bg-white border border-[#f0f0f0] rounded-[12px]"
+              whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+              transition={{ duration: duration.fast, ease: easing.ease }}
+            >
               <div className="text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em] mb-3">
                 Moneyline
               </div>
@@ -161,10 +167,14 @@ export default function PredictionDetailPage({
                   dimmed
                 />
               </div>
-            </div>
+            </motion.div>
 
             {/* Spread */}
-            <div className="p-4 bg-white border border-[#f0f0f0] rounded-[12px]">
+            <motion.div
+              className="p-4 bg-white border border-[#f0f0f0] rounded-[12px]"
+              whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+              transition={{ duration: duration.fast, ease: easing.ease }}
+            >
               <div className="text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em] mb-3">
                 Spread
               </div>
@@ -184,10 +194,14 @@ export default function PredictionDetailPage({
                   dimmed
                 />
               </div>
-            </div>
+            </motion.div>
 
             {/* Total */}
-            <div className="p-4 bg-white border border-[#f0f0f0] rounded-[12px]">
+            <motion.div
+              className="p-4 bg-white border border-[#f0f0f0] rounded-[12px]"
+              whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+              transition={{ duration: duration.fast, ease: easing.ease }}
+            >
               <div className="text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em] mb-3">
                 Total
               </div>
@@ -207,7 +221,7 @@ export default function PredictionDetailPage({
                   dimmed
                 />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
 
@@ -223,12 +237,14 @@ export default function PredictionDetailPage({
               <div className="relative">
                 <svg className="w-[80px] h-[80px] -rotate-90" viewBox="0 0 120 120">
                   <circle cx="60" cy="60" r="52" fill="none" stroke="#f0f0f0" strokeWidth="8" />
-                  <circle
+                  <motion.circle
                     cx="60" cy="60" r="52" fill="none"
                     stroke={prediction.aiConfidence >= 70 ? "#00c853" : prediction.aiConfidence >= 50 ? "#ff9100" : "#ff3d57"}
                     strokeWidth="8" strokeLinecap="round"
                     strokeDasharray={`${2 * Math.PI * 52}`}
-                    strokeDashoffset={`${2 * Math.PI * 52 * (1 - prediction.aiConfidence / 100)}`}
+                    initial={false}
+                    animate={{ strokeDashoffset: 2 * Math.PI * 52 * (1 - prediction.aiConfidence / 100) }}
+                    transition={{ duration: 0.8, ease: easing.easeOut, delay: 0.2 }}
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -298,7 +314,7 @@ export default function PredictionDetailPage({
             {prediction.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-2.5 py-1 text-[11px] font-medium text-[#666] bg-[#f5f5f5] rounded-[6px]"
+                className="px-2.5 py-1 text-[11px] font-medium text-[#666] bg-[#f5f5f5] rounded-[6px] hover:bg-[#ebebeb] transition-colors"
               >
                 {tag}
               </span>

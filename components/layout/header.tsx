@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, Bell, BarChart3, CalendarDays } from "lucide-react";
 import { useState } from "react";
+import { motion } from "motion/react";
+import { duration, easing } from "@/lib/animations";
 
 const navLinks = [
   { href: "/", label: "Predictions", icon: BarChart3 },
@@ -13,13 +15,14 @@ const navLinks = [
 export function Header() {
   const pathname = usePathname();
   const [searchValue, setSearchValue] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-[#e8e8e8]">
       <div className="h-[60px] flex items-center px-6 gap-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 opacity-90 hover:opacity-100 transition-opacity">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-text-primary">
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
@@ -32,12 +35,19 @@ export function Header() {
         {/* Search */}
         <div className="flex-1 max-w-[400px]">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+            <motion.div
+              animate={{ opacity: searchFocused ? 1 : 0.5 }}
+              transition={{ duration: duration.fast, ease: easing.ease }}
+            >
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+            </motion.div>
             <input
               type="text"
               placeholder="Search predictions..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
               className="w-full h-[36px] pl-9 pr-4 text-[13px] bg-[#f5f5f5] rounded-[8px] text-[#1a1a2e] placeholder:text-[#999] focus:outline-none focus:ring-1 focus:ring-[#ddd] transition-all"
             />
           </div>
@@ -75,7 +85,7 @@ export function Header() {
           <button className="relative p-2 text-[#666] hover:text-[#333] transition-colors cursor-pointer">
             <Bell className="w-[18px] h-[18px]" />
           </button>
-          <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 cursor-pointer" />
+          <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 cursor-pointer hover:opacity-90 transition-opacity" />
         </div>
       </div>
     </header>

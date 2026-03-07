@@ -3,7 +3,9 @@
 import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { sidebarLeagues } from "@/lib/mock-data";
+import { sidebarExpand, duration, easing } from "@/lib/animations";
 
 interface SidebarProps {
   activeLeague: string;
@@ -47,54 +49,71 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
                 {sport.name}
               </p>
             </div>
-            <ChevronDown
-              className={`w-3 h-3 shrink-0 text-neutral-400 transition-transform duration-200 ${
-                expanded[sport.id] ? "rotate-180" : "rotate-0"
-              }`}
-            />
+            <motion.div
+              animate={{ rotate: expanded[sport.id] ? 180 : 0 }}
+              transition={{ duration: duration.normal, ease: easing.easeInOut }}
+            >
+              <ChevronDown className="w-3 h-3 shrink-0 text-neutral-400" />
+            </motion.div>
           </button>
 
           {/* Collapsible sub-leagues */}
-          <div
-            style={{
-              height: expanded[sport.id] ? "auto" : "0px",
-              overflow: expanded[sport.id] ? "visible" : "hidden",
-              opacity: expanded[sport.id] ? 1 : 0,
-              transition: "opacity 300ms",
-            }}
-          >
-            <div className="pl-5 flex flex-col pt-0.5">
-              {sport.children?.map((league) => {
-                const isActive = activeLeague === league.slug;
-                return (
-                  <button
-                    key={league.id}
-                    onClick={() => onLeagueChange(league.slug)}
-                    className="block w-full text-left"
-                  >
-                    <div className={`
-                      rounded-md py-3 px-3 cursor-pointer relative transition-colors
-                      ${isActive ? "bg-neutral-50" : "hover:bg-neutral-50"}
-                    `}>
-                      <div className="flex items-center gap-x-2.5 min-w-0">
-                        <div className="shrink-0 w-5 h-5 flex items-center justify-center">
-                          <span className="text-[14px] leading-none">{league.logo}</span>
+          <AnimatePresence initial={false}>
+            {expanded[sport.id] && (
+              <motion.div
+                key={`${sport.id}-children`}
+                variants={sidebarExpand}
+                initial="collapsed"
+                animate="expanded"
+                exit="collapsed"
+                className="overflow-hidden"
+              >
+                <div className="pl-5 flex flex-col pt-0.5">
+                  {sport.children?.map((league, index) => {
+                    const isActive = activeLeague === league.slug;
+                    return (
+                      <motion.button
+                        key={league.id}
+                        onClick={() => onLeagueChange(league.slug)}
+                        initial={{ opacity: 0, x: -6 }}
+                        animate={{
+                          opacity: 1,
+                          x: 0,
+                          transition: {
+                            delay: index * 0.02,
+                            duration: duration.fast,
+                            ease: easing.easeOut,
+                          },
+                        }}
+                        whileHover={{ x: 2 }}
+                        transition={{ duration: duration.micro, ease: easing.ease }}
+                        className="block w-full text-left"
+                      >
+                        <div className={`
+                          rounded-md py-3 px-3 cursor-pointer relative transition-colors
+                          ${isActive ? "bg-neutral-50" : "hover:bg-neutral-50"}
+                        `}>
+                          <div className="flex items-center gap-x-2.5 min-w-0">
+                            <div className="shrink-0 w-5 h-5 flex items-center justify-center">
+                              <span className="text-[14px] leading-none">{league.logo}</span>
+                            </div>
+                            <p className="pr-4 whitespace-nowrap truncate text-[14px] font-medium text-[#1a1a2e]">
+                              {league.name}
+                            </p>
+                          </div>
+                          {league.count > 0 && (
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-neutral-400 font-bold">
+                              {league.count}
+                            </span>
+                          )}
                         </div>
-                        <p className="pr-4 whitespace-nowrap truncate text-[14px] font-medium text-[#1a1a2e]">
-                          {league.name}
-                        </p>
-                      </div>
-                      {league.count > 0 && (
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-neutral-400 font-bold">
-                          {league.count}
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       ))}
     </aside>

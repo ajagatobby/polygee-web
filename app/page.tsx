@@ -2,11 +2,13 @@
 
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Search, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { PredictionCard } from "@/components/predictions/prediction-card";
 import { predictions, formatDateLong } from "@/lib/mock-data";
 import { Prediction } from "@/types";
+import { dropdownVariants, duration, easing } from "@/lib/animations";
 
 const weeks = Array.from({ length: 38 }, (_, i) => `Week ${i + 1}`);
 
@@ -15,6 +17,7 @@ export default function HomePage() {
   const [weekFilter, setWeekFilter] = useState("Week 29");
   const [weekDropdownOpen, setWeekDropdownOpen] = useState(false);
   const weekDropdownRef = useRef<HTMLDivElement>(null);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -35,6 +38,11 @@ export default function HomePage() {
 
   const goToNextWeek = () => {
     if (currentWeekIndex < weeks.length - 1) setWeekFilter(weeks[currentWeekIndex + 1]);
+  };
+
+  const handleLeagueChange = (slug: string) => {
+    setHasInteracted(true);
+    setActiveLeague(slug);
   };
 
   // Get the active league name
@@ -67,7 +75,7 @@ export default function HomePage() {
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar */}
         <div className="hidden lg:block">
-          <Sidebar activeLeague={activeLeague} onLeagueChange={setActiveLeague} />
+          <Sidebar activeLeague={activeLeague} onLeagueChange={handleLeagueChange} />
         </div>
 
         {/* Main Content */}
@@ -76,9 +84,18 @@ export default function HomePage() {
           <div className="border-b border-[#f0f0f0]">
             <div className="px-10 pt-5 pb-4">
               <div className="flex items-center justify-between mb-3">
-                <h1 className="text-[26px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
-                  {activeLeagueName}
-                </h1>
+                <AnimatePresence mode="wait">
+                  <motion.h1
+                    key={activeLeagueName}
+                    className="text-[26px] font-bold text-[#1a1a2e] tracking-[-0.02em]"
+                    initial={hasInteracted ? { opacity: 0, x: -8 } : false}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 8 }}
+                    transition={{ duration: duration.normal, ease: easing.easeOut }}
+                  >
+                    {activeLeagueName}
+                  </motion.h1>
+                </AnimatePresence>
                 <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
                   <SlidersHorizontal className="w-[18px] h-[18px]" />
                 </button>
@@ -106,31 +123,44 @@ export default function HomePage() {
                       className="flex items-center gap-1.5 h-[34px] px-3 text-[13px] font-medium text-[#1a1a2e] bg-white border border-[#e8e8e8] rounded-[8px] hover:border-[#ccc] transition-colors cursor-pointer"
                     >
                       {weekFilter}
-                      <ChevronDown className={`w-3.5 h-3.5 text-[#999] transition-transform duration-200 ${weekDropdownOpen ? "rotate-180" : ""}`} />
+                      <motion.div
+                        animate={{ rotate: weekDropdownOpen ? 180 : 0 }}
+                        transition={{ duration: duration.normal, ease: easing.easeInOut }}
+                      >
+                        <ChevronDown className="w-3.5 h-3.5 text-[#999]" />
+                      </motion.div>
                     </button>
 
-                    {weekDropdownOpen && (
-                      <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-[140px] max-h-[280px] overflow-y-auto scrollbar-thin bg-white border border-[#e8e8e8] rounded-[10px] shadow-lg py-1">
-                        {weeks.map((week) => (
-                          <button
-                            key={week}
-                            onClick={() => {
-                              setWeekFilter(week);
-                              setWeekDropdownOpen(false);
-                            }}
-                            className={`
-                              w-full text-left px-3 py-2 text-[13px] transition-colors cursor-pointer
-                              ${week === weekFilter
-                                ? "bg-neutral-50 font-semibold text-[#1a1a2e]"
-                                : "text-[#666] hover:bg-neutral-50 hover:text-[#1a1a2e]"
-                              }
-                            `}
-                          >
-                            {week}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                    <AnimatePresence>
+                      {weekDropdownOpen && (
+                        <motion.div
+                          variants={dropdownVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          className="absolute right-0 top-[calc(100%+4px)] z-50 w-[140px] max-h-[280px] overflow-y-auto scrollbar-thin bg-white border border-[#e8e8e8] rounded-[10px] shadow-lg py-1"
+                        >
+                          {weeks.map((week) => (
+                            <button
+                              key={week}
+                              onClick={() => {
+                                setWeekFilter(week);
+                                setWeekDropdownOpen(false);
+                              }}
+                              className={`
+                                w-full text-left px-3 py-2 text-[13px] transition-colors cursor-pointer
+                                ${week === weekFilter
+                                  ? "bg-neutral-50 font-semibold text-[#1a1a2e]"
+                                  : "text-[#666] hover:bg-neutral-50 hover:text-[#1a1a2e]"
+                                }
+                              `}
+                            >
+                              {week}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   <button
@@ -147,23 +177,33 @@ export default function HomePage() {
 
           {/* Predictions list grouped by date */}
           <div className="px-10 pt-2">
-            {groupedPredictions.map(([date, preds]) => (
-              <div key={date}>
-                {/* Date header */}
-                <div className="px-1 py-2.5">
-                  <h2 className="text-[14px] font-bold text-[#1a1a2e]">
-                    {formatDateLong(date)}
-                  </h2>
-                </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeLeague}
+                initial={hasInteracted ? { opacity: 0, filter: "blur(4px)" } : false}
+                animate={{ opacity: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, filter: "blur(4px)" }}
+                transition={{ duration: duration.normal, ease: easing.easeOut }}
+              >
+                {groupedPredictions.map(([date, preds]) => (
+                  <div key={date}>
+                    {/* Date header */}
+                    <div className="px-1 py-2.5">
+                      <h2 className="text-[14px] font-bold text-[#1a1a2e]">
+                        {formatDateLong(date)}
+                      </h2>
+                    </div>
 
-                {/* 2-column grid of prediction cards */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
-                  {preds.map((pred) => (
-                    <PredictionCard key={pred.id} prediction={pred} />
-                  ))}
-                </div>
-              </div>
-            ))}
+                    {/* 2-column grid of prediction cards */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
+                      {preds.map((pred) => (
+                        <PredictionCard key={pred.id} prediction={pred} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           {filteredPredictions.length === 0 && (
