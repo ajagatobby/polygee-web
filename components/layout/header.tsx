@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Bell, BarChart3, CalendarDays } from "lucide-react";
-import { useState } from "react";
-import { motion } from "motion/react";
+import { Search, Bell, BarChart3, CalendarDays, Target, Settings, Trophy, HelpCircle, LogOut, ChevronUp } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { duration, easing } from "@/lib/animations";
 import { ConnectPolymarketModal } from "@/components/ui/connect-polymarket-modal";
 
@@ -18,6 +18,20 @@ export function Header() {
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
+  const avatarMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (avatarMenuRef.current && !avatarMenuRef.current.contains(e.target as Node)) {
+        setAvatarMenuOpen(false);
+      }
+    };
+    if (avatarMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [avatarMenuOpen]);
 
   return (
     <>
@@ -95,7 +109,79 @@ export function Header() {
           <button className="relative p-2 text-[#666] hover:text-[#333] transition-colors cursor-pointer">
             <Bell className="w-[18px] h-[18px]" />
           </button>
-          <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 cursor-pointer hover:opacity-90 transition-opacity" />
+          {/* Avatar + Popover */}
+          <div className="relative" ref={avatarMenuRef}>
+            <button
+              onClick={() => setAvatarMenuOpen((v) => !v)}
+              className="flex items-center gap-1.5 cursor-pointer"
+            >
+              <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 hover:opacity-90 transition-opacity" />
+              <motion.div
+                animate={{ rotate: avatarMenuOpen ? 0 : 180 }}
+                transition={{ duration: duration.fast, ease: easing.easeOut }}
+              >
+                <ChevronUp className="w-3.5 h-3.5 text-[#999]" />
+              </motion.div>
+            </button>
+
+            <AnimatePresence>
+              {avatarMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -4, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 0.97, y: -4, filter: "blur(4px)" }}
+                  transition={{ duration: duration.normal, ease: easing.easeOut }}
+                  className="absolute right-0 top-[calc(100%+8px)] w-[220px] bg-white border border-[#e8e8e8] rounded-[12px] shadow-lg overflow-hidden z-50"
+                  style={{ transformOrigin: "top right" }}
+                >
+                  {/* User info */}
+                  <div className="flex items-center gap-2.5 px-4 pt-4 pb-3">
+                    <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-semibold text-[#1a1a2e] truncate">0x9BBA6B71...</p>
+                    </div>
+                    <button className="ml-auto shrink-0 p-1 text-[#999] hover:text-[#1a1a2e] transition-colors cursor-pointer">
+                      <Settings className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="h-px bg-[#f0f0f0]" />
+
+                  {/* Primary menu items */}
+                  <div className="py-1.5">
+                    {[
+                      { icon: Target, label: "Accuracy" },
+                      { icon: Settings, label: "Settings" },
+                      { icon: Trophy, label: "Leaderboard" },
+                      { icon: HelpCircle, label: "Support" },
+                    ].map((item) => (
+                      <button
+                        key={item.label}
+                        onClick={() => setAvatarMenuOpen(false)}
+                        className="flex items-center gap-2.5 w-full px-4 py-2.5 text-[13px] font-medium text-[#1a1a2e] hover:bg-[#f7f7f7] transition-colors cursor-pointer"
+                      >
+                        <item.icon className="w-4 h-4 text-[#808080]" />
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="h-px bg-[#f0f0f0]" />
+
+                  {/* Logout */}
+                  <div className="py-1.5">
+                    <button
+                      onClick={() => setAvatarMenuOpen(false)}
+                      className="flex items-center gap-2.5 w-full px-4 py-2.5 text-[13px] font-medium text-[#ff3b30] hover:bg-red-50 transition-colors cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </header>
