@@ -1,13 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  CalendarDays,
-  ChevronDown,
-  BarChart3,
-  Radio,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { sidebarLeagues } from "@/lib/mock-data";
 
@@ -24,51 +18,10 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const isPredictionsActive = pathname === "/" || pathname.startsWith("/prediction");
-  const isFixturesActive = pathname.startsWith("/fixtures");
-
   return (
     <aside className="hidden lg:flex w-[240px] shrink-0 flex-col py-8 px-3 overflow-y-auto scrollbar-thin sticky top-[60px] border-r border-neutral-100" style={{ height: "calc(100vh - 60px)" }}>
-      {/* Top navigation links */}
-      <Link
-        href="/"
-        className={`
-          flex flex-row justify-between items-center rounded-md px-3 py-3 w-full cursor-pointer transition-colors
-          ${isPredictionsActive ? "bg-neutral-50" : "bg-transparent hover:bg-neutral-50"}
-        `}
-      >
-        <div className="flex flex-row items-center gap-x-2.5 flex-1 min-w-0">
-          <div className="shrink-0 text-neutral-500">
-            <BarChart3 className="w-5 h-5" />
-          </div>
-          <p className="text-[14px] font-semibold truncate text-[#1a1a2e]">
-            Predictions
-          </p>
-        </div>
-      </Link>
-
-      <Link
-        href="/fixtures"
-        className={`
-          flex flex-row justify-between items-center rounded-md px-3 py-3 w-full cursor-pointer transition-colors
-          ${isFixturesActive ? "bg-neutral-50" : "bg-transparent hover:bg-neutral-50"}
-        `}
-      >
-        <div className="flex flex-row items-center gap-x-2.5 flex-1 min-w-0">
-          <div className="shrink-0 text-neutral-500">
-            <CalendarDays className="w-5 h-5" />
-          </div>
-          <p className="text-[14px] font-semibold truncate text-[#1a1a2e]">
-            Fixtures
-          </p>
-        </div>
-      </Link>
-
-      {/* Divider */}
-      <div className="pb-2 border-b border-neutral-100 mb-2 w-full" />
-
       {/* Section label */}
-      <div className="flex items-center pl-3 pr-3 mt-4 mb-3">
+      <div className="flex items-center pl-3 pr-3 mb-3">
         <p className="text-[11px] uppercase text-neutral-400 font-medium tracking-wider whitespace-nowrap">
           All Leagues
         </p>
