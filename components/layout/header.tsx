@@ -19,6 +19,7 @@ export function Header() {
   const pathname = usePathname();
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [depositModalOpen, setDepositModalOpen] = useState(false);
   const [isPolymarketConnected, setIsPolymarketConnected] = useState(false);
@@ -122,187 +123,207 @@ export function Header() {
             })}
           </nav>
 
-          <AnimatePresence mode="wait">
-            {isPolymarketConnected ? (
-              <motion.button
-                key="deposit"
-                onClick={() => setDepositModalOpen(true)}
-                initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
-                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
-                transition={{ duration: duration.normal, ease: easing.easeOut }}
-                className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+          {isAuthenticated ? (
+            <>
+              <AnimatePresence mode="wait">
+                {isPolymarketConnected ? (
+                  <motion.button
+                    key="deposit"
+                    onClick={() => setDepositModalOpen(true)}
+                    initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+                    transition={{ duration: duration.normal, ease: easing.easeOut }}
+                    className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+                  >
+                    Deposit
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    key="connect"
+                    onClick={() => setConnectModalOpen(true)}
+                    initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+                    transition={{ duration: duration.normal, ease: easing.easeOut }}
+                    className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+                  >
+                    Connect Polymarket
+                  </motion.button>
+                )}
+              </AnimatePresence>
+
+              {/* Notifications */}
+              <div
+                className="relative"
+                ref={notifRef}
+                onMouseEnter={handleNotifEnter}
+                onMouseLeave={handleNotifLeave}
               >
-                Deposit
-              </motion.button>
-            ) : (
-              <motion.button
-                key="connect"
-                onClick={() => setConnectModalOpen(true)}
-                initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
-                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
-                transition={{ duration: duration.normal, ease: easing.easeOut }}
-                className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
-              >
-                Connect Polymarket
-              </motion.button>
-            )}
-          </AnimatePresence>
+                <button className="relative p-2 text-[#666] hover:text-[#333] transition-colors cursor-pointer">
+                  <Bell className="w-[18px] h-[18px]" />
+                  {notifications.some((n) => n.unread) && (
+                    <span className="absolute top-1.5 right-1.5 w-[7px] h-[7px] rounded-full bg-[#ff3b30] ring-2 ring-white" />
+                  )}
+                </button>
 
-          {/* Notifications */}
-          <div
-            className="relative"
-            ref={notifRef}
-            onMouseEnter={handleNotifEnter}
-            onMouseLeave={handleNotifLeave}
-          >
-            <button className="relative p-2 text-[#666] hover:text-[#333] transition-colors cursor-pointer">
-              <Bell className="w-[18px] h-[18px]" />
-              {notifications.some((n) => n.unread) && (
-                <span className="absolute top-1.5 right-1.5 w-[7px] h-[7px] rounded-full bg-[#ff3b30] ring-2 ring-white" />
-              )}
-            </button>
-
-            <AnimatePresence>
-              {notifOpen && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: -4, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, scale: 0.97, y: -4, filter: "blur(4px)" }}
-                  transition={{ duration: duration.normal, ease: easing.easeOut }}
-                  className="absolute right-0 top-[calc(100%+8px)] w-[320px] bg-white border border-[#e8e8e8] rounded-[12px] shadow-lg overflow-hidden z-50"
-                  style={{ transformOrigin: "top right" }}
-                >
-                  {/* Header */}
-                  <div className="flex items-center justify-between px-4 pt-4 pb-2.5">
-                    <h3 className="text-[14px] font-bold text-[#1a1a2e]">Notifications</h3>
-                    {notifications.some((n) => n.unread) && (
-                      <span className="text-[11px] font-medium text-[#1552f0] cursor-pointer hover:underline">
-                        Mark all read
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="h-px bg-[#f0f0f0]" />
-
-                  {/* Notification list */}
-                  <div className="max-h-[320px] overflow-y-auto scrollbar-thin">
-                    {notifications.map((notif) => (
-                      <button
-                        key={notif.id}
-                        className={`
-                          flex gap-3 w-full px-4 py-3 text-left transition-colors cursor-pointer
-                          ${notif.unread ? "bg-[#f7f9ff] hover:bg-[#eef2ff]" : "hover:bg-[#f7f7f7]"}
-                        `}
-                      >
-                        {/* Unread dot */}
-                        <div className="shrink-0 pt-1.5">
-                          <div
-                            className={`w-[6px] h-[6px] rounded-full ${
-                              notif.unread ? "bg-[#1552f0]" : "bg-transparent"
-                            }`}
-                          />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className={`text-[13px] text-[#1a1a2e] truncate ${notif.unread ? "font-semibold" : "font-medium"}`}>
-                            {notif.title}
-                          </p>
-                          <p className="text-[12px] text-[#808080] mt-0.5 truncate">
-                            {notif.description}
-                          </p>
-                        </div>
-                        <span className="shrink-0 text-[11px] text-[#bbb] pt-0.5">
-                          {notif.time}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="h-px bg-[#f0f0f0]" />
-
-                  {/* Footer */}
-                  <div className="px-4 py-2.5">
-                    <button className="w-full text-center text-[12px] font-medium text-[#1552f0] hover:underline cursor-pointer">
-                      View all notifications
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-          {/* Avatar + Popover */}
-          <div
-            className="relative"
-            ref={avatarMenuRef}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 cursor-pointer hover:opacity-90 transition-opacity" />
-
-            <AnimatePresence>
-              {avatarMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: -4, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, scale: 0.97, y: -4, filter: "blur(4px)" }}
-                  transition={{ duration: duration.normal, ease: easing.easeOut }}
-                  className="absolute right-0 top-[calc(100%+8px)] w-[220px] bg-white border border-[#e8e8e8] rounded-[12px] shadow-lg overflow-hidden z-50"
-                  style={{ transformOrigin: "top right" }}
-                >
-                  {/* User info */}
-                  <div className="flex items-center gap-2.5 px-4 pt-4 pb-3">
-                    <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-[13px] font-semibold text-[#1a1a2e] truncate">0x9BBA6B71...</p>
-                    </div>
-                    <button className="ml-auto shrink-0 p-1 text-[#999] hover:text-[#1a1a2e] transition-colors cursor-pointer">
-                      <Settings className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <div className="h-px bg-[#f0f0f0]" />
-
-                  {/* Primary menu items */}
-                  <div className="py-1.5">
-                    {[
-                      { icon: ClipboardList, label: "Orders" },
-                      { icon: Target, label: "Accuracy" },
-                      { icon: TrendingUp, label: "Stats" },
-                      { icon: Settings, label: "Settings" },
-                      { icon: Trophy, label: "Leaderboard" },
-                      { icon: HelpCircle, label: "Support" },
-                    ].map((item) => (
-                      <button
-                        key={item.label}
-                        onClick={() => setAvatarMenuOpen(false)}
-                        className="flex items-center gap-2.5 w-full px-4 py-2.5 text-[13px] font-medium text-[#1a1a2e] hover:bg-[#f7f7f7] transition-colors cursor-pointer"
-                      >
-                        <item.icon className="w-4 h-4 text-[#808080]" />
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="h-px bg-[#f0f0f0]" />
-
-                  {/* Logout */}
-                  <div className="py-1.5">
-                    <button
-                      onClick={() => {
-                        setAvatarMenuOpen(false);
-                        setLogoutModalOpen(true);
-                      }}
-                      className="flex items-center gap-2.5 w-full px-4 py-2.5 text-[13px] font-medium text-[#ff3b30] hover:bg-red-50 transition-colors cursor-pointer"
+                <AnimatePresence>
+                  {notifOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -4, filter: "blur(4px)" }}
+                      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, scale: 0.97, y: -4, filter: "blur(4px)" }}
+                      transition={{ duration: duration.normal, ease: easing.easeOut }}
+                      className="absolute right-0 top-[calc(100%+8px)] w-[320px] bg-white border border-[#e8e8e8] rounded-[12px] shadow-lg overflow-hidden z-50"
+                      style={{ transformOrigin: "top right" }}
                     >
-                      <LogOut className="w-4 h-4" />
-                      Logout
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                      {/* Header */}
+                      <div className="flex items-center justify-between px-4 pt-4 pb-2.5">
+                        <h3 className="text-[14px] font-bold text-[#1a1a2e]">Notifications</h3>
+                        {notifications.some((n) => n.unread) && (
+                          <span className="text-[11px] font-medium text-[#1552f0] cursor-pointer hover:underline">
+                            Mark all read
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="h-px bg-[#f0f0f0]" />
+
+                      {/* Notification list */}
+                      <div className="max-h-[320px] overflow-y-auto scrollbar-thin">
+                        {notifications.map((notif) => (
+                          <button
+                            key={notif.id}
+                            className={`
+                              flex gap-3 w-full px-4 py-3 text-left transition-colors cursor-pointer
+                              ${notif.unread ? "bg-[#f7f9ff] hover:bg-[#eef2ff]" : "hover:bg-[#f7f7f7]"}
+                            `}
+                          >
+                            {/* Unread dot */}
+                            <div className="shrink-0 pt-1.5">
+                              <div
+                                className={`w-[6px] h-[6px] rounded-full ${
+                                  notif.unread ? "bg-[#1552f0]" : "bg-transparent"
+                                }`}
+                              />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className={`text-[13px] text-[#1a1a2e] truncate ${notif.unread ? "font-semibold" : "font-medium"}`}>
+                                {notif.title}
+                              </p>
+                              <p className="text-[12px] text-[#808080] mt-0.5 truncate">
+                                {notif.description}
+                              </p>
+                            </div>
+                            <span className="shrink-0 text-[11px] text-[#bbb] pt-0.5">
+                              {notif.time}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="h-px bg-[#f0f0f0]" />
+
+                      {/* Footer */}
+                      <div className="px-4 py-2.5">
+                        <button className="w-full text-center text-[12px] font-medium text-[#1552f0] hover:underline cursor-pointer">
+                          View all notifications
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Avatar + Popover */}
+              <div
+                className="relative"
+                ref={avatarMenuRef}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 cursor-pointer hover:opacity-90 transition-opacity" />
+
+                <AnimatePresence>
+                  {avatarMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -4, filter: "blur(4px)" }}
+                      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, scale: 0.97, y: -4, filter: "blur(4px)" }}
+                      transition={{ duration: duration.normal, ease: easing.easeOut }}
+                      className="absolute right-0 top-[calc(100%+8px)] w-[220px] bg-white border border-[#e8e8e8] rounded-[12px] shadow-lg overflow-hidden z-50"
+                      style={{ transformOrigin: "top right" }}
+                    >
+                      {/* User info */}
+                      <div className="flex items-center gap-2.5 px-4 pt-4 pb-3">
+                        <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-[13px] font-semibold text-[#1a1a2e] truncate">0x9BBA6B71...</p>
+                        </div>
+                        <button className="ml-auto shrink-0 p-1 text-[#999] hover:text-[#1a1a2e] transition-colors cursor-pointer">
+                          <Settings className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div className="h-px bg-[#f0f0f0]" />
+
+                      {/* Primary menu items */}
+                      <div className="py-1.5">
+                        {[
+                          { icon: ClipboardList, label: "Orders" },
+                          { icon: Target, label: "Accuracy" },
+                          { icon: TrendingUp, label: "Stats" },
+                          { icon: Settings, label: "Settings" },
+                          { icon: Trophy, label: "Leaderboard" },
+                          { icon: HelpCircle, label: "Support" },
+                        ].map((item) => (
+                          <button
+                            key={item.label}
+                            onClick={() => setAvatarMenuOpen(false)}
+                            className="flex items-center gap-2.5 w-full px-4 py-2.5 text-[13px] font-medium text-[#1a1a2e] hover:bg-[#f7f7f7] transition-colors cursor-pointer"
+                          >
+                            <item.icon className="w-4 h-4 text-[#808080]" />
+                            {item.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="h-px bg-[#f0f0f0]" />
+
+                      {/* Logout */}
+                      <div className="py-1.5">
+                        <button
+                          onClick={() => {
+                            setAvatarMenuOpen(false);
+                            setLogoutModalOpen(true);
+                          }}
+                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-[13px] font-medium text-[#ff3b30] hover:bg-red-50 transition-colors cursor-pointer"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Logout
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={() => setIsAuthenticated(true)}
+                className="h-[34px] px-4 text-[13px] font-medium text-[#1a1a2e] bg-[#f5f5f5] rounded-[8px] hover:bg-[#ebebeb] transition-colors cursor-pointer"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => setIsAuthenticated(true)}
+                className="h-[34px] px-4 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+              >
+                Sign Up
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
