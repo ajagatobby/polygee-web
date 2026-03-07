@@ -28,7 +28,7 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
   const isFixturesActive = pathname.startsWith("/fixtures");
 
   return (
-    <aside className="hidden lg:flex w-[240px] shrink-0 flex-col py-8 px-3 overflow-y-auto scrollbar-hide sticky top-[60px]" style={{ height: "calc(100vh - 60px)" }}>
+    <aside className="hidden lg:flex w-[240px] shrink-0 flex-col py-8 px-3 overflow-y-auto scrollbar-thin sticky top-[60px]" style={{ height: "calc(100vh - 60px)" }}>
       {/* Top navigation links */}
       <Link
         href="/"
