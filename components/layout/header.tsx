@@ -24,8 +24,11 @@ export function Header() {
   const [isPolymarketConnected, setIsPolymarketConnected] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const avatarMenuRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const notifTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
@@ -35,6 +38,23 @@ export function Header() {
   const handleMouseLeave = () => {
     hoverTimeoutRef.current = setTimeout(() => setAvatarMenuOpen(false), 150);
   };
+
+  const handleNotifEnter = () => {
+    if (notifTimeoutRef.current) clearTimeout(notifTimeoutRef.current);
+    setNotifOpen(true);
+  };
+
+  const handleNotifLeave = () => {
+    notifTimeoutRef.current = setTimeout(() => setNotifOpen(false), 150);
+  };
+
+  const notifications = [
+    { id: 1, title: "Trade Executed", description: "Bought 'Arsenal Win' at $0.62", time: "2m ago", unread: true },
+    { id: 2, title: "Price Alert", description: "Liverpool vs Chelsea moved to $0.74", time: "15m ago", unread: true },
+    { id: 3, title: "Prediction Settled", description: "Man City vs Tottenham resolved — You won!", time: "1h ago", unread: false },
+    { id: 4, title: "New Market", description: "Champions League Final now available", time: "3h ago", unread: false },
+    { id: 5, title: "Budget Updated", description: "Trading budget set to $50.00", time: "5h ago", unread: false },
+  ];
 
   return (
     <>
@@ -130,9 +150,87 @@ export function Header() {
             )}
           </AnimatePresence>
 
-          <button className="relative p-2 text-[#666] hover:text-[#333] transition-colors cursor-pointer">
-            <Bell className="w-[18px] h-[18px]" />
-          </button>
+          {/* Notifications */}
+          <div
+            className="relative"
+            ref={notifRef}
+            onMouseEnter={handleNotifEnter}
+            onMouseLeave={handleNotifLeave}
+          >
+            <button className="relative p-2 text-[#666] hover:text-[#333] transition-colors cursor-pointer">
+              <Bell className="w-[18px] h-[18px]" />
+              {notifications.some((n) => n.unread) && (
+                <span className="absolute top-1.5 right-1.5 w-[7px] h-[7px] rounded-full bg-[#ff3b30] ring-2 ring-white" />
+              )}
+            </button>
+
+            <AnimatePresence>
+              {notifOpen && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -4, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 0.97, y: -4, filter: "blur(4px)" }}
+                  transition={{ duration: duration.normal, ease: easing.easeOut }}
+                  className="absolute right-0 top-[calc(100%+8px)] w-[320px] bg-white border border-[#e8e8e8] rounded-[12px] shadow-lg overflow-hidden z-50"
+                  style={{ transformOrigin: "top right" }}
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-4 pt-4 pb-2.5">
+                    <h3 className="text-[14px] font-bold text-[#1a1a2e]">Notifications</h3>
+                    {notifications.some((n) => n.unread) && (
+                      <span className="text-[11px] font-medium text-[#1552f0] cursor-pointer hover:underline">
+                        Mark all read
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="h-px bg-[#f0f0f0]" />
+
+                  {/* Notification list */}
+                  <div className="max-h-[320px] overflow-y-auto scrollbar-thin">
+                    {notifications.map((notif) => (
+                      <button
+                        key={notif.id}
+                        className={`
+                          flex gap-3 w-full px-4 py-3 text-left transition-colors cursor-pointer
+                          ${notif.unread ? "bg-[#f7f9ff] hover:bg-[#eef2ff]" : "hover:bg-[#f7f7f7]"}
+                        `}
+                      >
+                        {/* Unread dot */}
+                        <div className="shrink-0 pt-1.5">
+                          <div
+                            className={`w-[6px] h-[6px] rounded-full ${
+                              notif.unread ? "bg-[#1552f0]" : "bg-transparent"
+                            }`}
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className={`text-[13px] text-[#1a1a2e] truncate ${notif.unread ? "font-semibold" : "font-medium"}`}>
+                            {notif.title}
+                          </p>
+                          <p className="text-[12px] text-[#808080] mt-0.5 truncate">
+                            {notif.description}
+                          </p>
+                        </div>
+                        <span className="shrink-0 text-[11px] text-[#bbb] pt-0.5">
+                          {notif.time}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="h-px bg-[#f0f0f0]" />
+
+                  {/* Footer */}
+                  <div className="px-4 py-2.5">
+                    <button className="w-full text-center text-[12px] font-medium text-[#1552f0] hover:underline cursor-pointer">
+                      View all notifications
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           {/* Avatar + Popover */}
           <div
             className="relative"
