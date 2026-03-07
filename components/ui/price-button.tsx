@@ -27,7 +27,7 @@ export function PriceButton({
   label,
   price,
   color = "custom",
-  customColor = "#0066FF",
+  customColor = "#1552f0",
   size = "sm",
   dimmed = false,
   onClick,

@@ -39,7 +39,7 @@ export default function PredictionDetailPage({
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#0066FF] hover:underline"
+            className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#1552f0] hover:underline"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Predictions
@@ -230,7 +230,7 @@ export default function PredictionDetailPage({
           {/* AI Confidence */}
           <div className="p-5 bg-white border border-[#f0f0f0] rounded-[12px]">
             <div className="flex items-center gap-2 mb-4">
-              <Brain className="w-4 h-4 text-[#0066FF]" />
+              <Brain className="w-4 h-4 text-[#1552f0]" />
               <h3 className="text-[14px] font-bold text-[#1a1a2e]">AI Confidence</h3>
             </div>
             <div className="flex items-center gap-4">

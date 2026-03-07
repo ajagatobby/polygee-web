@@ -97,7 +97,7 @@ export default function FixturesPage() {
             <div className="px-10 pt-5 pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CalendarDays className="w-5 h-5 text-[#0066FF]" />
+                  <CalendarDays className="w-5 h-5 text-[#1552f0]" />
                   <h1 className="text-[26px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
                     Fixtures
                   </h1>

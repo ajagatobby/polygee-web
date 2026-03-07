@@ -30,7 +30,7 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
   const aiPickColor =
     prediction.aiPick.team === "draw"
       ? "#808080"
-      : aiPickTeam?.color || "#0066FF";
+      : aiPickTeam?.color || "#1552f0";
 
   return (
     <div className="pb-2 w-full">
