@@ -10,7 +10,6 @@ import { predictions, formatDateLong } from "@/lib/mock-data";
 import { Prediction } from "@/types";
 import { dropdownVariants, duration, easing } from "@/lib/animations";
 import { useAuth } from "@/lib/auth-context";
-import { Lock } from "lucide-react";
 
 const weeks = Array.from({ length: 38 }, (_, i) => `Week ${i + 1}`);
 
@@ -222,29 +221,32 @@ export default function HomePage() {
                   }}
                 />
                 <div className="bg-white pb-10 pt-2 flex flex-col items-center text-center">
-                  <motion.div
-                    className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#e7edfe] mb-3"
-                    animate={{
-                      clipPath: [
-                        "circle(0% at 50% 100%)",
-                        "circle(75% at 50% 50%)",
-                        "circle(75% at 50% 50%)",
-                        "circle(0% at 50% 0%)",
-                        "circle(0% at 50% 0%)",
-                        "circle(75% at 50% 50%)",
-                        "circle(75% at 50% 50%)",
-                        "circle(0% at 50% 100%)",
-                      ],
-                    }}
-                    transition={{
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      times: [0, 0.15, 0.35, 0.5, 0.5, 0.65, 0.85, 1],
-                    }}
-                  >
-                    <Lock className="w-5 h-5 text-[#1552f0]" />
-                  </motion.div>
+                  <div className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#e7edfe] mb-3">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#1552f0"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      {/* Lock body */}
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      {/* Shackle — animates up and down */}
+                      <motion.path
+                        d="M7 11V7a5 5 0 0 1 10 0v4"
+                        animate={{ y: [0, -3, -3, 0, 0] }}
+                        transition={{
+                          duration: 2.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          times: [0, 0.2, 0.5, 0.7, 1],
+                        }}
+                      />
+                    </svg>
+                  </div>
                   <h3 className="text-[17px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
                     Sign up to see all predictions
                   </h3>
