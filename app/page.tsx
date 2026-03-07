@@ -222,9 +222,27 @@ export default function HomePage() {
                   }}
                 />
                 <div className="bg-white pb-10 pt-2 flex flex-col items-center text-center">
-                  <div className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#e7edfe] mb-3">
-                    <Lock className="w-5 h-5 text-[#1552f0]" />
-                  </div>
+                  <motion.div
+                    className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#e7edfe] mb-3"
+                    animate={{ y: [0, -4, 0], scale: [1, 1.05, 1] }}
+                    transition={{
+                      duration: 2.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <motion.div
+                      animate={{ rotate: [0, -8, 8, 0] }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.3,
+                      }}
+                    >
+                      <Lock className="w-5 h-5 text-[#1552f0]" />
+                    </motion.div>
+                  </motion.div>
                   <h3 className="text-[17px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
                     Sign up to see all predictions
                   </h3>
