@@ -85,8 +85,8 @@ body {
 
 /* Custom scrollbar — global default */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -196,7 +196,7 @@ html {
 }
 
 .scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 .scrollbar-thin::-webkit-scrollbar-track {
   background: transparent;
