@@ -46,39 +46,41 @@ export default function HomePage() {
         </div>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-white px-6">
+        <main className="flex-1 overflow-y-auto bg-white">
           {/* League header */}
-          <div className="px-5 pt-5 pb-4 border-b border-[#f0f0f0]">
-            <div className="flex items-center justify-between mb-3">
-              <h1 className="text-[26px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
-                {activeLeagueName}
-              </h1>
-              <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
-                <SlidersHorizontal className="w-[18px] h-[18px]" />
-              </button>
-            </div>
+          <div className="border-b border-[#f0f0f0]">
+            <div className="px-6 pt-5 pb-4">
+              <div className="flex items-center justify-between mb-3">
+                <h1 className="text-[26px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
+                  {activeLeagueName}
+                </h1>
+                <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
+                  <SlidersHorizontal className="w-[18px] h-[18px]" />
+                </button>
+              </div>
 
-            {/* Controls row */}
-            <div className="flex items-center gap-3">
-              {/* Games pill */}
-              <button className="h-[34px] px-5 bg-[#0066FF] text-white text-[13px] font-semibold rounded-[20px] cursor-pointer">
-                Games
-              </button>
+              {/* Controls row */}
+              <div className="flex items-center gap-3">
+                {/* Games pill */}
+                <button className="h-[34px] px-5 bg-[#0066FF] text-white text-[13px] font-semibold rounded-[20px] cursor-pointer">
+                  Games
+                </button>
 
-              <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
-                <Search className="w-4 h-4" />
-              </button>
+                <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
+                  <Search className="w-4 h-4" />
+                </button>
 
-              {/* Week selector */}
-              <button className="ml-auto flex items-center gap-1.5 h-[34px] px-3 text-[13px] font-medium text-[#1a1a2e] bg-white border border-[#e8e8e8] rounded-[8px] hover:border-[#ccc] transition-colors cursor-pointer">
-                {weekFilter}
-                <ChevronDown className="w-3.5 h-3.5 text-[#999]" />
-              </button>
+                {/* Week selector */}
+                <button className="ml-auto flex items-center gap-1.5 h-[34px] px-3 text-[13px] font-medium text-[#1a1a2e] bg-white border border-[#e8e8e8] rounded-[8px] hover:border-[#ccc] transition-colors cursor-pointer">
+                  {weekFilter}
+                  <ChevronDown className="w-3.5 h-3.5 text-[#999]" />
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Predictions list grouped by date */}
-          <div className="px-3 pt-2">
+          <div className="px-6 pt-2">
             {groupedPredictions.map(([date, preds]) => (
               <div key={date}>
                 {/* Date header */}
