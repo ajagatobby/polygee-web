@@ -238,7 +238,7 @@ export function ConnectPolymarketModal({
                 onClick={handleSubmit}
                 disabled={!allFilled}
                 className={`
-                  flex-1 h-[40px] text-[13px] font-medium text-white rounded-[10px] transition-all cursor-pointer
+                  flex-1 h-[40px] text-[13px] font-bold text-white rounded-[10px] transition-all cursor-pointer
                   ${
                     allFilled
                       ? "bg-[#1552f0] hover:bg-[#1247d6]"
