@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Bell, BarChart3, CalendarDays, Target, Settings, Trophy, HelpCircle, LogOut, CircleDot, ClipboardList } from "lucide-react";
+import { Search, Bell, BarChart3, CalendarDays, Target, Settings, Trophy, HelpCircle, LogOut, CircleDot, ClipboardList, TrendingUp } from "lucide-react";
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { duration, easing } from "@/lib/animations";
@@ -261,26 +261,6 @@ export function Header() {
                     </button>
                   </div>
 
-                  {/* Trading stats */}
-                  <div className="grid grid-cols-2 gap-2 px-4 py-3">
-                    <div className="px-2.5 py-2 bg-[#f7f8fa] rounded-[8px]">
-                      <p className="text-[11px] text-[#808080] font-medium">Win Rate</p>
-                      <p className="text-[14px] font-bold text-[#00c853]">68%</p>
-                    </div>
-                    <div className="px-2.5 py-2 bg-[#f7f8fa] rounded-[8px]">
-                      <p className="text-[11px] text-[#808080] font-medium">Total Trades</p>
-                      <p className="text-[14px] font-bold text-[#1a1a2e]">142</p>
-                    </div>
-                    <div className="px-2.5 py-2 bg-[#f7f8fa] rounded-[8px]">
-                      <p className="text-[11px] text-[#808080] font-medium">P&L</p>
-                      <p className="text-[14px] font-bold text-[#00c853]">+$284.50</p>
-                    </div>
-                    <div className="px-2.5 py-2 bg-[#f7f8fa] rounded-[8px]">
-                      <p className="text-[11px] text-[#808080] font-medium">ROI</p>
-                      <p className="text-[14px] font-bold text-[#00c853]">+18.4%</p>
-                    </div>
-                  </div>
-
                   <div className="h-px bg-[#f0f0f0]" />
 
                   {/* Primary menu items */}
@@ -288,6 +268,7 @@ export function Header() {
                     {[
                       { icon: ClipboardList, label: "Orders" },
                       { icon: Target, label: "Accuracy" },
+                      { icon: TrendingUp, label: "Stats" },
                       { icon: Settings, label: "Settings" },
                       { icon: Trophy, label: "Leaderboard" },
                       { icon: HelpCircle, label: "Support" },
