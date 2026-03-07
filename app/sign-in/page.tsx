@@ -133,9 +133,9 @@ export default function SignInPage() {
                 <label className="block text-[12px] font-medium text-[#666]">
                   Password
                 </label>
-                <button type="button" className="text-[12px] font-medium text-[#1552f0] hover:underline cursor-pointer">
+                <Link href="/forgot-password" className="text-[12px] font-medium text-[#1552f0] hover:underline">
                   Forgot password?
-                </button>
+                </Link>
               </div>
               <div
                 className={`flex items-center gap-2.5 h-[44px] px-3.5 rounded-[10px] border transition-all ${
