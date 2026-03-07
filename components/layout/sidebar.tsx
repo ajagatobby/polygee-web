@@ -98,8 +98,10 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
         </div>
       ))}
     </aside>
+    {/* Top fade mask */}
+    <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none z-10" style={{ background: "linear-gradient(to bottom, white 0%, transparent 100%)" }} />
     {/* Bottom fade mask */}
-    <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none" style={{ background: "linear-gradient(to top, white 0%, transparent 100%)" }} />
+    <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none z-10" style={{ background: "linear-gradient(to top, white 0%, transparent 100%)" }} />
     </div>
   );
 }
