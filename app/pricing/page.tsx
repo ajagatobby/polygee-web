@@ -13,6 +13,7 @@ import {
   Headphones,
   ArrowRight,
   Sparkles,
+  Crown,
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { easing, duration } from "@/lib/animations";
@@ -92,11 +93,7 @@ const faqs = [
 ];
 
 export default function PricingPage() {
-  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
-
-  const price = billing === "monthly" ? MONTHLY_PRICE : YEARLY_MONTHLY;
-  const period = billing === "monthly" ? "month" : "month";
 
   return (
     <div className="min-h-screen bg-white">
@@ -125,166 +122,63 @@ export default function PricingPage() {
                 automated trading, and analytics.
               </p>
             </motion.div>
+          </div>
+        </section>
 
-            {/* Billing toggle */}
+        {/* Two pricing cards */}
+        <section className="px-6 pb-16">
+          <div className="max-w-[820px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+            {/* Monthly card */}
             <motion.div
-              className="flex items-center justify-center mt-8"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
+              className="relative bg-white border border-[#e8e8e8] rounded-[20px] overflow-hidden"
+              initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{
                 duration: duration.slow,
                 ease: easing.easeOut,
                 delay: 0.1,
               }}
             >
-              <div className="inline-flex items-center h-[40px] p-1 rounded-[10px] bg-[#f5f5f5]">
-                <button
-                  onClick={() => setBilling("monthly")}
-                  className={`relative h-[32px] px-4 text-[13px] font-medium rounded-[8px] transition-colors cursor-pointer ${
-                    billing === "monthly"
-                      ? "text-[#1a1a2e]"
-                      : "text-[#808080] hover:text-[#666]"
-                  }`}
-                >
-                  {billing === "monthly" && (
-                    <motion.div
-                      layoutId="billing-pill"
-                      className="absolute inset-0 bg-white rounded-[8px] shadow-sm"
-                      transition={{
-                        duration: duration.normal,
-                        ease: easing.easeOut,
-                      }}
-                    />
-                  )}
-                  <span className="relative z-10">Monthly</span>
-                </button>
-                <button
-                  onClick={() => setBilling("yearly")}
-                  className={`relative h-[32px] px-4 text-[13px] font-medium rounded-[8px] transition-colors cursor-pointer ${
-                    billing === "yearly"
-                      ? "text-[#1a1a2e]"
-                      : "text-[#808080] hover:text-[#666]"
-                  }`}
-                >
-                  {billing === "yearly" && (
-                    <motion.div
-                      layoutId="billing-pill"
-                      className="absolute inset-0 bg-white rounded-[8px] shadow-sm"
-                      transition={{
-                        duration: duration.normal,
-                        ease: easing.easeOut,
-                      }}
-                    />
-                  )}
-                  <span className="relative z-10">Yearly</span>
-                </button>
-              </div>
-              <AnimatePresence>
-                {billing === "yearly" && (
-                  <motion.span
-                    initial={{ opacity: 0, x: -8, filter: "blur(4px)" }}
-                    animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, x: -8, filter: "blur(4px)" }}
-                    transition={{
-                      duration: duration.normal,
-                      ease: easing.easeOut,
-                    }}
-                    className="ml-3 text-[12px] font-bold text-[#00c853] bg-[#00c853]/10 px-2.5 py-1 rounded-full"
-                  >
-                    Save 30%
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Pricing card */}
-        <section className="px-6 pb-16">
-          <motion.div
-            className="max-w-[460px] mx-auto"
-            initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{
-              duration: duration.slow,
-              ease: easing.easeOut,
-              delay: 0.15,
-            }}
-          >
-            <div className="relative bg-white border border-[#e8e8e8] rounded-[20px] overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-              {/* Top accent */}
-              <div className="h-[3px] bg-[#1552f0]" />
-
-              <div className="p-8">
+              <div className="p-7">
                 {/* Plan name */}
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-[18px] font-bold text-[#1a1a2e]">
-                      Pro
+                    <h2 className="text-[17px] font-bold text-[#1a1a2e]">
+                      Monthly
                     </h2>
                     <p className="text-[13px] text-[#808080] mt-0.5">
-                      Full access to everything
+                      Pay as you go
                     </p>
                   </div>
-                  <div className="flex items-center justify-center w-[40px] h-[40px] rounded-[12px] bg-[#1552f0]/8">
-                    <Zap className="w-5 h-5 text-[#1552f0]" />
+                  <div className="flex items-center justify-center w-[38px] h-[38px] rounded-[10px] bg-[#f5f5f5]">
+                    <Zap className="w-[18px] h-[18px] text-[#808080]" />
                   </div>
                 </div>
 
                 {/* Price */}
                 <div className="flex items-baseline gap-1 mb-1">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={billing}
-                      initial={{ opacity: 0, y: -12, filter: "blur(4px)" }}
-                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                      exit={{ opacity: 0, y: 12, filter: "blur(4px)" }}
-                      transition={{
-                        duration: duration.normal,
-                        ease: easing.easeOut,
-                      }}
-                      className="text-[48px] font-bold text-[#1a1a2e] tracking-[-0.03em] leading-none"
-                    >
-                      ${price % 1 === 0 ? price : price.toFixed(2)}
-                    </motion.span>
-                  </AnimatePresence>
+                  <span className="text-[44px] font-bold text-[#1a1a2e] tracking-[-0.03em] leading-none">
+                    ${MONTHLY_PRICE}
+                  </span>
                   <span className="text-[15px] text-[#999] font-medium">
-                    /{period}
+                    /month
                   </span>
                 </div>
-
-                {/* Yearly note */}
-                <AnimatePresence>
-                  {billing === "yearly" && (
-                    <motion.p
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{
-                        duration: duration.normal,
-                        ease: easing.easeOut,
-                      }}
-                      className="text-[13px] text-[#808080] overflow-hidden"
-                    >
-                      ${YEARLY_TOTAL.toFixed(2)} billed annually{" "}
-                      <span className="text-[#999] line-through ml-1">
-                        ${(MONTHLY_PRICE * 12).toFixed(2)}
-                      </span>
-                    </motion.p>
-                  )}
-                </AnimatePresence>
+                <p className="text-[13px] text-[#808080]">
+                  Billed monthly
+                </p>
 
                 {/* CTA */}
                 <Link
                   href="/sign-up"
-                  className="flex items-center justify-center gap-2 w-full h-[48px] mt-6 text-[14px] font-bold text-white bg-[#1552f0] rounded-[12px] hover:bg-[#1247d6] transition-colors cursor-pointer group"
+                  className="flex items-center justify-center gap-2 w-full h-[46px] mt-6 text-[14px] font-bold text-[#1a1a2e] bg-[#f5f5f5] rounded-[12px] hover:bg-[#ebebeb] transition-colors cursor-pointer group"
                 >
                   Get started
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
 
                 <p className="text-center text-[12px] text-[#bbb] mt-3">
-                  Cancel anytime. No commitments.
+                  Cancel anytime
                 </p>
 
                 {/* Divider */}
@@ -296,10 +190,95 @@ export default function PricingPage() {
                 </p>
                 <ul className="space-y-3">
                   {planFeatures.map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-start gap-2.5"
-                    >
+                    <li key={feature} className="flex items-start gap-2.5">
+                      <div className="flex items-center justify-center w-[18px] h-[18px] rounded-full bg-[#f5f5f5] shrink-0 mt-0.5">
+                        <Check className="w-3 h-3 text-[#808080]" />
+                      </div>
+                      <span className="text-[13px] text-[#666] leading-snug">
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+
+            {/* Yearly card — recommended */}
+            <motion.div
+              className="relative bg-white border-2 border-[#1552f0] rounded-[20px] overflow-hidden shadow-[0_4px_24px_rgba(21,82,240,0.10)]"
+              initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                duration: duration.slow,
+                ease: easing.easeOut,
+                delay: 0.18,
+              }}
+            >
+              {/* Recommended badge */}
+              <div className="flex items-center justify-center gap-1.5 bg-[#1552f0] py-2">
+                <Crown className="w-3.5 h-3.5 text-white" />
+                <span className="text-[11px] font-bold text-white uppercase tracking-[0.06em]">
+                  Most Popular
+                </span>
+              </div>
+
+              <div className="p-7">
+                {/* Plan name */}
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-[17px] font-bold text-[#1a1a2e]">
+                      Yearly
+                    </h2>
+                    <p className="text-[13px] text-[#808080] mt-0.5">
+                      Best value
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-center w-[38px] h-[38px] rounded-[10px] bg-[#1552f0]/8">
+                    <Zap className="w-[18px] h-[18px] text-[#1552f0]" />
+                  </div>
+                </div>
+
+                {/* Price */}
+                <div className="flex items-baseline gap-1 mb-1">
+                  <span className="text-[44px] font-bold text-[#1a1a2e] tracking-[-0.03em] leading-none">
+                    ${YEARLY_MONTHLY % 1 === 0 ? YEARLY_MONTHLY : YEARLY_MONTHLY.toFixed(2)}
+                  </span>
+                  <span className="text-[15px] text-[#999] font-medium">
+                    /month
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <p className="text-[13px] text-[#808080]">
+                    ${YEARLY_TOTAL.toFixed(2)} billed annually
+                  </p>
+                  <span className="text-[11px] font-bold text-[#00c853] bg-[#00c853]/10 px-2 py-0.5 rounded-full">
+                    Save 30%
+                  </span>
+                </div>
+
+                {/* CTA */}
+                <Link
+                  href="/sign-up"
+                  className="flex items-center justify-center gap-2 w-full h-[46px] mt-6 text-[14px] font-bold text-white bg-[#1552f0] rounded-[12px] hover:bg-[#1247d6] transition-colors cursor-pointer group"
+                >
+                  Get started
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+
+                <p className="text-center text-[12px] text-[#bbb] mt-3">
+                  Cancel anytime
+                </p>
+
+                {/* Divider */}
+                <div className="h-px bg-[#f0f0f0] my-6" />
+
+                {/* Features list */}
+                <p className="text-[12px] font-semibold text-[#999] uppercase tracking-[0.05em] mb-4">
+                  Everything included
+                </p>
+                <ul className="space-y-3">
+                  {planFeatures.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2.5">
                       <div className="flex items-center justify-center w-[18px] h-[18px] rounded-full bg-[#1552f0]/10 shrink-0 mt-0.5">
                         <Check className="w-3 h-3 text-[#1552f0]" />
                       </div>
@@ -310,8 +289,8 @@ export default function PricingPage() {
                   ))}
                 </ul>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </section>
 
         {/* Features grid */}
