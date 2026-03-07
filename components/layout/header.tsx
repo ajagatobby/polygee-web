@@ -6,6 +6,7 @@ import { Search, Bell, BarChart3, CalendarDays } from "lucide-react";
 import { useState } from "react";
 import { motion } from "motion/react";
 import { duration, easing } from "@/lib/animations";
+import { ConnectPolymarketModal } from "@/components/ui/connect-polymarket-modal";
 
 const navLinks = [
   { href: "/", label: "Predictions", icon: BarChart3 },
@@ -16,8 +17,10 @@ export function Header() {
   const pathname = usePathname();
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
 
   return (
+    <>
     <header className="sticky top-0 z-50 bg-white border-b border-[#e8e8e8]">
       <div className="h-[60px] flex items-center px-6 gap-6">
         {/* Logo */}
@@ -82,7 +85,10 @@ export function Header() {
             })}
           </nav>
 
-          <button className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer">
+          <button
+            onClick={() => setConnectModalOpen(true)}
+            className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+          >
             Connect Polymarket
           </button>
 
@@ -93,5 +99,11 @@ export function Header() {
         </div>
       </div>
     </header>
+
+    <ConnectPolymarketModal
+      open={connectModalOpen}
+      onClose={() => setConnectModalOpen(false)}
+    />
+    </>
   );
 }
