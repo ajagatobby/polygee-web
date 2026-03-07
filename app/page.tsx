@@ -46,7 +46,7 @@ export default function HomePage() {
         </div>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-white">
+        <main className="flex-1 overflow-y-auto bg-white px-6">
           {/* League header */}
           <div className="px-5 pt-5 pb-4 border-b border-[#f0f0f0]">
             <div className="flex items-center justify-between mb-3">
