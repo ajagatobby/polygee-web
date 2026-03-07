@@ -61,11 +61,6 @@ export default function HomePage() {
 
               {/* Controls row */}
               <div className="flex items-center gap-3">
-                {/* Games pill */}
-                <button className="h-[34px] px-5 bg-[#0066FF] text-white text-[13px] font-semibold rounded-[20px] cursor-pointer">
-                  Games
-                </button>
-
                 <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
                   <Search className="w-4 h-4" />
                 </button>
