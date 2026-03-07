@@ -5,12 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
 import { easing, duration } from "@/lib/animations";
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { setIsAuthenticated } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,8 +23,8 @@ export default function SignUpPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid) return;
-    setIsAuthenticated(true);
-    router.push("/");
+    // Redirect to invite code verification before activating account
+    router.push("/invite-code");
   };
 
   return (
