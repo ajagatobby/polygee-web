@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Bell, BarChart3, CalendarDays, Target, Settings, Trophy, HelpCircle, LogOut, ChevronUp } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { Search, Bell, BarChart3, CalendarDays, Target, Settings, Trophy, HelpCircle, LogOut } from "lucide-react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { duration, easing } from "@/lib/animations";
 import { ConnectPolymarketModal } from "@/components/ui/connect-polymarket-modal";
@@ -20,18 +20,16 @@ export function Header() {
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const avatarMenuRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (avatarMenuRef.current && !avatarMenuRef.current.contains(e.target as Node)) {
-        setAvatarMenuOpen(false);
-      }
-    };
-    if (avatarMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [avatarMenuOpen]);
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setAvatarMenuOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => setAvatarMenuOpen(false), 150);
+  };
 
   return (
     <>
@@ -110,19 +108,13 @@ export function Header() {
             <Bell className="w-[18px] h-[18px]" />
           </button>
           {/* Avatar + Popover */}
-          <div className="relative" ref={avatarMenuRef}>
-            <button
-              onClick={() => setAvatarMenuOpen((v) => !v)}
-              className="flex items-center gap-1.5 cursor-pointer"
-            >
-              <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 hover:opacity-90 transition-opacity" />
-              <motion.div
-                animate={{ rotate: avatarMenuOpen ? 0 : 180 }}
-                transition={{ duration: duration.fast, ease: easing.easeOut }}
-              >
-                <ChevronUp className="w-3.5 h-3.5 text-[#999]" />
-              </motion.div>
-            </button>
+          <div
+            className="relative"
+            ref={avatarMenuRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 cursor-pointer hover:opacity-90 transition-opacity" />
 
             <AnimatePresence>
               {avatarMenuOpen && (
