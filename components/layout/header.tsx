@@ -82,6 +82,10 @@ export function Header() {
             })}
           </nav>
 
+          <button className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer">
+            Connect Polymarket
+          </button>
+
           <button className="relative p-2 text-[#666] hover:text-[#333] transition-colors cursor-pointer">
             <Bell className="w-[18px] h-[18px]" />
           </button>
