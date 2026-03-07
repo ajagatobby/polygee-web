@@ -72,13 +72,13 @@
   --color-border-secondary: var(--border-secondary);
   --color-border-focus: var(--border-focus);
 
-  --font-sans: var(--font-poppins);
+  --font-sans: var(--font-inter);
 }
 
 body {
   background: #ffffff;
   color: var(--text-primary);
-  font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
