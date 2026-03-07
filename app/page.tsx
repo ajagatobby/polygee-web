@@ -1,16 +1,41 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { Search, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { PredictionCard } from "@/components/predictions/prediction-card";
 import { predictions, formatDateLong } from "@/lib/mock-data";
 import { Prediction } from "@/types";
 
+const weeks = Array.from({ length: 38 }, (_, i) => `Week ${i + 1}`);
+
 export default function HomePage() {
   const [activeLeague, setActiveLeague] = useState("premier-league");
   const [weekFilter, setWeekFilter] = useState("Week 29");
+  const [weekDropdownOpen, setWeekDropdownOpen] = useState(false);
+  const weekDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (weekDropdownRef.current && !weekDropdownRef.current.contains(e.target as Node)) {
+        setWeekDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const currentWeekIndex = weeks.indexOf(weekFilter);
+
+  const goToPrevWeek = () => {
+    if (currentWeekIndex > 0) setWeekFilter(weeks[currentWeekIndex - 1]);
+  };
+
+  const goToNextWeek = () => {
+    if (currentWeekIndex < weeks.length - 1) setWeekFilter(weeks[currentWeekIndex + 1]);
+  };
 
   // Get the active league name
   const activeLeagueName = useMemo(() => {
@@ -66,10 +91,56 @@ export default function HomePage() {
                 </button>
 
                 {/* Week selector */}
-                <button className="ml-auto flex items-center gap-1.5 h-[34px] px-3 text-[13px] font-medium text-[#1a1a2e] bg-white border border-[#e8e8e8] rounded-[8px] hover:border-[#ccc] transition-colors cursor-pointer">
-                  {weekFilter}
-                  <ChevronDown className="w-3.5 h-3.5 text-[#999]" />
-                </button>
+                <div className="ml-auto flex items-center gap-1" ref={weekDropdownRef}>
+                  <button
+                    onClick={goToPrevWeek}
+                    disabled={currentWeekIndex <= 0}
+                    className="p-1.5 text-[#999] hover:text-[#666] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <div className="relative">
+                    <button
+                      onClick={() => setWeekDropdownOpen((prev) => !prev)}
+                      className="flex items-center gap-1.5 h-[34px] px-3 text-[13px] font-medium text-[#1a1a2e] bg-white border border-[#e8e8e8] rounded-[8px] hover:border-[#ccc] transition-colors cursor-pointer"
+                    >
+                      {weekFilter}
+                      <ChevronDown className={`w-3.5 h-3.5 text-[#999] transition-transform duration-200 ${weekDropdownOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {weekDropdownOpen && (
+                      <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-[140px] max-h-[280px] overflow-y-auto scrollbar-thin bg-white border border-[#e8e8e8] rounded-[10px] shadow-lg py-1">
+                        {weeks.map((week) => (
+                          <button
+                            key={week}
+                            onClick={() => {
+                              setWeekFilter(week);
+                              setWeekDropdownOpen(false);
+                            }}
+                            className={`
+                              w-full text-left px-3 py-2 text-[13px] transition-colors cursor-pointer
+                              ${week === weekFilter
+                                ? "bg-neutral-50 font-semibold text-[#1a1a2e]"
+                                : "text-[#666] hover:bg-neutral-50 hover:text-[#1a1a2e]"
+                              }
+                            `}
+                          >
+                            {week}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={goToNextWeek}
+                    disabled={currentWeekIndex >= weeks.length - 1}
+                    className="p-1.5 text-[#999] hover:text-[#666] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
