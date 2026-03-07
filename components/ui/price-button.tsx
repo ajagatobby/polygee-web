@@ -92,7 +92,7 @@ export function PriceButton({
                   {label}
                 </span>
                 <span className="ml-1 text-sm" style={{ opacity: 1 }}>
-                  {price}&#162;
+                  {price}%
                 </span>
               </p>
             ) : (
@@ -100,7 +100,7 @@ export function PriceButton({
               <span className="uppercase leading-[21px] tracking-[0.15px] flex-1 h-full text-xs font-semibold text-center flex items-center justify-center">
                 <span className="opacity-70">{label}</span>
                 <span className="ml-1 text-sm" style={{ opacity: 1 }}>
-                  {price}&#162;
+                  {price}%
                 </span>
               </span>
             )}
