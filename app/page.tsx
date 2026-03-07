@@ -224,24 +224,26 @@ export default function HomePage() {
                 <div className="bg-white pb-10 pt-2 flex flex-col items-center text-center">
                   <motion.div
                     className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#e7edfe] mb-3"
-                    animate={{ y: [0, -4, 0], scale: [1, 1.05, 1] }}
+                    animate={{
+                      clipPath: [
+                        "circle(0% at 50% 100%)",
+                        "circle(75% at 50% 50%)",
+                        "circle(75% at 50% 50%)",
+                        "circle(0% at 50% 0%)",
+                        "circle(0% at 50% 0%)",
+                        "circle(75% at 50% 50%)",
+                        "circle(75% at 50% 50%)",
+                        "circle(0% at 50% 100%)",
+                      ],
+                    }}
                     transition={{
-                      duration: 2.5,
+                      duration: 4,
                       repeat: Infinity,
                       ease: "easeInOut",
+                      times: [0, 0.15, 0.35, 0.5, 0.5, 0.65, 0.85, 1],
                     }}
                   >
-                    <motion.div
-                      animate={{ rotate: [0, -8, 8, 0] }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 0.3,
-                      }}
-                    >
-                      <Lock className="w-5 h-5 text-[#1552f0]" />
-                    </motion.div>
+                    <Lock className="w-5 h-5 text-[#1552f0]" />
                   </motion.div>
                   <h3 className="text-[17px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
                     Sign up to see all predictions
