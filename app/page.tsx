@@ -41,7 +41,9 @@ export default function HomePage() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar */}
-        <Sidebar activeLeague={activeLeague} onLeagueChange={setActiveLeague} />
+        <div className="hidden lg:block">
+          <Sidebar activeLeague={activeLeague} onLeagueChange={setActiveLeague} />
+        </div>
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-white">

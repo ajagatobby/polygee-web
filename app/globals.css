@@ -170,3 +170,12 @@ html {
 .stagger-children > *:nth-child(10) { animation-delay: 0.5s; }
 .stagger-children > *:nth-child(11) { animation-delay: 0.55s; }
 .stagger-children > *:nth-child(12) { animation-delay: 0.6s; }
+
+/* Hide scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
