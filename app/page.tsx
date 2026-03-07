@@ -49,7 +49,7 @@ export default function HomePage() {
         <main className="flex-1 overflow-y-auto bg-white">
           {/* League header */}
           <div className="border-b border-[#f0f0f0]">
-            <div className="px-6 pt-5 pb-4">
+            <div className="px-10 pt-5 pb-4">
               <div className="flex items-center justify-between mb-3">
                 <h1 className="text-[26px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
                   {activeLeagueName}
@@ -80,7 +80,7 @@ export default function HomePage() {
           </div>
 
           {/* Predictions list grouped by date */}
-          <div className="px-6 pt-2">
+          <div className="px-10 pt-2">
             {groupedPredictions.map(([date, preds]) => (
               <div key={date}>
                 {/* Date header */}
