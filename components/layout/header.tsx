@@ -29,33 +29,6 @@ export function Header() {
           </div>
         </Link>
 
-        {/* Nav links */}
-        <nav className="flex items-center gap-1">
-          {navLinks.map((link) => {
-            const isActive =
-              link.href === "/"
-                ? pathname === "/" || pathname.startsWith("/prediction")
-                : pathname.startsWith(link.href);
-            const Icon = link.icon;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`
-                  flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium rounded-[8px] transition-colors
-                  ${isActive
-                    ? "text-[#1a1a2e] bg-[#f0f0f0] font-semibold"
-                    : "text-[#808080] hover:text-[#1a1a2e] hover:bg-[#f7f7f7]"
-                  }
-                `}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
-
         {/* Search */}
         <div className="flex-1 max-w-[400px]">
           <div className="relative">
@@ -71,7 +44,34 @@ export function Header() {
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-3 ml-auto">
+        <div className="flex items-center gap-4 ml-auto">
+          {/* Nav links */}
+          <nav className="flex items-center gap-1">
+            {navLinks.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/" || pathname.startsWith("/prediction")
+                  : pathname.startsWith(link.href);
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`
+                    flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium rounded-[8px] transition-colors
+                    ${isActive
+                      ? "text-[#1a1a2e] bg-[#f0f0f0] font-semibold"
+                      : "text-[#808080] hover:text-[#1a1a2e] hover:bg-[#f7f7f7]"
+                    }
+                  `}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+
           <button className="relative p-2 text-[#666] hover:text-[#333] transition-colors cursor-pointer">
             <Bell className="w-[18px] h-[18px]" />
           </button>
