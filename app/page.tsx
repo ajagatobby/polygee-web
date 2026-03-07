@@ -225,7 +225,7 @@ export default function HomePage() {
                     <motion.svg
                       width="20"
                       height="20"
-                      viewBox="0 0 24 24"
+                      viewBox="0 -4 24 28"
                       fill="none"
                       stroke="#1552f0"
                       strokeWidth="2"
