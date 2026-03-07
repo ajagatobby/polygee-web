@@ -45,7 +45,7 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
               <div className="shrink-0 w-5 h-5 flex items-center justify-center">
                 <span className="text-[16px] leading-none">{sport.logo}</span>
               </div>
-              <p className="text-[14px] font-semibold truncate text-[#1a1a2e]">
+              <p className="text-[14px] font-medium truncate text-[#1a1a2e]">
                 {sport.name}
               </p>
             </div>
