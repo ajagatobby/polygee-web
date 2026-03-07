@@ -86,10 +86,12 @@ export default function HomePage() {
                   </h2>
                 </div>
 
-                {/* Prediction rows */}
-                {preds.map((pred) => (
-                  <PredictionCard key={pred.id} prediction={pred} />
-                ))}
+                {/* 2-column grid of prediction cards */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
+                  {preds.map((pred) => (
+                    <PredictionCard key={pred.id} prediction={pred} />
+                  ))}
+                </div>
               </div>
             ))}
           </div>
