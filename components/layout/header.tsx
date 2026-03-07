@@ -12,7 +12,6 @@ const navLinks = [
   { href: "/", label: "Predictions", icon: BarChart3 },
   { href: "/fixtures", label: "Fixtures", icon: CalendarDays },
   { href: "/positions", label: "Open Positions", icon: CircleDot },
-  { href: "/orders", label: "Orders", icon: ClipboardList },
 ];
 
 export function Header() {
@@ -145,6 +144,7 @@ export function Header() {
                   {/* Primary menu items */}
                   <div className="py-1.5">
                     {[
+                      { icon: ClipboardList, label: "Orders" },
                       { icon: Target, label: "Accuracy" },
                       { icon: Settings, label: "Settings" },
                       { icon: Trophy, label: "Leaderboard" },
