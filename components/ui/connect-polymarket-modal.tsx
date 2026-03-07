@@ -72,8 +72,6 @@ const modalVariants = {
     transition: {
       duration: duration.medium,
       ease: easing.easeOut,
-      staggerChildren: 0.04,
-      delayChildren: 0.08,
     },
   },
   exit: {
@@ -88,14 +86,6 @@ const modalVariants = {
   },
 };
 
-const fieldVariants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: duration.normal, ease: easing.easeOut },
-  },
-};
 
 export function ConnectPolymarketModal({
   open,
@@ -158,10 +148,7 @@ export function ConnectPolymarketModal({
             exit="exit"
           >
             {/* Header */}
-            <motion.div
-              className="flex items-center justify-between px-6 pt-6 pb-4"
-              variants={fieldVariants}
-            >
+            <div className="flex items-center justify-between px-6 pt-6 pb-4">
               <div>
                 <h2 className="text-[18px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
                   Connect Polymarket
@@ -176,13 +163,10 @@ export function ConnectPolymarketModal({
               >
                 <X className="w-4 h-4" />
               </button>
-            </motion.div>
+            </div>
 
             {/* Divider */}
-            <motion.div
-              className="h-px bg-[#f0f0f0] mx-6"
-              variants={fieldVariants}
-            />
+            <div className="h-px bg-[#f0f0f0] mx-6" />
 
             {/* Fields */}
             <div className="px-6 py-5 flex flex-col gap-3.5">
@@ -193,7 +177,7 @@ export function ConnectPolymarketModal({
                 const isVisible = visibility[field.name];
 
                 return (
-                  <motion.div key={field.name} variants={fieldVariants}>
+                  <div key={field.name}>
                     <label className="block text-[12px] font-medium text-[#666] mb-1.5">
                       {field.label}
                     </label>
@@ -237,16 +221,13 @@ export function ConnectPolymarketModal({
                         </button>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
 
             {/* Footer */}
-            <motion.div
-              className="px-6 pb-6 pt-1 flex gap-2.5"
-              variants={fieldVariants}
-            >
+            <div className="px-6 pb-6 pt-1 flex gap-2.5">
               <button
                 onClick={onClose}
                 className="flex-1 h-[40px] text-[13px] font-medium text-[#666] bg-[#f5f5f5] rounded-[10px] hover:bg-[#ebebeb] transition-colors cursor-pointer"
@@ -267,7 +248,7 @@ export function ConnectPolymarketModal({
               >
                 Connect
               </button>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
       )}
