@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { CalendarDays, Filter } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { FixtureCard } from "@/components/fixtures/fixture-card";
+import { Tabs } from "@/components/ui/tabs";
 import { getFixturesByLeague, fixtures, formatDateLong } from "@/lib/mock-data";
 import { duration, easing } from "@/lib/animations";
 
@@ -44,11 +45,13 @@ export default function FixturesPage() {
     return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
   }, [filteredFixtures]);
 
-  const filters: { id: FixtureFilter; label: string; count: number }[] = [
-    { id: "all", label: "All", count: fixtures.length },
-    { id: "scheduled", label: "Upcoming", count: fixtures.filter((f) => f.status === "scheduled").length },
-    { id: "live", label: "Live", count: fixtures.filter((f) => f.status === "live").length },
-    { id: "completed", label: "Results", count: fixtures.filter((f) => f.status === "completed").length },
+  const liveCount = fixtures.filter((f) => f.status === "live").length;
+
+  const filterTabs = [
+    { id: "all" as const, label: "All", count: fixtures.length },
+    { id: "scheduled" as const, label: "Upcoming", count: fixtures.filter((f) => f.status === "scheduled").length },
+    { id: "live" as const, label: "Live", count: liveCount, dot: liveCount > 0 },
+    { id: "completed" as const, label: "Results", count: fixtures.filter((f) => f.status === "completed").length },
   ];
 
   return (
@@ -78,27 +81,15 @@ export default function FixturesPage() {
             </div>
           </div>
 
-          {/* Status Filters */}
-          <div className="flex items-center gap-2 px-10 py-3 border-b border-[#f0f0f0]">
-            <Filter className="w-3.5 h-3.5 text-[#bbb]" />
-            {filters.map((filter) => (
-              <button
-                key={filter.id}
-                onClick={() => handleFilterChange(filter.id)}
-                className={`
-                  h-[30px] px-3 text-[12px] font-medium rounded-[20px] transition-all cursor-pointer
-                  ${activeFilter === filter.id
-                    ? "bg-[#1a1a2e] text-white"
-                    : "bg-white text-[#666] border border-[#e8e8e8] hover:border-[#ccc]"
-                  }
-                `}
-              >
-                {filter.label}
-                {filter.id === "live" && filter.count > 0 && (
-                  <span className="ml-1 inline-flex w-[5px] h-[5px] bg-[#ff3b30] rounded-full animate-pulse-soft" />
-                )}
-              </button>
-            ))}
+          {/* Status Filter Tabs */}
+          <div className="border-b border-[#f0f0f0]">
+            <Tabs
+              tabs={filterTabs}
+              activeTab={activeFilter}
+              onTabChange={(id) => handleFilterChange(id as FixtureFilter)}
+              layoutId="fixtures-filter"
+              className="px-10"
+            />
           </div>
 
           {/* Fixtures grouped by date */}
