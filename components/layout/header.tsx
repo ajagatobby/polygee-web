@@ -102,21 +102,33 @@ export function Header() {
             })}
           </nav>
 
-          {isPolymarketConnected ? (
-            <button
-              onClick={() => setDepositModalOpen(true)}
-              className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#00c853] rounded-[8px] hover:bg-[#00a844] transition-colors cursor-pointer"
-            >
-              Deposit
-            </button>
-          ) : (
-            <button
-              onClick={() => setConnectModalOpen(true)}
-              className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
-            >
-              Connect Polymarket
-            </button>
-          )}
+          <AnimatePresence mode="wait">
+            {isPolymarketConnected ? (
+              <motion.button
+                key="deposit"
+                onClick={() => setDepositModalOpen(true)}
+                initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+                transition={{ duration: duration.normal, ease: easing.easeOut }}
+                className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+              >
+                Deposit
+              </motion.button>
+            ) : (
+              <motion.button
+                key="connect"
+                onClick={() => setConnectModalOpen(true)}
+                initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+                transition={{ duration: duration.normal, ease: easing.easeOut }}
+                className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+              >
+                Connect Polymarket
+              </motion.button>
+            )}
+          </AnimatePresence>
 
           <button className="relative p-2 text-[#666] hover:text-[#333] transition-colors cursor-pointer">
             <Bell className="w-[18px] h-[18px]" />
