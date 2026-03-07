@@ -75,24 +75,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Column headers (desktop only) */}
-          {filteredPredictions.length > 0 && (
-            <div className="hidden md:flex items-center justify-end gap-2 px-4 py-2 border-b border-[#f0f0f0] bg-white sticky top-0 z-10">
-              <div className="flex-1" />
-              <div className="grid grid-cols-3 gap-2 lg:w-[372px]">
-                <div className="text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
-                  Moneyline
-                </div>
-                <div className="text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
-                  Spread
-                </div>
-                <div className="text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
-                  Total
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Predictions list grouped by date */}
           <div className="px-3 pt-2">
             {groupedPredictions.map(([date, preds]) => (

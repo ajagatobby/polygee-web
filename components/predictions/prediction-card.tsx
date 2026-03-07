@@ -113,7 +113,7 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
             </div>
           </div>
 
-          {/* Main content: teams + buttons */}
+          {/* Main content: teams + 3 outcome buttons */}
           <div className="flex w-full gap-3 flex-row">
             {/* Teams + Scores (left side) */}
             <div className="flex justify-between lg:min-w-0 lg:flex-1 lg:shrink-0">
@@ -143,7 +143,6 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
                       {prediction.homeTeam.record}
                     </span>
                   )}
-                  {/* AI pick indicator for home team */}
                   {prediction.aiPick.team === "home" && (
                     <span
                       className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shrink-0"
@@ -172,7 +171,6 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
                       {prediction.awayTeam.record}
                     </span>
                   )}
-                  {/* AI pick indicator for away team */}
                   {prediction.aiPick.team === "away" && (
                     <span
                       className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shrink-0"
@@ -185,75 +183,8 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
               </div>
             </div>
 
-            {/* Buttons grid: 3 columns (right side) */}
-            <div className="hidden md:flex flex-1 justify-end">
-              <div className="grid flex-1 grid-cols-3 gap-2 lg:w-[372px]">
-                {/* Moneyline column: 3 stacked buttons */}
-                <div className="flex w-full flex-col gap-2">
-                  <PriceButton
-                    label={prediction.homeTeam.shortName}
-                    price={prediction.moneyline.home}
-                    color="custom"
-                    customColor={prediction.homeTeam.color}
-                    size="sm"
-                  />
-                  <PriceButton
-                    label="DRAW"
-                    price={prediction.moneyline.draw}
-                    color="gray"
-                    size="sm"
-                    dimmed
-                  />
-                  <PriceButton
-                    label={prediction.awayTeam.shortName}
-                    price={prediction.moneyline.away}
-                    color="custom"
-                    customColor={prediction.awayTeam.color}
-                    size="sm"
-                    dimmed
-                  />
-                </div>
-
-                {/* Spread column: 2 tall buttons */}
-                <div className="flex w-full flex-col gap-2">
-                  <PriceButton
-                    label={prediction.spread.homeLabel}
-                    price={prediction.spread.homePrice}
-                    color="gray"
-                    size="lg"
-                    dimmed
-                  />
-                  <PriceButton
-                    label={prediction.spread.awayLabel}
-                    price={prediction.spread.awayPrice}
-                    color="gray"
-                    size="lg"
-                    dimmed
-                  />
-                </div>
-
-                {/* Total column: 2 tall buttons */}
-                <div className="flex w-full flex-col gap-2">
-                  <PriceButton
-                    label={prediction.total.overLabel}
-                    price={prediction.total.overPrice}
-                    color="gray"
-                    size="lg"
-                    dimmed
-                  />
-                  <PriceButton
-                    label={prediction.total.underLabel}
-                    price={prediction.total.underPrice}
-                    color="gray"
-                    size="lg"
-                    dimmed
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Mobile: just moneyline buttons */}
-            <div className="flex md:hidden flex-col gap-2 shrink-0 w-[110px]">
+            {/* 3 outcome buttons: Home Win / Draw / Away Win */}
+            <div className="flex flex-col gap-2 shrink-0 w-[130px]">
               <PriceButton
                 label={prediction.homeTeam.shortName}
                 price={prediction.moneyline.home}
