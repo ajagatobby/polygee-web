@@ -7,6 +7,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { duration, easing } from "@/lib/animations";
 import { ConnectPolymarketModal } from "@/components/ui/connect-polymarket-modal";
+import { DepositModal } from "@/components/ui/deposit-modal";
 
 const navLinks = [
   { href: "/", label: "Predictions", icon: BarChart3 },
@@ -19,6 +20,8 @@ export function Header() {
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [depositModalOpen, setDepositModalOpen] = useState(false);
+  const [isPolymarketConnected, setIsPolymarketConnected] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const avatarMenuRef = useRef<HTMLDivElement>(null);
@@ -99,12 +102,21 @@ export function Header() {
             })}
           </nav>
 
-          <button
-            onClick={() => setConnectModalOpen(true)}
-            className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
-          >
-            Connect Polymarket
-          </button>
+          {isPolymarketConnected ? (
+            <button
+              onClick={() => setDepositModalOpen(true)}
+              className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#00c853] rounded-[8px] hover:bg-[#00a844] transition-colors cursor-pointer"
+            >
+              Deposit
+            </button>
+          ) : (
+            <button
+              onClick={() => setConnectModalOpen(true)}
+              className="flex items-center gap-1.5 h-[34px] px-3.5 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+            >
+              Connect Polymarket
+            </button>
+          )}
 
           <button className="relative p-2 text-[#666] hover:text-[#333] transition-colors cursor-pointer">
             <Bell className="w-[18px] h-[18px]" />
@@ -187,6 +199,12 @@ export function Header() {
     <ConnectPolymarketModal
       open={connectModalOpen}
       onClose={() => setConnectModalOpen(false)}
+      onConnect={() => setIsPolymarketConnected(true)}
+    />
+
+    <DepositModal
+      open={depositModalOpen}
+      onClose={() => setDepositModalOpen(false)}
     />
 
     {/* Logout Confirmation Modal */}
@@ -240,7 +258,7 @@ export function Header() {
               <button
                 onClick={() => {
                   setLogoutModalOpen(false);
-                  // TODO: handle logout
+                  setIsPolymarketConnected(false);
                 }}
                 className="flex-1 h-[40px] text-[13px] font-bold text-white bg-[#ff3b30] rounded-[10px] hover:bg-[#e6352b] transition-colors cursor-pointer"
               >

@@ -8,6 +8,7 @@ import { easing, duration } from "@/lib/animations";
 interface ConnectPolymarketModalProps {
   open: boolean;
   onClose: () => void;
+  onConnect?: () => void;
 }
 
 const fields = [
@@ -90,6 +91,7 @@ const modalVariants = {
 export function ConnectPolymarketModal({
   open,
   onClose,
+  onConnect,
 }: ConnectPolymarketModalProps) {
   const [values, setValues] = useState<Record<FieldName, string>>({
     apiKey: "",
@@ -121,7 +123,7 @@ export function ConnectPolymarketModal({
 
   const handleSubmit = () => {
     if (!allFilled) return;
-    // TODO: handle submission
+    onConnect?.();
     onClose();
   };
 
