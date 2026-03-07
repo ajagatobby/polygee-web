@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Search, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -83,7 +83,7 @@ export default function HomePage() {
           {/* League header */}
           <div className="border-b border-[#f0f0f0]">
             <div className="px-10 pt-5 pb-4">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between">
                 <AnimatePresence mode="wait">
                   <motion.h1
                     key={activeLeagueName}
@@ -96,19 +96,9 @@ export default function HomePage() {
                     {activeLeagueName}
                   </motion.h1>
                 </AnimatePresence>
-                <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
-                  <SlidersHorizontal className="w-[18px] h-[18px]" />
-                </button>
-              </div>
-
-              {/* Controls row */}
-              <div className="flex items-center gap-3">
-                <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
-                  <Search className="w-4 h-4" />
-                </button>
 
                 {/* Week selector */}
-                <div className="ml-auto flex items-center gap-1" ref={weekDropdownRef}>
+                <div className="flex items-center gap-1" ref={weekDropdownRef}>
                   <button
                     onClick={goToPrevWeek}
                     disabled={currentWeekIndex <= 0}

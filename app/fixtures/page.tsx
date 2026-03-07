@@ -1,21 +1,47 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { CalendarDays } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { FixtureCard } from "@/components/fixtures/fixture-card";
 import { Tabs } from "@/components/ui/tabs";
 import { getFixturesByLeague, fixtures, formatDateLong } from "@/lib/mock-data";
-import { duration, easing } from "@/lib/animations";
+import { dropdownVariants, duration, easing } from "@/lib/animations";
 
 type FixtureFilter = "all" | "scheduled" | "live" | "completed";
+
+const weeks = Array.from({ length: 38 }, (_, i) => `Week ${i + 1}`);
 
 export default function FixturesPage() {
   const [activeLeague, setActiveLeague] = useState("premier-league");
   const [activeFilter, setActiveFilter] = useState<FixtureFilter>("all");
+  const [weekFilter, setWeekFilter] = useState("Week 29");
+  const [weekDropdownOpen, setWeekDropdownOpen] = useState(false);
+  const weekDropdownRef = useRef<HTMLDivElement>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (weekDropdownRef.current && !weekDropdownRef.current.contains(e.target as Node)) {
+        setWeekDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const currentWeekIndex = weeks.indexOf(weekFilter);
+
+  const goToPrevWeek = () => {
+    if (currentWeekIndex > 0) setWeekFilter(weeks[currentWeekIndex - 1]);
+  };
+
+  const goToNextWeek = () => {
+    if (currentWeekIndex < weeks.length - 1) setWeekFilter(weeks[currentWeekIndex + 1]);
+  };
 
   const handleFilterChange = (filter: FixtureFilter) => {
     setHasInteracted(true);
@@ -69,15 +95,79 @@ export default function FixturesPage() {
           {/* Header */}
           <div className="border-b border-[#f0f0f0]">
             <div className="px-10 pt-5 pb-4">
-              <div className="flex items-center gap-2 mb-1">
-                <CalendarDays className="w-5 h-5 text-[#0066FF]" />
-                <h1 className="text-[26px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
-                  Fixtures
-                </h1>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CalendarDays className="w-5 h-5 text-[#0066FF]" />
+                  <h1 className="text-[26px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
+                    Fixtures
+                  </h1>
+                </div>
+
+                {/* Week selector */}
+                <div className="flex items-center gap-1" ref={weekDropdownRef}>
+                  <button
+                    onClick={goToPrevWeek}
+                    disabled={currentWeekIndex <= 0}
+                    className="p-1.5 text-[#999] hover:text-[#666] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <div className="relative">
+                    <button
+                      onClick={() => setWeekDropdownOpen((prev) => !prev)}
+                      className="flex items-center gap-1.5 h-[34px] px-3 text-[13px] font-medium text-[#1a1a2e] bg-white border border-[#e8e8e8] rounded-[8px] hover:border-[#ccc] transition-colors cursor-pointer"
+                    >
+                      {weekFilter}
+                      <motion.div
+                        animate={{ rotate: weekDropdownOpen ? 180 : 0 }}
+                        transition={{ duration: duration.normal, ease: easing.easeInOut }}
+                      >
+                        <ChevronDown className="w-3.5 h-3.5 text-[#999]" />
+                      </motion.div>
+                    </button>
+
+                    <AnimatePresence>
+                      {weekDropdownOpen && (
+                        <motion.div
+                          variants={dropdownVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          className="absolute right-0 top-[calc(100%+4px)] z-50 w-[140px] max-h-[280px] overflow-y-auto scrollbar-thin bg-white border border-[#e8e8e8] rounded-[10px] shadow-lg py-1"
+                        >
+                          {weeks.map((week) => (
+                            <button
+                              key={week}
+                              onClick={() => {
+                                setWeekFilter(week);
+                                setWeekDropdownOpen(false);
+                              }}
+                              className={`
+                                w-full text-left px-3 py-2 text-[13px] transition-colors cursor-pointer
+                                ${week === weekFilter
+                                  ? "bg-neutral-50 font-semibold text-[#1a1a2e]"
+                                  : "text-[#666] hover:bg-neutral-50 hover:text-[#1a1a2e]"
+                                }
+                              `}
+                            >
+                              {week}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <button
+                    onClick={goToNextWeek}
+                    disabled={currentWeekIndex >= weeks.length - 1}
+                    className="p-1.5 text-[#999] hover:text-[#666] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-              <p className="text-[13px] text-[#999]">
-                Upcoming matches, live scores, and recent results.
-              </p>
             </div>
           </div>
 
