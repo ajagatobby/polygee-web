@@ -18,6 +18,7 @@ export function Header() {
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const avatarMenuRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -163,7 +164,10 @@ export function Header() {
                   {/* Logout */}
                   <div className="py-1.5">
                     <button
-                      onClick={() => setAvatarMenuOpen(false)}
+                      onClick={() => {
+                        setAvatarMenuOpen(false);
+                        setLogoutModalOpen(true);
+                      }}
                       className="flex items-center gap-2.5 w-full px-4 py-2.5 text-[13px] font-medium text-[#ff3b30] hover:bg-red-50 transition-colors cursor-pointer"
                     >
                       <LogOut className="w-4 h-4" />
@@ -182,6 +186,58 @@ export function Header() {
       open={connectModalOpen}
       onClose={() => setConnectModalOpen(false)}
     />
+
+    {/* Logout Confirmation Modal */}
+    <AnimatePresence>
+      {logoutModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <motion.div
+            className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: duration.normal, ease: easing.easeOut }}
+            onClick={() => setLogoutModalOpen(false)}
+          />
+          <motion.div
+            className="relative w-full max-w-[360px] mx-4 bg-white rounded-[16px] shadow-xl overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95, y: 10, filter: "blur(4px)" }}
+            animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 0.97, y: 6, filter: "blur(4px)" }}
+            transition={{ duration: duration.medium, ease: easing.easeOut }}
+          >
+            <div className="px-6 pt-6 pb-2 text-center">
+              <div className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-red-50 mx-auto mb-3">
+                <LogOut className="w-5 h-5 text-[#ff3b30]" />
+              </div>
+              <h2 className="text-[17px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
+                Log out?
+              </h2>
+              <p className="text-[13px] text-[#808080] mt-1">
+                Are you sure you want to log out of your account?
+              </p>
+            </div>
+            <div className="px-6 pb-6 pt-4 flex gap-2.5">
+              <button
+                onClick={() => setLogoutModalOpen(false)}
+                className="flex-1 h-[40px] text-[13px] font-medium text-[#666] bg-[#f5f5f5] rounded-[10px] hover:bg-[#ebebeb] transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setLogoutModalOpen(false);
+                  // TODO: handle logout
+                }}
+                className="flex-1 h-[40px] text-[13px] font-bold text-white bg-[#ff3b30] rounded-[10px] hover:bg-[#e6352b] transition-colors cursor-pointer"
+              >
+                Logout
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
     </>
   );
 }
