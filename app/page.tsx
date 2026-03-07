@@ -3,6 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { PredictionCard } from "@/components/predictions/prediction-card";
@@ -19,7 +20,7 @@ export default function HomePage() {
   const [weekDropdownOpen, setWeekDropdownOpen] = useState(false);
   const weekDropdownRef = useRef<HTMLDivElement>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -277,18 +278,18 @@ export default function HomePage() {
                     odds, and trading insights.
                   </p>
                   <div className="flex items-center gap-2.5 mt-4">
-                    <button
-                      onClick={() => setIsAuthenticated(true)}
-                      className="h-[38px] px-5 text-[13px] font-medium text-[#1a1a2e] bg-[#f5f5f5] rounded-[8px] hover:bg-[#ebebeb] transition-colors cursor-pointer"
+                    <Link
+                      href="/sign-in"
+                      className="flex items-center h-[38px] px-5 text-[13px] font-medium text-[#1a1a2e] bg-[#f5f5f5] rounded-[8px] hover:bg-[#ebebeb] transition-colors"
                     >
                       Sign In
-                    </button>
-                    <button
-                      onClick={() => setIsAuthenticated(true)}
-                      className="h-[38px] px-5 text-[13px] font-bold text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+                    </Link>
+                    <Link
+                      href="/sign-up"
+                      className="flex items-center h-[38px] px-5 text-[13px] font-bold text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors"
                     >
                       Sign Up Free
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

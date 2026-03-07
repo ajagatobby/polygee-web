@@ -313,18 +313,18 @@ export function Header() {
             </>
           ) : (
             <div className="flex items-center gap-2.5">
-              <button
-                onClick={() => setIsAuthenticated(true)}
-                className="h-[34px] px-4 text-[13px] font-medium text-[#1a1a2e] bg-[#f5f5f5] rounded-[8px] hover:bg-[#ebebeb] transition-colors cursor-pointer"
+              <Link
+                href="/sign-in"
+                className="flex items-center h-[34px] px-4 text-[13px] font-medium text-[#1a1a2e] bg-[#f5f5f5] rounded-[8px] hover:bg-[#ebebeb] transition-colors"
               >
                 Sign In
-              </button>
-              <button
-                onClick={() => setIsAuthenticated(true)}
-                className="h-[34px] px-4 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+              </Link>
+              <Link
+                href="/sign-up"
+                className="flex items-center h-[34px] px-4 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors"
               >
                 Sign Up
-              </button>
+              </Link>
             </div>
           )}
         </div>
