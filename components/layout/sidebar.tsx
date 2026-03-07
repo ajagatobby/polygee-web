@@ -19,7 +19,8 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
   };
 
   return (
-    <aside className="hidden lg:flex w-[240px] shrink-0 flex-col py-8 px-3 overflow-y-auto scrollbar-thin sticky top-[60px] border-r border-neutral-100" style={{ height: "calc(100vh - 60px)" }}>
+    <div className="hidden lg:block relative w-[240px] shrink-0 sticky top-[60px] border-r border-neutral-100" style={{ height: "calc(100vh - 60px)" }}>
+    <aside className="flex flex-col py-8 px-3 overflow-y-auto scrollbar-thin h-full">
       {/* Section label */}
       <div className="flex items-center pl-3 pr-3 mb-3">
         <p className="text-[11px] uppercase text-neutral-400 font-medium tracking-wider whitespace-nowrap">
@@ -97,5 +98,8 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
         </div>
       ))}
     </aside>
+    {/* Bottom fade mask */}
+    <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none" style={{ background: "linear-gradient(to top, white 0%, transparent 100%)" }} />
+    </div>
   );
 }
