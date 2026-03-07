@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Bell, BarChart3, CalendarDays, Target, Settings, Trophy, HelpCircle, LogOut } from "lucide-react";
+import { Search, Bell, BarChart3, CalendarDays, Target, Settings, Trophy, HelpCircle, LogOut, CircleDot, ClipboardList } from "lucide-react";
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { duration, easing } from "@/lib/animations";
@@ -11,6 +11,8 @@ import { ConnectPolymarketModal } from "@/components/ui/connect-polymarket-modal
 const navLinks = [
   { href: "/", label: "Predictions", icon: BarChart3 },
   { href: "/fixtures", label: "Fixtures", icon: CalendarDays },
+  { href: "/positions", label: "Open Positions", icon: CircleDot },
+  { href: "/orders", label: "Orders", icon: ClipboardList },
 ];
 
 export function Header() {
