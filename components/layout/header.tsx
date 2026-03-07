@@ -41,7 +41,7 @@ export function Header() {
 
   const handleNotifEnter = () => {
     if (notifTimeoutRef.current) clearTimeout(notifTimeoutRef.current);
-    setNotifOpen(true);
+    notifTimeoutRef.current = setTimeout(() => setNotifOpen(true), 300);
   };
 
   const handleNotifLeave = () => {
