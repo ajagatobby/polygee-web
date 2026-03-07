@@ -1,126 +1,285 @@
 "use client";
 
 import Link from "next/link";
-import { TrendingUp, Users, Clock } from "lucide-react";
-import { Card, Badge, ProgressBar } from "@/components/ui";
+import { Brain } from "lucide-react";
+import { PriceButton } from "@/components/ui/price-button";
+import { Sparkline } from "@/components/ui/sparkline";
 import { Prediction } from "@/types";
-import { formatVolume, formatDate } from "@/lib/mock-data";
+import { formatVolume } from "@/lib/mock-data";
 
 interface PredictionCardProps {
   prediction: Prediction;
 }
 
 export function PredictionCard({ prediction }: PredictionCardProps) {
-  const topOutcome = prediction.outcomes.reduce((a, b) =>
-    a.probability > b.probability ? a : b
-  );
+  const isLive = prediction.status === "live";
 
-  const probabilityColor =
-    topOutcome.probability >= 50
-      ? "green"
-      : topOutcome.probability >= 35
-      ? "amber"
-      : "red";
+  // Determine AI pick team name and color
+  const aiPickTeam =
+    prediction.aiPick.team === "home"
+      ? prediction.homeTeam
+      : prediction.aiPick.team === "away"
+      ? prediction.awayTeam
+      : null;
+  const aiPickLabel =
+    prediction.aiPick.team === "draw"
+      ? "DRAW"
+      : aiPickTeam?.shortName || "";
+  const aiPickColor =
+    prediction.aiPick.team === "draw"
+      ? "#808080"
+      : aiPickTeam?.color || "#0066FF";
 
   return (
-    <Link href={`/prediction/${prediction.id}`}>
-      <Card hoverable padding="none" className="overflow-hidden group">
-        {/* Header */}
-        <div className="px-4 pt-4 pb-3">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-base">{prediction.league.logo}</span>
-              <span className="text-xs font-medium text-text-tertiary">
-                {prediction.league.name}
+    <div className="pb-2 w-full">
+      <div className="w-full bg-white rounded-xl border border-[#e8e8e8] overflow-hidden hover:bg-[#fafafa]/50 transition-colors">
+        <div className="flex flex-col w-full p-3">
+          {/* Top row: status + volume + AI pick + sparkline + Game View */}
+          <div className="flex flex-1 justify-between items-center h-[32px] min-h-[32px] gap-2 mb-3">
+            <div className="flex flex-1 items-center gap-2.5 min-w-0">
+              {/* Live indicator or time */}
+              <div className="h-5 flex justify-start items-center gap-2.5 whitespace-nowrap shrink-0">
+                {isLive ? (
+                  <>
+                    <div className="flex items-center gap-0.5">
+                      <div className="relative flex items-center justify-center">
+                        <div className="w-[7px] h-[7px] rounded-full bg-red-500 relative z-10" />
+                        <div className="absolute -inset-px w-[9px] h-[9px] rounded-full bg-red-500 opacity-75 animate-ping" />
+                      </div>
+                      <p className="text-xs text-red-500 uppercase ml-1 font-bold">Live</p>
+                    </div>
+                    <p className="text-xs font-semibold">
+                      <span className="text-[#1a1a2e]">HT</span>
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-xs font-semibold text-[#1a1a2e]">{prediction.matchTime}</p>
+                )}
+              </div>
+
+              {/* Volume */}
+              <span className="text-xs text-[#808080] font-semibold whitespace-nowrap shrink-0">
+                {formatVolume(prediction.totalVolume)} Vol.
               </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              {prediction.status === "live" && (
-                <Badge variant="live" dot>
-                  LIVE
-                </Badge>
-              )}
-              {prediction.tags.slice(0, 1).map((tag) => (
-                <Badge key={tag} variant="info" size="sm">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </div>
 
-          {/* Match Teams */}
-          <div className="flex items-center gap-3 mb-3">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="text-lg">{prediction.homeTeam.logo}</span>
-                <span className="text-sm font-semibold text-text-primary truncate">
-                  {prediction.homeTeam.name}
+              {/* AI Pick badge */}
+              <div
+                className="flex items-center gap-1 h-[22px] px-2 rounded-full shrink-0"
+                style={{ backgroundColor: aiPickColor + "14" }}
+              >
+                <Brain className="w-3 h-3" style={{ color: aiPickColor }} />
+                <span
+                  className="text-[10px] font-bold uppercase tracking-wide"
+                  style={{ color: aiPickColor }}
+                >
+                  {aiPickLabel}
+                </span>
+                <span
+                  className="text-[10px] font-semibold"
+                  style={{ color: aiPickColor, opacity: 0.7 }}
+                >
+                  {prediction.aiPick.confidence}%
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{prediction.awayTeam.logo}</span>
-                <span className="text-sm font-semibold text-text-primary truncate">
-                  {prediction.awayTeam.name}
-                </span>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-brand-green">
-                {topOutcome.probability}%
-              </div>
-              <div className="text-[10px] font-medium text-text-tertiary uppercase tracking-wide">
-                {topOutcome.label.split(" ").slice(0, -1).join(" ")}
-              </div>
-            </div>
-          </div>
 
-          {/* Outcome Bars */}
-          <div className="space-y-2">
-            {prediction.outcomes.map((outcome, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span className="text-xs text-text-secondary w-20 truncate">
-                  {outcome.label}
-                </span>
-                <ProgressBar
-                  value={outcome.probability}
-                  color={
-                    i === 0 ? "green" : i === 1 ? "amber" : "red"
-                  }
-                  size="sm"
-                  className="flex-1"
+              {/* Sparkline */}
+              <div className="hidden sm:flex items-center shrink-0">
+                <Sparkline
+                  data={prediction.probabilityHistory}
+                  width={56}
+                  height={24}
+                  color="auto"
+                  strokeWidth={1.5}
                 />
-                <span className="text-xs font-semibold text-text-primary w-10 text-right">
-                  {outcome.probability}%
-                </span>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Footer */}
-        <div className="px-4 py-2.5 bg-bg-secondary/50 border-t border-border-secondary flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 text-text-tertiary">
-              <TrendingUp className="w-3 h-3" />
-              <span className="text-[11px] font-medium">
-                {formatVolume(prediction.totalVolume)}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 text-text-tertiary">
-              <Users className="w-3 h-3" />
-              <span className="text-[11px] font-medium">
-                {prediction.participantsCount.toLocaleString()}
-              </span>
+            {/* Game View link */}
+            <div className="flex overflow-visible gap-1 shrink-0">
+              <Link
+                href={`/prediction/${prediction.id}`}
+                className="flex h-[32px] group gap-1 items-center justify-center rounded-lg pr-2.5 pl-2 bg-[#f5f5f5] hover:bg-[#ebebeb] cursor-pointer transition-colors"
+              >
+                <span className="flex items-center">
+                  <span className="flex items-center justify-center font-medium mr-1.5 text-[10px] px-1 py-0.5 rounded-sm text-[#808080] border border-[#ddd] border-b-2 bg-white">
+                    {prediction.matchCount || 12}
+                  </span>
+                  <span className="text-[#1a1a2e] text-xs font-medium">Game View</span>
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 18 18">
+                  <polyline points="6.5 2.75 12.75 9 6.5 15.25" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+                </svg>
+              </Link>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-text-tertiary">
-            <Clock className="w-3 h-3" />
-            <span className="text-[11px] font-medium">
-              {formatDate(prediction.matchDate)} {prediction.matchTime}
-            </span>
+
+          {/* Main content: teams + buttons */}
+          <div className="flex w-full gap-3 flex-row">
+            {/* Teams + Scores (left side) */}
+            <div className="flex justify-between lg:min-w-0 lg:flex-1 lg:shrink-0">
+              <div
+                className="grid gap-x-3 items-center lg:self-center lg:flex-1 lg:min-w-0 relative w-full"
+                style={{
+                  gridTemplateColumns: isLive ? "28px min-content auto" : "min-content auto",
+                  gridTemplateRows: "40px 40px",
+                  gap: "8px 12px",
+                }}
+              >
+                {/* Home team row */}
+                {isLive && (
+                  <div className="flex px-1.5 text-xs font-semibold rounded-sm justify-center items-center h-6 bg-[#f0f0f0] text-[#1a1a2e]">
+                    {prediction.homeScore}
+                  </div>
+                )}
+                <div className="relative overflow-hidden w-6 h-6 flex items-center justify-center self-center">
+                  <span className="text-[18px] leading-none">{prediction.homeTeam.logo}</span>
+                </div>
+                <div className="flex flex-1 items-center min-w-0 max-w-full gap-[5px] overflow-hidden">
+                  <span className="text-sm font-semibold text-[#1a1a2e] whitespace-nowrap truncate">
+                    {prediction.homeTeam.name}
+                  </span>
+                  {prediction.homeTeam.record && (
+                    <span className="text-xs font-normal text-[#808080] whitespace-nowrap">
+                      {prediction.homeTeam.record}
+                    </span>
+                  )}
+                  {/* AI pick indicator for home team */}
+                  {prediction.aiPick.team === "home" && (
+                    <span
+                      className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shrink-0"
+                      style={{ backgroundColor: prediction.homeTeam.color + "18", color: prediction.homeTeam.color }}
+                    >
+                      AI Pick
+                    </span>
+                  )}
+                </div>
+
+                {/* Away team row */}
+                {isLive && (
+                  <div className="flex px-1.5 text-xs font-semibold rounded-sm justify-center items-center h-6 bg-[#f0f0f0] text-[#1a1a2e]">
+                    {prediction.awayScore}
+                  </div>
+                )}
+                <div className="relative overflow-hidden w-6 h-6 flex items-center justify-center self-center">
+                  <span className="text-[18px] leading-none">{prediction.awayTeam.logo}</span>
+                </div>
+                <div className="flex flex-1 items-center min-w-0 max-w-full gap-[5px] overflow-hidden">
+                  <span className="text-sm font-semibold text-[#1a1a2e] whitespace-nowrap truncate">
+                    {prediction.awayTeam.name}
+                  </span>
+                  {prediction.awayTeam.record && (
+                    <span className="text-xs font-normal text-[#808080] whitespace-nowrap">
+                      {prediction.awayTeam.record}
+                    </span>
+                  )}
+                  {/* AI pick indicator for away team */}
+                  {prediction.aiPick.team === "away" && (
+                    <span
+                      className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shrink-0"
+                      style={{ backgroundColor: prediction.awayTeam.color + "18", color: prediction.awayTeam.color }}
+                    >
+                      AI Pick
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Buttons grid: 3 columns (right side) */}
+            <div className="hidden md:flex flex-1 justify-end">
+              <div className="grid flex-1 grid-cols-3 gap-2 lg:w-[372px]">
+                {/* Moneyline column: 3 stacked buttons */}
+                <div className="flex w-full flex-col gap-2">
+                  <PriceButton
+                    label={prediction.homeTeam.shortName}
+                    price={prediction.moneyline.home}
+                    color="custom"
+                    customColor={prediction.homeTeam.color}
+                    size="sm"
+                  />
+                  <PriceButton
+                    label="DRAW"
+                    price={prediction.moneyline.draw}
+                    color="gray"
+                    size="sm"
+                    dimmed
+                  />
+                  <PriceButton
+                    label={prediction.awayTeam.shortName}
+                    price={prediction.moneyline.away}
+                    color="custom"
+                    customColor={prediction.awayTeam.color}
+                    size="sm"
+                    dimmed
+                  />
+                </div>
+
+                {/* Spread column: 2 tall buttons */}
+                <div className="flex w-full flex-col gap-2">
+                  <PriceButton
+                    label={prediction.spread.homeLabel}
+                    price={prediction.spread.homePrice}
+                    color="gray"
+                    size="lg"
+                    dimmed
+                  />
+                  <PriceButton
+                    label={prediction.spread.awayLabel}
+                    price={prediction.spread.awayPrice}
+                    color="gray"
+                    size="lg"
+                    dimmed
+                  />
+                </div>
+
+                {/* Total column: 2 tall buttons */}
+                <div className="flex w-full flex-col gap-2">
+                  <PriceButton
+                    label={prediction.total.overLabel}
+                    price={prediction.total.overPrice}
+                    color="gray"
+                    size="lg"
+                    dimmed
+                  />
+                  <PriceButton
+                    label={prediction.total.underLabel}
+                    price={prediction.total.underPrice}
+                    color="gray"
+                    size="lg"
+                    dimmed
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile: just moneyline buttons */}
+            <div className="flex md:hidden flex-col gap-2 shrink-0 w-[110px]">
+              <PriceButton
+                label={prediction.homeTeam.shortName}
+                price={prediction.moneyline.home}
+                color="custom"
+                customColor={prediction.homeTeam.color}
+                size="sm"
+              />
+              <PriceButton
+                label="DRAW"
+                price={prediction.moneyline.draw}
+                color="gray"
+                size="sm"
+                dimmed
+              />
+              <PriceButton
+                label={prediction.awayTeam.shortName}
+                price={prediction.moneyline.away}
+                color="custom"
+                customColor={prediction.awayTeam.color}
+                size="sm"
+                dimmed
+              />
+            </div>
           </div>
         </div>
-      </Card>
-    </Link>
+      </div>
+    </div>
   );
 }

@@ -84,6 +84,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 78,
     tags: ["Top Match", "London Derby"],
     matchCount: 12,
+    probabilityHistory: [48, 45, 50, 47, 52, 55, 51, 53, 50, 52],
+    aiPick: { team: "home", confidence: 78 },
   },
   {
     id: "pred-2",
@@ -108,6 +110,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 72,
     tags: ["Title Decider", "Featured"],
     matchCount: 15,
+    probabilityHistory: [42, 44, 40, 43, 46, 44, 48, 45, 43, 45],
+    aiPick: { team: "home", confidence: 72 },
   },
   {
     id: "pred-3",
@@ -132,6 +136,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 65,
     tags: ["El Clasico", "Featured"],
     matchCount: 18,
+    probabilityHistory: [38, 36, 40, 42, 39, 37, 41, 40, 38, 40],
+    aiPick: { team: "home", confidence: 65 },
   },
   {
     id: "pred-4",
@@ -156,6 +162,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 82,
     tags: ["Der Klassiker"],
     matchCount: 10,
+    probabilityHistory: [55, 52, 58, 60, 56, 59, 57, 61, 58, 58],
+    aiPick: { team: "home", confidence: 82 },
   },
   {
     id: "pred-5",
@@ -182,6 +190,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 71,
     tags: ["Derby", "Live"],
     matchCount: 8,
+    probabilityHistory: [50, 46, 48, 52, 49, 47, 50, 48, 46, 48],
+    aiPick: { team: "home", confidence: 71 },
   },
   {
     id: "pred-6",
@@ -206,6 +216,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 61,
     tags: ["Top 4 Battle"],
     matchCount: 9,
+    probabilityHistory: [35, 37, 36, 40, 38, 35, 39, 37, 38, 38],
+    aiPick: { team: "home", confidence: 61 },
   },
   {
     id: "pred-7",
@@ -230,6 +242,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 58,
     tags: ["UCL", "Quarter-Final"],
     matchCount: 14,
+    probabilityHistory: [32, 30, 35, 33, 36, 34, 37, 35, 33, 35],
+    aiPick: { team: "away", confidence: 58 },
   },
   {
     id: "pred-8",
@@ -254,6 +268,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 74,
     tags: ["European Race"],
     matchCount: 6,
+    probabilityHistory: [46, 48, 50, 47, 52, 49, 51, 50, 48, 50],
+    aiPick: { team: "home", confidence: 74 },
   },
   {
     id: "pred-9",
@@ -278,6 +294,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 67,
     tags: ["Madrid Derby"],
     matchCount: 11,
+    probabilityHistory: [28, 30, 26, 32, 29, 31, 28, 30, 29, 30],
+    aiPick: { team: "away", confidence: 67 },
   },
   {
     id: "pred-10",
@@ -302,6 +320,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 63,
     tags: ["UCL", "Quarter-Final"],
     matchCount: 16,
+    probabilityHistory: [40, 38, 42, 44, 41, 43, 40, 42, 41, 42],
+    aiPick: { team: "home", confidence: 63 },
   },
   {
     id: "pred-11",
@@ -326,6 +346,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 59,
     tags: ["Derby d'Italia"],
     matchCount: 7,
+    probabilityHistory: [34, 36, 33, 38, 35, 37, 34, 36, 35, 36],
+    aiPick: { team: "home", confidence: 59 },
   },
   {
     id: "pred-12",
@@ -350,6 +372,8 @@ export const predictions: Prediction[] = [
     aiConfidence: 69,
     tags: ["Title Race", "Featured"],
     matchCount: 13,
+    probabilityHistory: [40, 42, 44, 41, 46, 43, 45, 44, 42, 44],
+    aiPick: { team: "home", confidence: 69 },
   },
 ];
 

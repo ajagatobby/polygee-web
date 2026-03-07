@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { SlidersHorizontal, ChevronDown } from "lucide-react";
+import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { PredictionCard } from "@/components/predictions/prediction-card";
@@ -44,46 +44,70 @@ export default function HomePage() {
         <Sidebar activeLeague={activeLeague} onLeagueChange={setActiveLeague} />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-[#fafafa]">
+        <main className="flex-1 overflow-y-auto bg-white">
           {/* League header */}
-          <div className="px-6 pt-6 pb-4 bg-white border-b border-[#f0f0f0]">
-            <div className="flex items-center justify-between mb-1">
-              <h1 className="text-[24px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
+          <div className="px-5 pt-5 pb-4 border-b border-[#f0f0f0]">
+            <div className="flex items-center justify-between mb-3">
+              <h1 className="text-[26px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
                 {activeLeagueName}
               </h1>
-              <div className="flex items-center gap-2">
-                {/* Week selector */}
-                <button className="flex items-center gap-1.5 h-[34px] px-3 text-[13px] font-medium text-[#1a1a2e] bg-white border border-[#e8e8e8] rounded-[8px] hover:border-[#ccc] transition-colors cursor-pointer">
-                  {weekFilter}
-                  <ChevronDown className="w-3.5 h-3.5 text-[#999]" />
-                </button>
-                <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
-                  <SlidersHorizontal className="w-[18px] h-[18px]" />
-                </button>
-              </div>
+              <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
+                <SlidersHorizontal className="w-[18px] h-[18px]" />
+              </button>
             </div>
-            <p className="text-[13px] text-[#999]">
-              AI-powered match predictions and outcome probabilities.
-            </p>
+
+            {/* Controls row */}
+            <div className="flex items-center gap-3">
+              {/* Games pill */}
+              <button className="h-[34px] px-5 bg-[#0066FF] text-white text-[13px] font-semibold rounded-[20px] cursor-pointer">
+                Games
+              </button>
+
+              <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
+                <Search className="w-4 h-4" />
+              </button>
+
+              {/* Week selector */}
+              <button className="ml-auto flex items-center gap-1.5 h-[34px] px-3 text-[13px] font-medium text-[#1a1a2e] bg-white border border-[#e8e8e8] rounded-[8px] hover:border-[#ccc] transition-colors cursor-pointer">
+                {weekFilter}
+                <ChevronDown className="w-3.5 h-3.5 text-[#999]" />
+              </button>
+            </div>
           </div>
 
-          {/* Predictions grid grouped by date */}
-          <div className="px-6 py-5">
+          {/* Column headers (desktop only) */}
+          {filteredPredictions.length > 0 && (
+            <div className="hidden md:flex items-center justify-end gap-2 px-4 py-2 border-b border-[#f0f0f0] bg-white sticky top-0 z-10">
+              <div className="flex-1" />
+              <div className="grid grid-cols-3 gap-2 lg:w-[372px]">
+                <div className="text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
+                  Moneyline
+                </div>
+                <div className="text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
+                  Spread
+                </div>
+                <div className="text-center text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em]">
+                  Total
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Predictions list grouped by date */}
+          <div className="px-3 pt-2">
             {groupedPredictions.map(([date, preds]) => (
-              <div key={date} className="mb-6 last:mb-0">
+              <div key={date}>
                 {/* Date header */}
-                <div className="mb-3">
+                <div className="px-1 py-2.5">
                   <h2 className="text-[14px] font-bold text-[#1a1a2e]">
                     {formatDateLong(date)}
                   </h2>
                 </div>
 
-                {/* 3-column grid of prediction cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {preds.map((pred) => (
-                    <PredictionCard key={pred.id} prediction={pred} />
-                  ))}
-                </div>
+                {/* Prediction rows */}
+                {preds.map((pred) => (
+                  <PredictionCard key={pred.id} prediction={pred} />
+                ))}
               </div>
             ))}
           </div>

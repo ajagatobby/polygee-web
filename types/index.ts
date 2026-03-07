@@ -41,6 +41,11 @@ export interface PredictionOutcome {
   odds: number;
 }
 
+export interface AiPick {
+  team: "home" | "away" | "draw";
+  confidence: number; // 0-100
+}
+
 export interface Prediction {
   id: string;
   league: League;
@@ -62,6 +67,10 @@ export interface Prediction {
   aiConfidence: number;
   tags: string[];
   matchCount?: number;
+  /** Historical probability points for sparkline (home win %) */
+  probabilityHistory: number[];
+  /** AI's predicted winner */
+  aiPick: AiPick;
 }
 
 export interface Fixture {
