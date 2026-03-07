@@ -12,7 +12,6 @@ import {
   Shield,
   Headphones,
   ArrowRight,
-  Sparkles,
   Crown,
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
@@ -108,12 +107,6 @@ export default function PricingPage() {
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: duration.slow, ease: easing.easeOut }}
             >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1552f0]/8 mb-5">
-                <Sparkles className="w-3.5 h-3.5 text-[#1552f0]" />
-                <span className="text-[12px] font-semibold text-[#1552f0]">
-                  Simple, transparent pricing
-                </span>
-              </div>
               <h1 className="text-[40px] font-bold text-[#1a1a2e] tracking-[-0.03em] leading-[1.15]">
                 One plan. Everything included.
               </h1>
