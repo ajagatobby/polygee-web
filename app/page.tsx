@@ -222,7 +222,7 @@ export default function HomePage() {
                 />
                 <div className="bg-white pb-10 pt-2 flex flex-col items-center text-center">
                   <div className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#e7edfe] mb-3">
-                    <svg
+                    <motion.svg
                       width="20"
                       height="20"
                       viewBox="0 0 24 24"
@@ -232,20 +232,42 @@ export default function HomePage() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     >
-                      {/* Lock body */}
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                      {/* Shackle — animates up and down */}
-                      <motion.path
-                        d="M7 11V7a5 5 0 0 1 10 0v4"
-                        animate={{ y: [0, -3, -3, 0, 0] }}
+                      {/* Lock body — draws in */}
+                      <motion.rect
+                        x="3" y="11" width="18" height="11" rx="2" ry="2"
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{ pathLength: 1, opacity: 1 }}
+                        transition={{ duration: 0.8, ease: easing.easeOut }}
+                      />
+                      {/* Shackle — draws in, then lifts and drops */}
+                      <motion.g
+                        animate={{
+                          translateY: [0, 0, -3, -3, 0, 0],
+                        }}
                         transition={{
-                          duration: 2.5,
+                          duration: 3,
                           repeat: Infinity,
                           ease: "easeInOut",
-                          times: [0, 0.2, 0.5, 0.7, 1],
+                          times: [0, 0.25, 0.4, 0.6, 0.75, 1],
                         }}
+                      >
+                        <motion.path
+                          d="M7 11V7a5 5 0 0 1 10 0v4"
+                          initial={{ pathLength: 0, opacity: 0 }}
+                          animate={{ pathLength: 1, opacity: 1 }}
+                          transition={{ duration: 0.8, ease: easing.easeOut, delay: 0.3 }}
+                        />
+                      </motion.g>
+                      {/* Keyhole dot */}
+                      <motion.circle
+                        cx="12" cy="16.5" r="1"
+                        fill="#1552f0"
+                        stroke="none"
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.3, delay: 0.9, ease: easing.easeOut }}
                       />
-                    </svg>
+                    </motion.svg>
                   </div>
                   <h3 className="text-[17px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
                     Sign up to see all predictions
