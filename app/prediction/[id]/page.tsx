@@ -21,6 +21,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Header } from "@/components/layout/header";
 import { PriceButton } from "@/components/ui/price-button";
+import { useAuth } from "@/lib/auth-context";
 import { useFixturePrediction } from "@/lib/hooks/use-fixtures";
 import {
   probToPercent,
@@ -43,11 +44,80 @@ export default function PredictionDetailPage({
 }) {
   const { id } = use(params);
   const fixtureId = parseInt(id, 10);
+  const { isAuthenticated, isPro, loading: authLoading } = useAuth();
 
   const { data: enriched, isLoading, error } = useFixturePrediction(
     fixtureId,
     !isNaN(fixtureId) && fixtureId > 0,
   );
+
+  // Auth loading state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#fafafa]">
+        <Header />
+        <div className="flex flex-col items-center justify-center py-20">
+          <Loader2 className="w-6 h-6 text-[#1552f0] animate-spin mb-3" />
+          <p className="text-[13px] text-[#999]">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Gate: Non-pro users cannot view prediction details
+  if (!isAuthenticated || !isPro) {
+    return (
+      <div className="min-h-screen bg-[#fafafa]">
+        <Header />
+        <main className="max-w-2xl mx-auto px-6 py-16 text-center">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-[13px] text-[#999] hover:text-[#666] transition-colors mb-8 group"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+            Back to Predictions
+          </Link>
+
+          <div className="p-8 bg-white border border-[#f0f0f0] rounded-[16px]">
+            <div className="flex items-center justify-center w-[56px] h-[56px] rounded-full bg-[#e7edfe] mx-auto mb-4">
+              <BarChart3 className="w-6 h-6 text-[#1552f0]" />
+            </div>
+            <h1 className="text-[22px] font-bold text-[#1a1a2e] tracking-[-0.02em] mb-2">
+              Upgrade to Pro
+            </h1>
+            <p className="text-[14px] text-[#808080] leading-relaxed max-w-[400px] mx-auto mb-6">
+              Detailed AI predictions, value bets, key factors, and in-depth match analysis are available exclusively for Pro subscribers.
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              {!isAuthenticated ? (
+                <>
+                  <Link
+                    href="/sign-in"
+                    className="flex items-center h-[40px] px-5 text-[13px] font-medium text-[#1a1a2e] bg-[#f5f5f5] rounded-[8px] hover:bg-[#ebebeb] transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    className="flex items-center h-[40px] px-5 text-[13px] font-bold text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors"
+                  >
+                    Sign Up Free
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  href="/pricing"
+                  className="flex items-center h-[40px] px-6 text-[13px] font-bold text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors"
+                >
+                  View Pro Plans
+                </Link>
+              )}
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   // Loading state
   if (isLoading) {

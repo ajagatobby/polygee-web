@@ -349,6 +349,13 @@ export interface ApiBookmakerOdds {
 // ─── Users / Auth ──────────────────────────────────────────────────────
 
 export type UserRole = "user" | "admin";
+export type SubscriptionTier = "free" | "pro";
+export type SubscriptionStatus =
+  | "none"
+  | "active"
+  | "canceled"
+  | "past_due"
+  | "trialing";
 
 export interface ApiUser {
   uid: string;
@@ -358,6 +365,9 @@ export interface ApiUser {
   photoUrl: string | null;
   provider: string | null;
   role: UserRole;
+  subscriptionTier: SubscriptionTier;
+  subscriptionStatus: SubscriptionStatus;
+  subscriptionPeriodEnd: string | null;
   requestCount: number;
   lastActiveAt: string | null;
   createdAt: string;

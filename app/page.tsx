@@ -16,7 +16,7 @@ import type { ApiEnrichedFixture } from "@/types/api";
 export default function HomePage() {
   const [activeLeague, setActiveLeague] = useState<string>("all");
   const [hasInteracted, setHasInteracted] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isPro } = useAuth();
 
   // Convert activeLeague to leagueId filter (if not "all")
   const leagueIdFilter = activeLeague !== "all" ? Number(activeLeague) : undefined;
@@ -32,6 +32,10 @@ export default function HomePage() {
     setHasInteracted(true);
     setActiveLeague(slug);
   };
+
+  // Gating: unauthenticated or free users see limited predictions
+  const maxFreeCards = 2;
+  const shouldGate = !isAuthenticated || !isPro;
 
   // Get the active league name from the first fixture
   const activeLeagueName = useMemo(() => {
@@ -129,7 +133,7 @@ export default function HomePage() {
                     return groupedFixtures.map(([date, items]) => {
                       const dateCards = items.map((item) => {
                         const index = cardCount++;
-                        const isBlurred = !isAuthenticated && index >= 2;
+                        const isBlurred = shouldGate && index >= maxFreeCards;
                         return (
                           <div
                             key={item.fixture.id}
@@ -158,8 +162,8 @@ export default function HomePage() {
                 </motion.div>
               </AnimatePresence>
 
-              {/* Sign up overlay */}
-              {!isAuthenticated && fixtures.length > 2 && (
+              {/* Upgrade / sign-up overlay for gated users */}
+              {shouldGate && fixtures.length > maxFreeCards && (
                 <div className="sticky bottom-0 left-0 right-0 z-10 -mt-32">
                   <div
                     className="h-40 pointer-events-none"
@@ -214,24 +218,39 @@ export default function HomePage() {
                       </motion.svg>
                     </div>
                     <h3 className="text-[17px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
-                      Sign up to see all predictions
+                      {isAuthenticated
+                        ? "Upgrade to Pro for all predictions"
+                        : "Sign up to see all predictions"}
                     </h3>
                     <p className="text-[13px] text-[#808080] mt-1 max-w-[340px]">
-                      Create a free account to unlock every AI prediction and data-driven analysis.
+                      {isAuthenticated
+                        ? "Unlock every AI prediction, detailed match analysis, and value bets with a Pro subscription."
+                        : "Create a free account to get started, or go Pro for unlimited predictions and analysis."}
                     </p>
                     <div className="flex items-center gap-2.5 mt-4">
-                      <Link
-                        href="/sign-in"
-                        className="flex items-center h-[38px] px-5 text-[13px] font-medium text-[#1a1a2e] bg-[#f5f5f5] rounded-[8px] hover:bg-[#ebebeb] transition-colors"
-                      >
-                        Sign In
-                      </Link>
-                      <Link
-                        href="/sign-up"
-                        className="flex items-center h-[38px] px-5 text-[13px] font-bold text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors"
-                      >
-                        Sign Up Free
-                      </Link>
+                      {isAuthenticated ? (
+                        <Link
+                          href="/pricing"
+                          className="flex items-center h-[38px] px-5 text-[13px] font-bold text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors"
+                        >
+                          View Pro Plans
+                        </Link>
+                      ) : (
+                        <>
+                          <Link
+                            href="/sign-in"
+                            className="flex items-center h-[38px] px-5 text-[13px] font-medium text-[#1a1a2e] bg-[#f5f5f5] rounded-[8px] hover:bg-[#ebebeb] transition-colors"
+                          >
+                            Sign In
+                          </Link>
+                          <Link
+                            href="/sign-up"
+                            className="flex items-center h-[38px] px-5 text-[13px] font-bold text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors"
+                          >
+                            Sign Up Free
+                          </Link>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

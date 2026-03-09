@@ -6,6 +6,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   type ReactNode,
 } from "react";
 import {
@@ -20,7 +21,7 @@ import {
 } from "firebase/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { firebaseApp } from "@/lib/firebase";
-import { registerUser } from "@/lib/api/endpoints/auth";
+import { registerUser, fetchCurrentUser } from "@/lib/api/endpoints/auth";
 import { userKeys } from "@/lib/api/query-keys";
 import type { ApiUser } from "@/types/api";
 
@@ -35,6 +36,8 @@ interface AuthContextValue {
   loading: boolean;
   /** Convenience: true when a user is authenticated */
   isAuthenticated: boolean;
+  /** True when user has an active pro subscription */
+  isPro: boolean;
   /** Sign in with email + password */
   signIn: (email: string, password: string) => Promise<void>;
   /** Register new account: creates Firebase user + backend row */
@@ -81,6 +84,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     return unsubscribe;
   }, [queryClient]);
+
+  // Auto-fetch backend profile when Firebase user is available
+  useEffect(() => {
+    if (!firebaseUser) return;
+    let cancelled = false;
+    fetchCurrentUser()
+      .then((user) => {
+        if (!cancelled) setDbUser(user);
+      })
+      .catch(() => {
+        // Silently fail — user is still authenticated via Firebase
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [firebaseUser]);
 
   // ── Sign in ────────────────────────────────────────────────────────
 
@@ -129,6 +148,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = firebaseUser != null;
 
+  // Pro = subscription tier is 'pro' AND status is active or trialing
+  const isPro = useMemo(() => {
+    if (!dbUser) return false;
+    return (
+      dbUser.subscriptionTier === "pro" &&
+      (dbUser.subscriptionStatus === "active" ||
+        dbUser.subscriptionStatus === "trialing")
+    );
+  }, [dbUser]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -136,6 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         dbUser,
         loading,
         isAuthenticated,
+        isPro,
         signIn,
         signUp,
         signInWithGoogle,
