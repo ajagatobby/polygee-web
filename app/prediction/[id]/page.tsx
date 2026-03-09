@@ -328,7 +328,7 @@ export default function PredictionDetailPage({
                 </div>
               </motion.div>
 
-              {/* Predicted Score */}
+              {/* Expected Goals */}
               {(prediction.predictedHomeGoals != null || prediction.predictedAwayGoals != null) && (
                 <motion.div
                   className="p-4 bg-white border border-[#f0f0f0] rounded-[12px]"
@@ -336,10 +336,11 @@ export default function PredictionDetailPage({
                   transition={{ duration: duration.fast, ease: easing.ease }}
                 >
                   <div className="text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em] mb-3">
-                    Predicted Score
+                    Expected Goals
                   </div>
-                  <div className="flex items-center justify-center gap-4 py-4">
-                    <div className="text-center">
+                  <div className="flex items-center justify-center gap-6 py-4">
+                    <div className="text-center min-w-[80px]">
+                      <div className="text-[11px] text-[#999] font-semibold uppercase tracking-wide mb-2">{homeShort}</div>
                       {homeTeam.logo ? (
                         <img src={homeTeam.logo} alt={homeTeam.name || ""} className="w-8 h-8 object-contain mx-auto mb-2" />
                       ) : (
@@ -348,10 +349,11 @@ export default function PredictionDetailPage({
                       <div className="text-[28px] font-bold text-[#1a1a2e]">
                         {prediction.predictedHomeGoals ?? "-"}
                       </div>
-                      <div className="text-[11px] text-[#999] font-medium">{homeShort}</div>
+                      <div className="text-[10px] text-[#bbb] font-medium mt-0.5">goals</div>
                     </div>
                     <div className="text-[20px] font-bold text-[#ccc]">-</div>
-                    <div className="text-center">
+                    <div className="text-center min-w-[80px]">
+                      <div className="text-[11px] text-[#999] font-semibold uppercase tracking-wide mb-2">{awayShort}</div>
                       {awayTeam.logo ? (
                         <img src={awayTeam.logo} alt={awayTeam.name || ""} className="w-8 h-8 object-contain mx-auto mb-2" />
                       ) : (
@@ -360,7 +362,7 @@ export default function PredictionDetailPage({
                       <div className="text-[28px] font-bold text-[#1a1a2e]">
                         {prediction.predictedAwayGoals ?? "-"}
                       </div>
-                      <div className="text-[11px] text-[#999] font-medium">{awayShort}</div>
+                      <div className="text-[10px] text-[#bbb] font-medium mt-0.5">goals</div>
                     </div>
                   </div>
                 </motion.div>
