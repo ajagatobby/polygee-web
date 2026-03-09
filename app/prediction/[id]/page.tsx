@@ -562,12 +562,46 @@ export default function PredictionDetailPage({
           </div>
         )}
 
+        {/* Combined Research */}
+        {prediction?.researchContext?.combinedResearch && (
+          <div className="p-5 bg-white border border-[#f0f0f0] rounded-[12px] mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Lightbulb className="w-4 h-4 text-[#1552f0]" />
+              <h3 className="text-[14px] font-bold text-[#1a1a2e]">Research</h3>
+            </div>
+            <div className="prose prose-sm max-w-none text-[#666] prose-headings:text-[#1a1a2e] prose-headings:font-bold prose-headings:tracking-[-0.01em] prose-h2:text-[14px] prose-h2:mt-4 prose-h2:mb-2 prose-h3:text-[13px] prose-h3:mt-3 prose-h3:mb-1.5 prose-p:text-[13px] prose-p:leading-relaxed prose-p:my-1.5 prose-strong:text-[#1a1a2e] prose-strong:font-semibold prose-ul:my-1.5 prose-ul:text-[13px] prose-ol:my-1.5 prose-ol:text-[13px] prose-li:my-0.5 prose-li:leading-relaxed prose-hr:my-3 prose-hr:border-[#f0f0f0] prose-table:text-[12px] prose-th:text-[#1a1a2e] prose-th:font-semibold prose-td:py-1.5">
+              <Markdown remarkPlugins={[remarkGfm]}>
+                {prediction.researchContext.combinedResearch}
+              </Markdown>
+            </div>
+            {/* Citations */}
+            {prediction.researchContext.citations && prediction.researchContext.citations.length > 0 && (
+              <div className="mt-4 pt-3 border-t border-[#f0f0f0]">
+                <p className="text-[10px] font-semibold text-[#999] uppercase tracking-[0.05em] mb-2">Sources</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {prediction.researchContext.citations.map((url, i) => (
+                    <a
+                      key={i}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-[#1552f0] bg-[#1552f0]/5 hover:bg-[#1552f0]/10 px-2 py-1 rounded-md truncate max-w-[250px] transition-colors"
+                    >
+                      {new URL(url).hostname.replace('www.', '')}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Detailed Analysis */}
         {prediction?.detailedAnalysis && (
           <div className="p-5 bg-white border border-[#f0f0f0] rounded-[12px] mb-6">
             <div className="flex items-center gap-2 mb-3">
               <Brain className="w-4 h-4 text-[#1552f0]" />
-              <h3 className="text-[14px] font-bold text-[#1a1a2e]">Detailed Analysis</h3>
+              <h3 className="text-[14px] font-bold text-[#1a1a2e]">AI Analysis</h3>
             </div>
             <div className="prose prose-sm max-w-none text-[#666] prose-headings:text-[#1a1a2e] prose-headings:font-bold prose-headings:tracking-[-0.01em] prose-h2:text-[14px] prose-h2:mt-4 prose-h2:mb-2 prose-h3:text-[13px] prose-h3:mt-3 prose-h3:mb-1.5 prose-p:text-[13px] prose-p:leading-relaxed prose-p:my-1.5 prose-strong:text-[#1a1a2e] prose-strong:font-semibold prose-ul:my-1.5 prose-ul:text-[13px] prose-ol:my-1.5 prose-ol:text-[13px] prose-li:my-0.5 prose-li:leading-relaxed prose-hr:my-3 prose-hr:border-[#f0f0f0] prose-table:text-[12px] prose-th:text-[#1a1a2e] prose-th:font-semibold prose-td:py-1.5">
               <Markdown remarkPlugins={[remarkGfm]}>

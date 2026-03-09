@@ -136,7 +136,7 @@ export interface ApiValueBet {
   bookmaker?: string | null;
 }
 
-/** Inline prediction returned from /fixtures/today */
+/** Inline prediction returned from /fixtures/today and /fixtures/:id/prediction */
 export interface ApiPredictionSummary {
   id: number;
   predictionType: PredictionType;
@@ -150,6 +150,11 @@ export interface ApiPredictionSummary {
   riskFactors: string[] | null;
   valueBets: ApiValueBet[] | null;
   detailedAnalysis: string | null;
+  researchContext: {
+    combinedResearch?: string;
+    citations?: string[];
+  } | null;
+  matchContext: Record<string, unknown> | null;
   actualResult: string | null;
   wasCorrect: boolean | null;
   probabilityAccuracy: string | null;
