@@ -129,11 +129,11 @@ export interface ApiPrediction {
 
 export interface ApiValueBet {
   outcome: string;
-  predictedProb: number;
-  bookmakerOdds: number;
-  impliedProb: number;
-  edge: number;
-  bookmaker: string;
+  predictedProb?: number | null;
+  bookmakerOdds?: number | null;
+  impliedProb?: number | null;
+  edge?: number | null;
+  bookmaker?: string | null;
 }
 
 /** Inline prediction returned from /fixtures/today */

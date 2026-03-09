@@ -314,12 +314,16 @@ export default function PredictionDetailPage({
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[#999]">
-                            {vb.bookmakerOdds.toFixed(2)}
-                          </span>
-                          <span className={`font-bold ${vb.edge > 0 ? "text-[#00c853]" : "text-[#ff3d57]"}`}>
-                            {vb.edge > 0 ? "+" : ""}{(vb.edge * 100).toFixed(1)}%
-                          </span>
+                          {vb.bookmakerOdds != null && (
+                            <span className="text-[#999]">
+                              {Number(vb.bookmakerOdds).toFixed(2)}
+                            </span>
+                          )}
+                          {vb.edge != null && (
+                            <span className={`font-bold ${vb.edge > 0 ? "text-[#00c853]" : "text-[#ff3d57]"}`}>
+                              {vb.edge > 0 ? "+" : ""}{(Number(vb.edge) * 100).toFixed(1)}%
+                            </span>
+                          )}
                         </div>
                       </div>
                     ))}
