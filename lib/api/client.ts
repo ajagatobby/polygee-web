@@ -1,6 +1,5 @@
 import axios from "axios";
-import { getAuth } from "firebase/auth";
-import { firebaseApp } from "@/lib/firebase";
+import { firebaseAuth } from "@/lib/firebase";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
@@ -25,8 +24,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      const auth = getAuth(firebaseApp);
-      const user = auth.currentUser;
+      const user = firebaseAuth.currentUser;
       if (user) {
         const token = await user.getIdToken();
         config.headers.Authorization = `Bearer ${token}`;
@@ -64,8 +62,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const auth = getAuth(firebaseApp);
-        const user = auth.currentUser;
+        const user = firebaseAuth.currentUser;
         if (user) {
           // Force refresh the token
           const token = await user.getIdToken(true);

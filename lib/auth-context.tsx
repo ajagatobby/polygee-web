@@ -10,7 +10,6 @@ import {
   type ReactNode,
 } from "react";
 import {
-  getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -20,7 +19,7 @@ import {
   type User as FirebaseUser,
 } from "firebase/auth";
 import { useQueryClient } from "@tanstack/react-query";
-import { firebaseApp } from "@/lib/firebase";
+import { firebaseAuth } from "@/lib/firebase";
 import { registerUser, fetchCurrentUser } from "@/lib/api/endpoints/auth";
 import { userKeys } from "@/lib/api/query-keys";
 import type { ApiUser } from "@/types/api";
@@ -60,7 +59,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 // ─── Provider ──────────────────────────────────────────────────────────
 
-const auth = getAuth(firebaseApp);
+const auth = firebaseAuth;
 const googleProvider = new GoogleAuthProvider();
 
 export function AuthProvider({ children }: { children: ReactNode }) {

@@ -1,4 +1,11 @@
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
+import {
+  getAuth,
+  initializeAuth,
+  indexedDBLocalPersistence,
+  browserLocalPersistence,
+  type Auth,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,3 +23,26 @@ const firebaseConfig = {
  */
 export const firebaseApp: FirebaseApp =
   getApps().length > 0 ? getApps()[0] : initializeApp(firebaseConfig);
+
+/**
+ * Singleton Firebase Auth instance with explicit long-lived persistence.
+ *
+ * - indexedDBLocalPersistence (primary): survives browser restarts, tab closes,
+ *   and clears — refresh tokens persist until explicitly revoked.
+ * - browserLocalPersistence (fallback): localStorage-based for browsers
+ *   where IndexedDB is unavailable (e.g. some private browsing modes).
+ *
+ * This ensures sessions last 30+ days (until the refresh token expires
+ * or is revoked server-side), rather than ending when the tab closes.
+ */
+export const firebaseAuth: Auth = (() => {
+  try {
+    // On first init, use initializeAuth with explicit persistence
+    return initializeAuth(firebaseApp, {
+      persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+    });
+  } catch {
+    // If already initialized (hot-reload), fall back to getAuth
+    return getAuth(firebaseApp);
+  }
+})();
