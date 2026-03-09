@@ -82,7 +82,8 @@ export default function FixturesPage() {
   const upcomingQuery = useUpcomingFixtures(
     !isToday
       ? {
-          date: selectedDate,
+          from: selectedDate,
+          to: selectedDate,
           leagueId: leagueIdFilter,
         }
       : undefined,
