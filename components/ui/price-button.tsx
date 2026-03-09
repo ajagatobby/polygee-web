@@ -97,9 +97,9 @@ export function PriceButton({
               </p>
             ) : (
               /* Moneyline: centered label + price */
-              <span className="uppercase leading-[21px] tracking-[0.15px] flex-1 h-full text-xs font-semibold text-center flex items-center justify-center">
-                <span className="opacity-70">{label}</span>
-                <span className="ml-1 text-sm" style={{ opacity: 1 }}>
+              <span className="uppercase leading-[21px] tracking-[0.15px] flex-1 h-full text-xs font-semibold text-center flex items-center justify-center overflow-hidden px-1.5">
+                <span className="opacity-70 truncate">{label}</span>
+                <span className="ml-1 text-sm shrink-0" style={{ opacity: 1 }}>
                   {price}%
                 </span>
               </span>

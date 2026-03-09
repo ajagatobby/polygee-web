@@ -235,14 +235,24 @@ export function getTeamColor(
   return TEAM_COLORS[teamId] || DEFAULT_TEAM_COLOR;
 }
 
-/** Get the short display name for a team (3-letter code or last word of name) */
+/** Get the short display name for a team (3-letter code, or derive from full name) */
 export function getTeamShortName(
   shortName: string | null | undefined,
   fullName: string | null | undefined,
 ): string {
   if (shortName) return shortName;
-  if (fullName) return fullName.split(" ").pop() || fullName;
-  return "TBD";
+  if (!fullName) return "TBD";
+
+  // Multi-word: take the last word (e.g. "Manchester United" → "United")
+  const lastWord = fullName.split(" ").pop() || fullName;
+
+  // If the result is still longer than 5 chars, take first 3 letters uppercase
+  // This handles single-word names like "Kayserispor" → "KAY"
+  if (lastWord.length > 5) {
+    return lastWord.slice(0, 3).toUpperCase();
+  }
+
+  return lastWord;
 }
 
 // ─── AI pick helpers ───────────────────────────────────────────────────
