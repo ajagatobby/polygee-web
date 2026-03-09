@@ -8,3 +8,4 @@ export * from "./use-leagues";
 export * from "./use-alerts";
 export * from "./use-auth";
 export * from "./use-live-socket";
+export * from "./use-team-color";

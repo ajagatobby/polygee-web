@@ -31,10 +31,10 @@ import {
   isMatchFinished,
   getStatusLabel,
   getAiPick,
-  getTeamColor,
   getTeamShortName,
   getLeagueLogo,
 } from "@/lib/utils";
+import { useTeamColor } from "@/lib/hooks/use-team-color";
 import { duration, easing } from "@/lib/animations";
 
 export default function PredictionDetailPage({
@@ -160,9 +160,9 @@ export default function PredictionDetailPage({
   const isLive = isMatchLive(fixture.status);
   const isFinished = isMatchFinished(fixture.status);
 
-  // Team colors: prefer API kit colors, then static map
-  const homeColor = getTeamColor(homeTeam.id, homeTeam.teamColors?.player?.primary);
-  const awayColor = getTeamColor(awayTeam.id, awayTeam.teamColors?.player?.primary);
+  // Team colors: prefer API kit > logo extraction > static map > default
+  const homeColor = useTeamColor(homeTeam.id, homeTeam.logo, homeTeam.teamColors?.player?.primary);
+  const awayColor = useTeamColor(awayTeam.id, awayTeam.logo, awayTeam.teamColors?.player?.primary);
 
   // Short names (3-letter code or last word)
   const homeShort = getTeamShortName(homeTeam.shortName, homeTeam.name);

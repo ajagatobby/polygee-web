@@ -11,9 +11,9 @@ import {
   isMatchLive,
   getStatusLabel,
   getAiPick,
-  getTeamColor,
   getTeamShortName,
 } from "@/lib/utils";
+import { useTeamColor } from "@/lib/hooks/use-team-color";
 import { duration, easing } from "@/lib/animations";
 
 // ─── Component ─────────────────────────────────────────────────────────
@@ -31,9 +31,9 @@ export function PredictionCard({ data }: PredictionCardProps) {
   const drawProb = probToPercent(prediction?.drawProb);
   const awayProb = probToPercent(prediction?.awayWinProb);
 
-  // Team colors: prefer API kit colors, then static map
-  const homeColor = getTeamColor(homeTeam.id, homeTeam.teamColors?.player?.primary);
-  const awayColor = getTeamColor(awayTeam.id, awayTeam.teamColors?.player?.primary);
+  // Team colors: prefer API kit > logo extraction > static map > default
+  const homeColor = useTeamColor(homeTeam.id, homeTeam.logo, homeTeam.teamColors?.player?.primary);
+  const awayColor = useTeamColor(awayTeam.id, awayTeam.logo, awayTeam.teamColors?.player?.primary);
 
   // AI pick (highest probability outcome)
   const aiPick = prediction

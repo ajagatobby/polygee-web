@@ -11,6 +11,7 @@ import {
   getStatusLabel,
   getTeamShortName,
 } from "@/lib/utils";
+import { useTeamColor } from "@/lib/hooks/use-team-color";
 import { duration, easing } from "@/lib/animations";
 
 interface FixtureCardProps {
@@ -21,10 +22,12 @@ interface FixtureCardProps {
 function OutcomeButton({
   label,
   color,
+  customColor,
   dimmed = false,
 }: {
   label: string;
   color: "custom" | "gray";
+  customColor?: string;
   dimmed?: boolean;
 }) {
   const [tapState, setTapState] = useState<"rest" | "pressed">("rest");
@@ -34,9 +37,9 @@ function OutcomeButton({
   const hoverOffset = 2;
 
   const isGray = color === "gray";
-  const bg = isGray ? "var(--color-bg-tertiary, #eef1f5)" : "#1a1a2e";
+  const bg = isGray ? "var(--color-bg-tertiary, #eef1f5)" : (customColor || "#1a1a2e");
   const textColor = isGray ? "var(--color-text-primary, #0d1117)" : "#fff";
-  const shadowOpacity = isGray ? 0.08 : 0.15;
+  const shadowOpacity = isGray ? 0.08 : 0.2;
 
   const currentShadowHeight = tapState === "pressed" ? Math.max(shadowHeight - 2, 1) : shadowHeight;
   const translateY = tapState === "pressed" ? hoverOffset : 0;
@@ -75,6 +78,10 @@ export function FixtureCard({ data }: FixtureCardProps) {
   const isLive = isMatchLive(fixture.status);
   const isCompleted = isMatchFinished(fixture.status);
   const [subscribed, setSubscribed] = useState(false);
+
+  // Team colors: prefer API kit > logo extraction > static map > default
+  const homeColor = useTeamColor(homeTeam.id, homeTeam.logo, homeTeam.teamColors?.player?.primary);
+  const awayColor = useTeamColor(awayTeam.id, awayTeam.logo, awayTeam.teamColors?.player?.primary);
 
   // Short team names (3-letter code or last word)
   const homeShort = getTeamShortName(homeTeam.shortName, homeTeam.name);
@@ -243,6 +250,7 @@ export function FixtureCard({ data }: FixtureCardProps) {
               <OutcomeButton
                 label={homeShort}
                 color="custom"
+                customColor={homeColor}
               />
               <OutcomeButton
                 label="DRAW"
@@ -252,6 +260,7 @@ export function FixtureCard({ data }: FixtureCardProps) {
               <OutcomeButton
                 label={awayShort}
                 color="custom"
+                customColor={awayColor}
                 dimmed
               />
             </div>
