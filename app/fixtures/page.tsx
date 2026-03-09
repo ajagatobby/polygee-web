@@ -357,15 +357,47 @@ export default function FixturesPage() {
               </AnimatePresence>
 
               {filteredFixtures.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="text-[40px] mb-3">&#128197;</div>
-                  <h3 className="text-[16px] font-semibold text-[#1a1a2e] mb-1">
+                <div className="flex flex-col items-center justify-center py-24 text-center">
+                  {/* 3D calendar icon */}
+                  <div className="mb-5">
+                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      {/* Shadow */}
+                      <ellipse cx="32" cy="60" rx="20" ry="3" fill="#000" opacity="0.06" />
+                      {/* Back face for depth */}
+                      <rect x="12" y="14" width="42" height="40" rx="6" fill="#1552f0" opacity="0.10" />
+                      {/* Main body */}
+                      <rect x="9" y="10" width="42" height="40" rx="6" fill="#fff" />
+                      <rect x="9" y="10" width="42" height="40" rx="6" stroke="#e0e0e0" strokeWidth="1" />
+                      {/* Header band */}
+                      <path d="M9 16a6 6 0 0 1 6-6h30a6 6 0 0 1 6 6v8H9v-8Z" fill="#1552f0" />
+                      {/* Header shine */}
+                      <path d="M9 16a6 6 0 0 1 6-6h30a6 6 0 0 1 6 6v3H9v-3Z" fill="#fff" opacity="0.12" />
+                      {/* Calendar rings */}
+                      <rect x="20" y="6" width="4" height="10" rx="2" fill="#1552f0" />
+                      <rect x="20.5" y="6.5" width="3" height="4" rx="1.5" fill="#fff" />
+                      <rect x="36" y="6" width="4" height="10" rx="2" fill="#1552f0" />
+                      <rect x="36.5" y="6.5" width="3" height="4" rx="1.5" fill="#fff" />
+                      {/* Grid row 1 */}
+                      <rect x="16" y="30" width="7" height="5" rx="1.5" fill="#1552f0" opacity="0.15" />
+                      <rect x="26.5" y="30" width="7" height="5" rx="1.5" fill="#1552f0" opacity="0.10" />
+                      <rect x="37" y="30" width="7" height="5" rx="1.5" fill="#1552f0" opacity="0.08" />
+                      {/* Grid row 2 */}
+                      <rect x="16" y="38" width="7" height="5" rx="1.5" fill="#1552f0" opacity="0.08" />
+                      <rect x="26.5" y="38" width="7" height="5" rx="1.5" fill="#1552f0" opacity="0.06" />
+                      <rect x="37" y="38" width="7" height="5" rx="1.5" fill="#1552f0" opacity="0.04" />
+                      {/* 3D right edge */}
+                      <path d="M51 16v28a6 6 0 0 1-6 6h-2l3-2V18l5-2Z" fill="#0e3fc2" opacity="0.08" />
+                      {/* 3D bottom edge */}
+                      <path d="M15 50h30a6 6 0 0 1-6 4H21a6 6 0 0 1-6-4Z" fill="#000" opacity="0.04" />
+                    </svg>
+                  </div>
+                  <h3 className="text-[17px] font-bold text-[#1a1a2e] mb-1.5">
                     No fixtures found
                   </h3>
-                  <p className="text-[13px] text-[#999]">
+                  <p className="text-[13px] text-[#999] leading-relaxed max-w-[280px]">
                     {searchQuery.trim()
                       ? `No matches found for "${searchQuery.trim()}". Try a different search.`
-                      : "Try selecting a different date or league."}
+                      : "There are no matches scheduled for this date. Try selecting a different day or league."}
                   </p>
                 </div>
               )}
