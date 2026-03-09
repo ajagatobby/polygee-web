@@ -8,6 +8,7 @@ import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { PredictionCard } from "@/components/predictions/prediction-card";
 import { useTodayFixtures } from "@/lib/hooks/use-fixtures";
+import { useLiveSocket } from "@/lib/hooks/use-live-socket";
 import { dropdownVariants, duration, easing } from "@/lib/animations";
 import { useAuth } from "@/lib/auth-context";
 import { formatDateLong } from "@/lib/utils";
@@ -27,6 +28,9 @@ export default function HomePage() {
   );
 
   const fixtures = todayData?.data ?? [];
+
+  // Connect to live WebSocket — patches TanStack Query cache for real-time score updates
+  useLiveSocket({ enabled: true });
 
   const handleLeagueChange = (slug: string) => {
     setHasInteracted(true);

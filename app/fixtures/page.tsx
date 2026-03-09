@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { FixtureCard } from "@/components/fixtures/fixture-card";
 import { Tabs } from "@/components/ui/tabs";
 import { useTodayFixtures, useUpcomingFixtures } from "@/lib/hooks/use-fixtures";
+import { useLiveSocket } from "@/lib/hooks/use-live-socket";
 import { dropdownVariants, duration, easing } from "@/lib/animations";
 import { formatDateLong, isMatchLive, isMatchFinished, isMatchUpcoming } from "@/lib/utils";
 import type { ApiEnrichedFixture } from "@/types/api";
@@ -45,6 +46,9 @@ export default function FixturesPage() {
   const dateDropdownRef = useRef<HTMLDivElement>(null);
 
   const currentDateIndex = dateOptions.findIndex((d) => d.value === selectedDate);
+
+  // Connect to live WebSocket for real-time score updates
+  useLiveSocket({ enabled: true });
 
   // Close dropdown on outside click
   useEffect(() => {

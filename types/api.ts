@@ -436,3 +436,57 @@ export interface ApiLeaguesResponse {
   count: number;
   trackedIds: number[];
 }
+
+// ─── WebSocket Live Events ─────────────────────────────────────────────
+
+/** State of a single live match from the WebSocket */
+export interface LiveFixtureState {
+  fixtureId: number;
+  homeTeamId: number;
+  homeTeamName: string;
+  awayTeamId: number;
+  awayTeamName: string;
+  leagueId: number;
+  leagueName: string;
+  status: string;
+  elapsed: number | null;
+  goalsHome: number | null;
+  goalsAway: number | null;
+  events: unknown[];
+  raw: unknown;
+}
+
+/** Payload for the periodic 'match-update' event */
+export interface LiveMatchUpdatePayload {
+  matches: LiveFixtureState[];
+  count: number;
+  timestamp: string;
+}
+
+/** Payload for goal/red-card/match-start/match-end events */
+export interface LiveEventPayload {
+  fixtureId: number;
+  homeTeamId: number;
+  homeTeamName: string;
+  awayTeamId: number;
+  awayTeamName: string;
+  leagueId: number;
+  leagueName: string;
+  detail: string;
+  data: Record<string, unknown>;
+  timestamp: string;
+}
+
+/** All WebSocket event types */
+export type LiveEventType =
+  | "match-update"
+  | "goal"
+  | "red-card"
+  | "match-start"
+  | "match-end";
+
+/** Discriminated message from the WebSocket */
+export interface LiveSocketMessage {
+  event: LiveEventType;
+  data: LiveMatchUpdatePayload | LiveEventPayload;
+}
