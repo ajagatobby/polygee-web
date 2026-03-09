@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, X, Bell, BarChart3, CalendarDays, LogOut, TrendingUp, AlertTriangle, Zap, Shirt, CreditCard, Crown, Activity } from "lucide-react";
+import { Search, X, Bell, BarChart3, CalendarDays, LogOut, TrendingUp, AlertTriangle, Zap, Shirt, CreditCard, Crown, Activity, User } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { duration, easing } from "@/lib/animations";
@@ -310,6 +310,15 @@ export function Header() {
 
                       {/* Menu items */}
                       <div className="py-1.5">
+                        <Link
+                          href="/profile"
+                          role="menuitem"
+                          onClick={() => setAvatarMenuOpen(false)}
+                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-[13px] font-medium text-[#1a1a2e] hover:bg-[#f7f7f7] transition-colors cursor-pointer"
+                        >
+                          <User className="w-4 h-4 text-[#808080]" />
+                          Profile
+                        </Link>
                         <Link
                           href="/pricing"
                           role="menuitem"
