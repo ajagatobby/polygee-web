@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Bell, BellOff } from "lucide-react";
+import { MapPin } from "lucide-react";
+import Image from "next/image";
 import { motion } from "motion/react";
 import type { ApiEnrichedFixture } from "@/types/api";
 import {
@@ -77,7 +78,6 @@ export function FixtureCard({ data }: FixtureCardProps) {
   const { fixture, homeTeam, awayTeam } = data;
   const isLive = isMatchLive(fixture.status);
   const isCompleted = isMatchFinished(fixture.status);
-  const [subscribed, setSubscribed] = useState(false);
 
   // Team colors: prefer API kit > logo extraction > static map > default
   const homeColor = useTeamColor(homeTeam.id, homeTeam.logo, homeTeam.teamColors?.player?.primary);
@@ -149,28 +149,7 @@ export function FixtureCard({ data }: FixtureCardProps) {
               )}
             </div>
 
-            {/* Subscribe button */}
-            <div className="flex overflow-visible gap-1 shrink-0">
-              <button
-                onClick={() => setSubscribed((prev) => !prev)}
-                className={`
-                  flex h-[32px] gap-1.5 items-center justify-center rounded-lg px-2.5 cursor-pointer transition-colors
-                  ${subscribed
-                    ? "bg-[#1a1a2e] text-white"
-                    : "bg-[#f5f5f5] hover:bg-[#ebebeb] text-[#1a1a2e]"
-                  }
-                `}
-              >
-                {subscribed ? (
-                  <BellOff className="w-3 h-3" />
-                ) : (
-                  <Bell className="w-3 h-3" />
-                )}
-                <span className="text-xs font-medium">
-                  {subscribed ? "Subscribed" : "Subscribe"}
-                </span>
-              </button>
-            </div>
+            {/* Round badge (if not already shown) */}
           </div>
 
           {/* Main content: teams + 3 outcome buttons */}
@@ -195,10 +174,12 @@ export function FixtureCard({ data }: FixtureCardProps) {
                 )}
                 <div className="relative overflow-hidden w-6 h-6 flex items-center justify-center self-center">
                   {homeTeam.logo ? (
-                    <img
+                    <Image
                       src={homeTeam.logo}
                       alt={homeTeam.name || ""}
-                      className="w-6 h-6 object-contain"
+                      width={24}
+                      height={24}
+                      className="object-contain"
                     />
                   ) : (
                     <div className="w-6 h-6 rounded-full bg-[#e8e8e8]" />
@@ -224,10 +205,12 @@ export function FixtureCard({ data }: FixtureCardProps) {
                 )}
                 <div className="relative overflow-hidden w-6 h-6 flex items-center justify-center self-center">
                   {awayTeam.logo ? (
-                    <img
+                    <Image
                       src={awayTeam.logo}
                       alt={awayTeam.name || ""}
-                      className="w-6 h-6 object-contain"
+                      width={24}
+                      height={24}
+                      className="object-contain"
                     />
                   ) : (
                     <div className="w-6 h-6 rounded-full bg-[#e8e8e8]" />

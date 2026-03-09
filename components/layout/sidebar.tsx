@@ -2,6 +2,7 @@
 
 import { ChevronDown, Loader2 } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { useLeagues } from "@/lib/hooks/use-leagues";
 import { sidebarExpand, duration, easing } from "@/lib/animations";
@@ -67,15 +68,11 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
             className="flex flex-row items-center justify-between rounded-md px-3 py-3 w-full cursor-pointer transition-colors bg-transparent hover:bg-neutral-50"
           >
             <div className="flex items-center gap-x-2.5 min-w-0">
-              <div className="shrink-0 w-5 h-5 flex items-center justify-center">
-                <img
-                  src="https://media.api-sports.io/football/leagues/39.png"
-                  alt="Soccer"
-                  className="w-5 h-5 object-contain"
-                />
+              <div className="shrink-0 w-5 h-5 flex items-center justify-center text-[14px]">
+                &#9917;
               </div>
               <p className="text-[14px] font-medium truncate text-[#1a1a2e]">
-                Soccer
+                Football
               </p>
             </div>
             <motion.div
@@ -123,11 +120,13 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
                           ${isActive ? "bg-neutral-50" : "hover:bg-neutral-50"}
                         `}>
                           <div className="flex items-center gap-x-2.5 min-w-0">
-                            <div className="shrink-0 w-5 h-5 flex items-center justify-center">
-                              <img
+                             <div className="shrink-0 w-5 h-5 flex items-center justify-center">
+                              <Image
                                 src={league.logo}
                                 alt={league.name}
-                                className="w-5 h-5 object-contain"
+                                width={20}
+                                height={20}
+                                className="object-contain"
                               />
                             </div>
                             <p className="pr-4 whitespace-nowrap truncate text-[14px] font-medium text-[#1a1a2e]">

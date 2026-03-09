@@ -35,7 +35,7 @@ export default function Error({
           or go back to the home page.
         </p>
 
-        {error.message && (
+        {process.env.NODE_ENV === "development" && error.message && (
           <div className="mb-6 p-3 bg-[#fafafa] border border-[#f0f0f0] rounded-[8px]">
             <p className="text-[12px] text-[#999] font-mono break-all">
               {error.message}

@@ -394,6 +394,11 @@ html {
   margin-bottom: 0;
 }
 
+/* Safe area for mobile nav */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

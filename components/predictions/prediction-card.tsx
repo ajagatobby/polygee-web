@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Brain } from "lucide-react";
 import { motion } from "motion/react";
 import { PriceButton } from "@/components/ui/price-button";
@@ -174,10 +175,12 @@ export function PredictionCard({ data }: PredictionCardProps) {
                 )}
                 <div className="relative overflow-hidden w-6 h-6 flex items-center justify-center self-center">
                   {homeTeam.logo ? (
-                    <img
+                    <Image
                       src={homeTeam.logo}
                       alt={homeTeam.name || ""}
-                      className="w-6 h-6 object-contain"
+                      width={24}
+                      height={24}
+                      className="object-contain"
                     />
                   ) : (
                     <div className="w-6 h-6 rounded-full bg-[#e8e8e8]" />
@@ -208,10 +211,12 @@ export function PredictionCard({ data }: PredictionCardProps) {
                 )}
                 <div className="relative overflow-hidden w-6 h-6 flex items-center justify-center self-center">
                   {awayTeam.logo ? (
-                    <img
+                    <Image
                       src={awayTeam.logo}
                       alt={awayTeam.name || ""}
-                      className="w-6 h-6 object-contain"
+                      width={24}
+                      height={24}
+                      className="object-contain"
                     />
                   ) : (
                     <div className="w-6 h-6 rounded-full bg-[#e8e8e8]" />

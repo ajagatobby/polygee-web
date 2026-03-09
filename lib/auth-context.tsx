@@ -85,6 +85,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, [queryClient]);
 
+  // Listen for session expiry (final 401 from API client after token refresh fails)
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      firebaseSignOut(auth).then(() => {
+        setDbUser(null);
+        queryClient.clear();
+        // Redirect to sign-in with message
+        if (typeof window !== "undefined" && !window.location.pathname.startsWith("/sign-")) {
+          window.location.href = "/sign-in?expired=1";
+        }
+      });
+    };
+    window.addEventListener("session-expired", handleSessionExpired);
+    return () => window.removeEventListener("session-expired", handleSessionExpired);
+  }, [queryClient]);
+
   // Auto-fetch backend profile when Firebase user is available
   useEffect(() => {
     if (!firebaseUser) return;

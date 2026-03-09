@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
@@ -10,12 +10,14 @@ import { easing, duration } from "@/lib/animations";
 
 export default function SignInPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionExpired = searchParams.get("expired") === "1";
   const { signIn, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(sessionExpired ? "Your session has expired. Please sign in again." : "");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isValid = email.trim().length > 0 && password.trim().length > 0;

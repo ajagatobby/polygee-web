@@ -5,6 +5,7 @@ import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Loader2 } from "l
 import { motion, AnimatePresence } from "motion/react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
+import { MobileNav } from "@/components/layout/mobile-nav";
 import { FixtureCard } from "@/components/fixtures/fixture-card";
 import { Tabs } from "@/components/ui/tabs";
 import { useTodayFixtures, useUpcomingFixtures } from "@/lib/hooks/use-fixtures";
@@ -84,7 +85,8 @@ export default function FixturesPage() {
       : undefined,
   );
 
-  const { data: fixturesResponse, isLoading, error } = isToday ? todayQuery : upcomingQuery;
+  const activeQuery = isToday ? todayQuery : upcomingQuery;
+  const { data: fixturesResponse, isLoading, error } = activeQuery;
 
   const allFixtures = fixturesResponse?.data ?? [];
 
@@ -160,10 +162,10 @@ export default function FixturesPage() {
         </div>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-white">
+        <main className="flex-1 overflow-y-auto bg-white pb-16 sm:pb-0">
           {/* Header */}
           <div className="border-b border-[#f0f0f0]">
-            <div className="px-10 pt-5 pb-4">
+            <div className="px-4 md:px-6 lg:px-10 pt-5 pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CalendarDays className="w-5 h-5 text-[#1552f0]" />
@@ -248,7 +250,7 @@ export default function FixturesPage() {
               activeTab={activeFilter}
               onTabChange={(id) => handleFilterChange(id as FixtureFilter)}
               layoutId="fixtures-filter"
-              className="px-10"
+              className="px-4 md:px-6 lg:px-10"
             />
           </div>
 
@@ -267,15 +269,21 @@ export default function FixturesPage() {
               <h3 className="text-[16px] font-semibold text-[#1a1a2e] mb-1">
                 Failed to load fixtures
               </h3>
-              <p className="text-[13px] text-[#999]">
+              <p className="text-[13px] text-[#999] mb-4">
                 Please check your connection and try again.
               </p>
+              <button
+                onClick={() => activeQuery.refetch()}
+                className="h-[36px] px-4 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+              >
+                Try Again
+              </button>
             </div>
           )}
 
           {/* Fixtures grouped by date */}
           {!isLoading && !error && (
-            <div className="px-10 pt-4 pb-6">
+            <div className="px-4 md:px-6 lg:px-10 pt-4 pb-6">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={`${activeLeague}-${activeFilter}-${selectedDate}`}
@@ -322,6 +330,8 @@ export default function FixturesPage() {
           )}
         </main>
       </div>
+
+      <MobileNav />
     </div>
   );
 }

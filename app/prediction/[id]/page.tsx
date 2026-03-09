@@ -2,6 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Clock,
@@ -46,6 +47,7 @@ export default function PredictionDetailPage({
 }) {
   const { id } = use(params);
   const fixtureId = parseInt(id, 10);
+  const router = useRouter();
   const { isAuthenticated, isPro, loading: authLoading } = useAuth();
 
   const { data: enriched, isLoading, error } = useFixturePrediction(
@@ -199,15 +201,15 @@ export default function PredictionDetailPage({
     <div className="min-h-screen bg-[#fafafa]">
       <Header />
 
-      <main className="max-w-4xl mx-auto px-6 py-5">
+      <main className="max-w-4xl mx-auto px-4 md:px-6 py-5">
         {/* Back link */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-[13px] text-[#999] hover:text-[#666] transition-colors mb-5 group"
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-1.5 text-[13px] text-[#999] hover:text-[#666] transition-colors mb-5 group cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
           Back to {fixture.leagueName || "Predictions"}
-        </Link>
+        </button>
 
         {/* Match header */}
         <div className="mb-6">

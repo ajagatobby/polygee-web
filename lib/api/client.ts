@@ -40,6 +40,18 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
+// ─── Session expiry event ──────────────────────────────────────────────
+
+/**
+ * Dispatch a custom event when the session has expired (final 401 after retry).
+ * The auth context listens for this and triggers sign-out + redirect.
+ */
+function dispatchSessionExpired() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("session-expired"));
+  }
+}
+
 // ─── Response interceptor: handle errors ───────────────────────────────
 
 apiClient.interceptors.response.use(
@@ -61,8 +73,11 @@ apiClient.interceptors.response.use(
           return apiClient(originalRequest);
         }
       } catch {
-        // Token refresh failed — propagate the 401
+        // Token refresh failed — session is expired
       }
+
+      // Final 401 after retry — session expired
+      dispatchSessionExpired();
     }
 
     return Promise.reject(error);

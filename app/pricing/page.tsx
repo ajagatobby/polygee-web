@@ -104,6 +104,7 @@ const faqs = [
 export default function PricingPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [loadingPlan, setLoadingPlan] = useState<"monthly" | "yearly" | "portal" | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const { isAuthenticated, isPro } = useAuth();
   const router = useRouter();
 
@@ -116,11 +117,12 @@ export default function PricingPage() {
 
       const priceId = plan === "monthly" ? STRIPE_MONTHLY_PRICE_ID : STRIPE_YEARLY_PRICE_ID;
       if (!priceId) {
-        console.error(`Stripe Price ID not configured for ${plan} plan`);
+        setCheckoutError("Billing is not configured yet. Please try again later.");
         return;
       }
 
       setLoadingPlan(plan);
+      setCheckoutError(null);
       try {
         const origin = window.location.origin;
         const { url } = await createCheckoutSession({
@@ -131,6 +133,7 @@ export default function PricingPage() {
         window.location.href = url;
       } catch (error) {
         console.error("Failed to create checkout session:", error);
+        setCheckoutError("Failed to start checkout. Please try again.");
         setLoadingPlan(null);
       }
     },
@@ -139,6 +142,7 @@ export default function PricingPage() {
 
   const handleManageBilling = useCallback(async () => {
     setLoadingPlan("portal");
+    setCheckoutError(null);
     try {
       const { url } = await createBillingPortalSession({
         returnUrl: `${window.location.origin}/pricing`,
@@ -146,6 +150,7 @@ export default function PricingPage() {
       window.location.href = url;
     } catch (error) {
       console.error("Failed to create billing portal session:", error);
+      setCheckoutError("Failed to open billing portal. Please try again.");
       setLoadingPlan(null);
     }
   }, []);
@@ -203,6 +208,23 @@ export default function PricingPage() {
                     <Settings className="w-4 h-4" />
                   )}
                   Manage Subscription
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Checkout error banner */}
+        {checkoutError && (
+          <section className="px-6 pb-4">
+            <div className="max-w-[820px] mx-auto">
+              <div className="flex items-center gap-3 p-4 bg-[#fff0f2] border border-[#ff3d57]/20 rounded-[12px]">
+                <p className="text-[13px] text-[#ff3b30] font-medium flex-1">{checkoutError}</p>
+                <button
+                  onClick={() => setCheckoutError(null)}
+                  className="text-[12px] text-[#ff3b30] font-semibold hover:underline cursor-pointer shrink-0"
+                >
+                  Dismiss
                 </button>
               </div>
             </div>

@@ -33,9 +33,21 @@ export default function SignUpPage() {
       await signUp(email, password, name);
       router.push("/");
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })
+      const firebaseCode = (err as { code?: string })?.code;
+      const apiMsg = (err as { response?: { data?: { message?: string } } })
         ?.response?.data?.message;
-      setError(msg || "Registration failed. Please check your input and try again.");
+
+      if (firebaseCode === "auth/email-already-in-use") {
+        setError("An account with this email already exists. Try signing in instead.");
+      } else if (firebaseCode === "auth/weak-password") {
+        setError("Password is too weak. Please use at least 8 characters with a mix of letters and numbers.");
+      } else if (firebaseCode === "auth/invalid-email") {
+        setError("Please enter a valid email address.");
+      } else if (apiMsg) {
+        setError(apiMsg);
+      } else {
+        setError("Registration failed. Please check your input and try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -46,8 +58,16 @@ export default function SignUpPage() {
     try {
       await signInWithGoogle();
       router.push("/");
-    } catch {
-      setError("Google sign-in failed. Please try again.");
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code;
+      if (code === "auth/popup-closed-by-user") return; // User cancelled — no error
+      if (code === "auth/popup-blocked") {
+        setError("Pop-up was blocked. Please allow pop-ups for this site and try again.");
+      } else if (code === "auth/account-exists-with-different-credential") {
+        setError("An account already exists with this email using a different sign-in method.");
+      } else {
+        setError("Google sign-in failed. Please try again.");
+      }
     }
   };
 

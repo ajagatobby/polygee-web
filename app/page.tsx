@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
+import { MobileNav } from "@/components/layout/mobile-nav";
 import { PredictionCard } from "@/components/predictions/prediction-card";
 import { useTodayFixtures } from "@/lib/hooks/use-fixtures";
 import { useLiveSocket } from "@/lib/hooks/use-live-socket";
@@ -23,7 +24,7 @@ export default function HomePage() {
   const leagueIdFilter = activeLeague !== "all" ? Number(activeLeague) : undefined;
 
   // Fetch today's fixtures with predictions from the API
-  const { data: todayData, isLoading, error } = useTodayFixtures(
+  const { data: todayData, isLoading, error, refetch } = useTodayFixtures(
     leagueIdFilter ? { leagueId: leagueIdFilter } : undefined,
   );
 
@@ -72,10 +73,10 @@ export default function HomePage() {
         </div>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-white">
+        <main className="flex-1 overflow-y-auto bg-white pb-16 sm:pb-0">
           {/* League header */}
           <div className="border-b border-[#f0f0f0]">
-            <div className="px-10 pt-5 pb-4">
+            <div className="px-4 md:px-6 lg:px-10 pt-5 pb-4">
               <div className="flex items-center justify-between">
                 <AnimatePresence mode="wait">
                   <motion.h1
@@ -115,15 +116,21 @@ export default function HomePage() {
               <h3 className="text-[16px] font-semibold text-[#1a1a2e] mb-1">
                 Failed to load predictions
               </h3>
-              <p className="text-[13px] text-[#999]">
+              <p className="text-[13px] text-[#999] mb-4">
                 Please check your connection and try again.
               </p>
+              <button
+                onClick={() => refetch()}
+                className="h-[36px] px-4 text-[13px] font-medium text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors cursor-pointer"
+              >
+                Try Again
+              </button>
             </div>
           )}
 
           {/* Predictions list grouped by date */}
           {!isLoading && !error && (
-            <div className="px-10 pt-2 relative">
+            <div className="px-4 md:px-6 lg:px-10 pt-2 relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeLeague}
@@ -275,6 +282,8 @@ export default function HomePage() {
           )}
         </main>
       </div>
+
+      <MobileNav />
     </div>
   );
 }
