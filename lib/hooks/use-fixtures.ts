@@ -87,8 +87,8 @@ export function useFixtureOdds(id: number, enabled = true) {
     queryKey: fixtureKeys.odds(id),
     queryFn: () => fetchFixtureOdds(id),
     enabled: enabled && id > 0,
-    staleTime: 2 * 60 * 1000, // odds can fluctuate
-    gcTime: 10 * 60 * 1000,
+    staleTime: 30 * 24 * 60 * 60 * 1000, // 30 days — odds rarely need re-fetching
+    gcTime: 60 * 24 * 60 * 60 * 1000, // 60 days
   });
 }
 
@@ -98,7 +98,7 @@ export function useFixtureOddsCompare(id: number, enabled = true) {
     queryKey: fixtureKeys.oddsCompare(id),
     queryFn: () => fetchFixtureOddsCompare(id),
     enabled: enabled && id > 0,
-    staleTime: 2 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 30 * 24 * 60 * 60 * 1000, // 30 days
+    gcTime: 60 * 24 * 60 * 60 * 1000, // 60 days
   });
 }
