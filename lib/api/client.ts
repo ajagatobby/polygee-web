@@ -1,14 +1,36 @@
 import axios from "axios";
+import { onAuthStateChanged } from "firebase/auth";
 import { firebaseAuth } from "@/lib/firebase";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+
+// ─── Firebase Auth readiness ───────────────────────────────────────────
+
+/**
+ * Tracks whether Firebase Auth has finished restoring the session from
+ * IndexedDB/localStorage. Until this resolves, `firebaseAuth.currentUser`
+ * is null even if the user has a valid session.
+ *
+ * We wait for this before attaching tokens or dispatching session-expired
+ * to avoid a race condition where requests fire before auth is ready,
+ * get a 401, and incorrectly trigger sign-out.
+ */
+let authReady = false;
+const authReadyPromise = new Promise<void>((resolve) => {
+  const unsubscribe = onAuthStateChanged(firebaseAuth, () => {
+    authReady = true;
+    unsubscribe();
+    resolve();
+  });
+});
 
 /**
  * Axios instance pre-configured for the polygentic-backend API.
  *
  * - Base URL from env `NEXT_PUBLIC_API_URL` (defaults to localhost:8080)
  * - Automatically attaches Firebase ID token as Bearer auth
+ * - Waits for Firebase Auth to restore session before sending authenticated requests
  * - Handles 401 by attempting a token refresh
  */
 export const apiClient = axios.create({
@@ -24,6 +46,10 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     try {
+      // Wait for Firebase to restore session before reading currentUser
+      if (!authReady) {
+        await authReadyPromise;
+      }
       const user = firebaseAuth.currentUser;
       if (user) {
         const token = await user.getIdToken();
@@ -71,10 +97,18 @@ apiClient.interceptors.response.use(
         }
       } catch {
         // Token refresh failed — session is expired
+        dispatchSessionExpired();
+        return Promise.reject(error);
       }
 
-      // Final 401 after retry — session expired
-      dispatchSessionExpired();
+      // No current user after auth is ready — only dispatch session-expired
+      // if there WAS a token on the original request (meaning user was
+      // previously signed in but the session is now invalid).
+      // If there was never a token, this is just an unauthenticated request
+      // hitting a protected endpoint — not a session expiry.
+      if (originalRequest.headers.Authorization) {
+        dispatchSessionExpired();
+      }
     }
 
     return Promise.reject(error);
