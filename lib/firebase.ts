@@ -4,6 +4,7 @@ import {
   initializeAuth,
   indexedDBLocalPersistence,
   browserLocalPersistence,
+  browserPopupRedirectResolver,
   type Auth,
 } from "firebase/auth";
 
@@ -37,9 +38,10 @@ export const firebaseApp: FirebaseApp =
  */
 export const firebaseAuth: Auth = (() => {
   try {
-    // On first init, use initializeAuth with explicit persistence
+    // On first init, use initializeAuth with explicit persistence + popup resolver
     return initializeAuth(firebaseApp, {
       persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+      popupRedirectResolver: browserPopupRedirectResolver,
     });
   } catch {
     // If already initialized (hot-reload), fall back to getAuth

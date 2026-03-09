@@ -49,8 +49,23 @@ export default function SignInPage() {
     try {
       await signInWithGoogle();
       router.push("/");
-    } catch {
-      setError("Google sign-in failed. Please try again.");
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code;
+      if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
+        // User closed the popup — not an error worth showing
+        return;
+      } else if (code === "auth/popup-blocked") {
+        setError("Popup was blocked by your browser. Please allow popups and try again.");
+      } else if (code === "auth/account-exists-with-different-credential") {
+        setError("An account already exists with the same email. Try signing in with email/password.");
+      } else if (code === "auth/unauthorized-domain") {
+        setError("This domain is not authorized for Google sign-in. Contact support.");
+      } else {
+        setError("Google sign-in failed. Please try again.");
+        if (process.env.NODE_ENV === "development") {
+          console.error("Google sign-in error:", code, err);
+        }
+      }
     }
   };
 
