@@ -41,7 +41,7 @@ export function Tabs({
                 relative flex items-center gap-1.5 h-[34px] px-3.5 rounded-[8px] cursor-pointer outline-none
                 text-[13px] font-medium transition-all duration-150
                 ${isActive
-                  ? "bg-[#1a1a2e] text-white shadow-sm"
+                  ? "bg-[#1552f0] text-white shadow-sm"
                   : "text-[#808080] hover:text-[#1a1a2e] hover:bg-[#f5f5f5]"
                 }
               `}
@@ -50,7 +50,7 @@ export function Tabs({
               {isActive && (
                 <motion.span
                   layoutId={layoutId}
-                  className="absolute inset-0 rounded-[8px] bg-[#1a1a2e]"
+                  className="absolute inset-0 rounded-[8px] bg-[#1552f0]"
                   transition={{
                     type: "spring",
                     stiffness: 500,
