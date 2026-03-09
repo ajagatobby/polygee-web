@@ -66,7 +66,7 @@ export default function PredictionDetailPage({
         {/* Match header */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-[14px]">{prediction.league.logo}</span>
+            <img src={prediction.league.logo} alt={prediction.league.name} className="w-5 h-5 object-contain" />
             <span className="text-[13px] text-[#999] font-medium">
               {prediction.league.name}
             </span>
