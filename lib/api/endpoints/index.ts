@@ -7,3 +7,4 @@ export * from "./teams";
 export * from "./leagues";
 export * from "./alerts";
 export * from "./auth";
+export * from "./billing";

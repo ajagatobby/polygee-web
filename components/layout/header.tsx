@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Bell, BarChart3, CalendarDays, Target, Settings, Trophy, HelpCircle, LogOut, CircleDot, ClipboardList, TrendingUp, AlertTriangle, Zap, Users, Shirt } from "lucide-react";
+import { Search, Bell, BarChart3, CalendarDays, Target, Settings, Trophy, HelpCircle, LogOut, CircleDot, ClipboardList, TrendingUp, AlertTriangle, Zap, Users, Shirt, CreditCard, Crown } from "lucide-react";
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { duration, easing } from "@/lib/animations";
@@ -23,7 +23,7 @@ export function Header() {
   const pathname = usePathname();
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const { isAuthenticated, signOut, firebaseUser } = useAuth();
+  const { isAuthenticated, isPro, signOut, firebaseUser } = useAuth();
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [depositModalOpen, setDepositModalOpen] = useState(false);
   const [isPolymarketConnected, setIsPolymarketConnected] = useState(false);
@@ -315,9 +315,17 @@ export function Header() {
                           <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shrink-0" />
                         )}
                         <div className="min-w-0">
-                          <p className="text-[13px] font-semibold text-[#1a1a2e] truncate">
-                            {firebaseUser?.displayName || firebaseUser?.email || "User"}
-                          </p>
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-[13px] font-semibold text-[#1a1a2e] truncate">
+                              {firebaseUser?.displayName || firebaseUser?.email || "User"}
+                            </p>
+                            {isPro && (
+                              <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-[#1552f0]/10 shrink-0">
+                                <Crown className="w-2.5 h-2.5 text-[#1552f0]" />
+                                <span className="text-[9px] font-bold text-[#1552f0] uppercase">Pro</span>
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <button className="ml-auto shrink-0 p-1 text-[#999] hover:text-[#1a1a2e] transition-colors cursor-pointer">
                           <Settings className="w-4 h-4" />
@@ -345,6 +353,14 @@ export function Header() {
                             {item.label}
                           </button>
                         ))}
+                        <Link
+                          href="/pricing"
+                          onClick={() => setAvatarMenuOpen(false)}
+                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-[13px] font-medium text-[#1a1a2e] hover:bg-[#f7f7f7] transition-colors cursor-pointer"
+                        >
+                          <CreditCard className="w-4 h-4 text-[#808080]" />
+                          Billing
+                        </Link>
                       </div>
 
                       <div className="h-px bg-[#f0f0f0]" />

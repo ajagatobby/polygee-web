@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Check,
@@ -13,9 +14,18 @@ import {
   Headphones,
   ArrowRight,
   Crown,
+  Loader2,
+  Settings,
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
+import { useAuth } from "@/lib/auth-context";
+import { createCheckoutSession, createBillingPortalSession } from "@/lib/api/endpoints/billing";
 import { easing, duration } from "@/lib/animations";
+
+// ─── Stripe Price IDs (set in Stripe Dashboard) ────────────────────────
+// These should match the Price IDs created in your Stripe account.
+const STRIPE_MONTHLY_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID || "";
+const STRIPE_YEARLY_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_YEARLY_PRICE_ID || "";
 
 const MONTHLY_PRICE = 99;
 const YEARLY_DISCOUNT = 0.3;
@@ -93,6 +103,52 @@ const faqs = [
 
 export default function PricingPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<"monthly" | "yearly" | "portal" | null>(null);
+  const { isAuthenticated, isPro } = useAuth();
+  const router = useRouter();
+
+  const handleCheckout = useCallback(
+    async (plan: "monthly" | "yearly") => {
+      if (!isAuthenticated) {
+        router.push("/sign-up");
+        return;
+      }
+
+      const priceId = plan === "monthly" ? STRIPE_MONTHLY_PRICE_ID : STRIPE_YEARLY_PRICE_ID;
+      if (!priceId) {
+        console.error(`Stripe Price ID not configured for ${plan} plan`);
+        return;
+      }
+
+      setLoadingPlan(plan);
+      try {
+        const origin = window.location.origin;
+        const { url } = await createCheckoutSession({
+          priceId,
+          successUrl: `${origin}/pricing/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${origin}/pricing`,
+        });
+        window.location.href = url;
+      } catch (error) {
+        console.error("Failed to create checkout session:", error);
+        setLoadingPlan(null);
+      }
+    },
+    [isAuthenticated, router],
+  );
+
+  const handleManageBilling = useCallback(async () => {
+    setLoadingPlan("portal");
+    try {
+      const { url } = await createBillingPortalSession({
+        returnUrl: `${window.location.origin}/pricing`,
+      });
+      window.location.href = url;
+    } catch (error) {
+      console.error("Failed to create billing portal session:", error);
+      setLoadingPlan(null);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -117,6 +173,41 @@ export default function PricingPage() {
             </motion.div>
           </div>
         </section>
+
+        {/* Active subscription banner */}
+        {isPro && (
+          <section className="px-6 pb-6">
+            <div className="max-w-[820px] mx-auto">
+              <div className="flex items-center justify-between p-5 bg-[#e7edfe] border border-[#1552f0]/20 rounded-[14px]">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-[36px] h-[36px] rounded-full bg-[#1552f0]/10">
+                    <Crown className="w-[18px] h-[18px] text-[#1552f0]" />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-bold text-[#1a1a2e]">
+                      You're on the Pro plan
+                    </p>
+                    <p className="text-[12px] text-[#808080]">
+                      You have full access to all features.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleManageBilling}
+                  disabled={loadingPlan === "portal"}
+                  className="flex items-center gap-2 h-[38px] px-4 text-[13px] font-medium text-[#1a1a2e] bg-white rounded-[8px] border border-[#e8e8e8] hover:bg-[#f5f5f5] transition-colors cursor-pointer disabled:opacity-60"
+                >
+                  {loadingPlan === "portal" ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Settings className="w-4 h-4" />
+                  )}
+                  Manage Subscription
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Two pricing cards */}
         <section className="px-6 pb-16">
@@ -162,13 +253,37 @@ export default function PricingPage() {
                 </p>
 
                 {/* CTA */}
-                <Link
-                  href="/sign-up"
-                  className="flex items-center justify-center gap-2 w-full h-[46px] mt-6 text-[14px] font-bold text-[#1a1a2e] bg-[#f5f5f5] rounded-[12px] hover:bg-[#ebebeb] transition-colors cursor-pointer group"
-                >
-                  Get started
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
+                {isPro ? (
+                  <button
+                    onClick={handleManageBilling}
+                    disabled={loadingPlan === "portal"}
+                    className="flex items-center justify-center gap-2 w-full h-[46px] mt-6 text-[14px] font-bold text-[#1a1a2e] bg-[#f5f5f5] rounded-[12px] hover:bg-[#ebebeb] transition-colors cursor-pointer disabled:opacity-60"
+                  >
+                    {loadingPlan === "portal" ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        Manage Subscription
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleCheckout("monthly")}
+                    disabled={loadingPlan === "monthly"}
+                    className="flex items-center justify-center gap-2 w-full h-[46px] mt-6 text-[14px] font-bold text-[#1a1a2e] bg-[#f5f5f5] rounded-[12px] hover:bg-[#ebebeb] transition-colors cursor-pointer group disabled:opacity-60"
+                  >
+                    {loadingPlan === "monthly" ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        Get started
+                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                      </>
+                    )}
+                  </button>
+                )}
 
                 <p className="text-center text-[12px] text-[#bbb] mt-3">
                   Cancel anytime
@@ -250,13 +365,37 @@ export default function PricingPage() {
                 </div>
 
                 {/* CTA */}
-                <Link
-                  href="/sign-up"
-                  className="flex items-center justify-center gap-2 w-full h-[46px] mt-6 text-[14px] font-bold text-white bg-[#1552f0] rounded-[12px] hover:bg-[#1247d6] transition-colors cursor-pointer group"
-                >
-                  Get started
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
+                {isPro ? (
+                  <button
+                    onClick={handleManageBilling}
+                    disabled={loadingPlan === "portal"}
+                    className="flex items-center justify-center gap-2 w-full h-[46px] mt-6 text-[14px] font-bold text-white bg-[#1552f0] rounded-[12px] hover:bg-[#1247d6] transition-colors cursor-pointer disabled:opacity-60"
+                  >
+                    {loadingPlan === "portal" ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        Manage Subscription
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleCheckout("yearly")}
+                    disabled={loadingPlan === "yearly"}
+                    className="flex items-center justify-center gap-2 w-full h-[46px] mt-6 text-[14px] font-bold text-white bg-[#1552f0] rounded-[12px] hover:bg-[#1247d6] transition-colors cursor-pointer group disabled:opacity-60"
+                  >
+                    {loadingPlan === "yearly" ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        Get started
+                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                      </>
+                    )}
+                  </button>
+                )}
 
                 <p className="text-center text-[12px] text-[#bbb] mt-3">
                   Cancel anytime
@@ -456,13 +595,45 @@ export default function PricingPage() {
               Polymarket.
             </p>
             <div className="flex items-center justify-center gap-3 mt-8">
-              <Link
-                href="/sign-up"
-                className="inline-flex items-center gap-2 h-[44px] px-6 text-[14px] font-bold text-[#1552f0] bg-white rounded-[10px] hover:bg-white/90 transition-colors cursor-pointer group"
-              >
-                Get started
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
+              {isPro ? (
+                <button
+                  onClick={handleManageBilling}
+                  disabled={loadingPlan === "portal"}
+                  className="inline-flex items-center gap-2 h-[44px] px-6 text-[14px] font-bold text-[#1552f0] bg-white rounded-[10px] hover:bg-white/90 transition-colors cursor-pointer disabled:opacity-60"
+                >
+                  {loadingPlan === "portal" ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      Manage Subscription
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              ) : isAuthenticated ? (
+                <button
+                  onClick={() => handleCheckout("yearly")}
+                  disabled={loadingPlan === "yearly"}
+                  className="inline-flex items-center gap-2 h-[44px] px-6 text-[14px] font-bold text-[#1552f0] bg-white rounded-[10px] hover:bg-white/90 transition-colors cursor-pointer group disabled:opacity-60"
+                >
+                  {loadingPlan === "yearly" ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      Get started
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  )}
+                </button>
+              ) : (
+                <Link
+                  href="/sign-up"
+                  className="inline-flex items-center gap-2 h-[44px] px-6 text-[14px] font-bold text-[#1552f0] bg-white rounded-[10px] hover:bg-white/90 transition-colors cursor-pointer group"
+                >
+                  Get started
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              )}
             </div>
           </motion.div>
         </section>
