@@ -284,6 +284,28 @@ export interface ApiAlert {
 
 // ─── Leagues ───────────────────────────────────────────────────────────
 
+/** Raw league item from API-Football (passed through untransformed by backend) */
+export interface ApiLeagueRaw {
+  league: {
+    id: number;
+    name: string;
+    type: string;
+    logo: string;
+  };
+  country: {
+    name: string;
+    code: string | null;
+    flag: string | null;
+  };
+  seasons: Array<{
+    year: number;
+    start: string;
+    end: string;
+    current: boolean;
+  }>;
+}
+
+/** Flattened league shape used throughout the frontend */
 export interface ApiLeague {
   id: number;
   name: string;
@@ -431,6 +453,14 @@ export interface ApiUpcomingFixturesResponse {
   filters: Record<string, unknown>;
 }
 
+/** Raw response from GET /api/leagues (backend passes API-Football data through) */
+export interface ApiLeaguesRawResponse {
+  data: ApiLeagueRaw[];
+  count: number;
+  trackedIds: number[];
+}
+
+/** Transformed response used by the frontend */
 export interface ApiLeaguesResponse {
   data: ApiLeague[];
   count: number;
