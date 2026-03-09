@@ -1,10 +1,10 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { sidebarLeagues } from "@/lib/mock-data";
+import { useLeagues } from "@/lib/hooks/use-leagues";
+import { getLeagueLogo } from "@/lib/utils";
 import { sidebarExpand, duration, easing } from "@/lib/animations";
 
 interface SidebarProps {
@@ -13,8 +13,10 @@ interface SidebarProps {
 }
 
 export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
-  const pathname = usePathname();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({ soccer: true });
+  const { data: leaguesData, isLoading } = useLeagues();
+
+  const leagues = leaguesData?.data ?? [];
 
   const toggleExpand = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -30,38 +32,66 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
         </p>
       </div>
 
-      {/* Sports with collapsible leagues */}
-      {sidebarLeagues.map((sport) => (
-        <div key={sport.id}>
-          {/* Sport parent row (e.g. Soccer) */}
+      {/* "All" option */}
+      <button
+        onClick={() => onLeagueChange("all")}
+        className="block w-full text-left"
+      >
+        <div className={`
+          rounded-md py-3 px-3 cursor-pointer relative transition-colors
+          ${activeLeague === "all" ? "bg-neutral-50" : "hover:bg-neutral-50"}
+        `}>
+          <div className="flex items-center gap-x-2.5 min-w-0">
+            <div className="shrink-0 w-5 h-5 flex items-center justify-center text-[14px]">
+              &#9917;
+            </div>
+            <p className="pr-4 whitespace-nowrap truncate text-[14px] font-medium text-[#1a1a2e]">
+              All Leagues
+            </p>
+          </div>
+        </div>
+      </button>
+
+      {/* Loading state */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="w-4 h-4 text-[#999] animate-spin" />
+        </div>
+      )}
+
+      {/* Soccer parent with collapsible leagues */}
+      {!isLoading && leagues.length > 0 && (
+        <div>
+          {/* Sport parent row */}
           <button
-            onClick={() => toggleExpand(sport.id)}
-            className={`
-              flex flex-row items-center justify-between rounded-md px-3 py-3 w-full cursor-pointer transition-colors
-              bg-transparent hover:bg-neutral-50
-            `}
+            onClick={() => toggleExpand("soccer")}
+            className="flex flex-row items-center justify-between rounded-md px-3 py-3 w-full cursor-pointer transition-colors bg-transparent hover:bg-neutral-50"
           >
             <div className="flex items-center gap-x-2.5 min-w-0">
               <div className="shrink-0 w-5 h-5 flex items-center justify-center">
-                <img src={sport.logo} alt={sport.name} className="w-5 h-5 object-contain" />
+                <img
+                  src="https://media.api-sports.io/football/leagues/39.png"
+                  alt="Soccer"
+                  className="w-5 h-5 object-contain"
+                />
               </div>
               <p className="text-[14px] font-medium truncate text-[#1a1a2e]">
-                {sport.name}
+                Soccer
               </p>
             </div>
             <motion.div
-              animate={{ rotate: expanded[sport.id] ? 180 : 0 }}
+              animate={{ rotate: expanded.soccer ? 180 : 0 }}
               transition={{ duration: duration.normal, ease: easing.easeInOut }}
             >
               <ChevronDown className="w-3 h-3 shrink-0 text-neutral-400" />
             </motion.div>
           </button>
 
-          {/* Collapsible sub-leagues */}
+          {/* Collapsible leagues */}
           <AnimatePresence initial={false}>
-            {expanded[sport.id] && (
+            {expanded.soccer && (
               <motion.div
-                key={`${sport.id}-children`}
+                key="soccer-children"
                 variants={sidebarExpand}
                 initial="collapsed"
                 animate="expanded"
@@ -69,12 +99,12 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
                 className="overflow-hidden"
               >
                 <div className="pl-5 flex flex-col pt-0.5">
-                  {sport.children?.map((league, index) => {
-                    const isActive = activeLeague === league.slug;
+                  {leagues.map((league, index) => {
+                    const isActive = activeLeague === String(league.id);
                     return (
                       <motion.button
                         key={league.id}
-                        onClick={() => onLeagueChange(league.slug)}
+                        onClick={() => onLeagueChange(String(league.id))}
                         initial={{ opacity: 0, x: -6 }}
                         animate={{
                           opacity: 1,
@@ -95,15 +125,19 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
                         `}>
                           <div className="flex items-center gap-x-2.5 min-w-0">
                             <div className="shrink-0 w-5 h-5 flex items-center justify-center">
-                              <img src={league.logo} alt={league.name} className="w-5 h-5 object-contain" />
+                              <img
+                                src={getLeagueLogo(league.id)}
+                                alt={league.name}
+                                className="w-5 h-5 object-contain"
+                              />
                             </div>
                             <p className="pr-4 whitespace-nowrap truncate text-[14px] font-medium text-[#1a1a2e]">
                               {league.name}
                             </p>
                           </div>
-                          {league.count > 0 && (
+                          {league.fixtureCount != null && league.fixtureCount > 0 && (
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-neutral-400 font-bold">
-                              {league.count}
+                              {league.fixtureCount}
                             </span>
                           )}
                         </div>
@@ -115,7 +149,7 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
             )}
           </AnimatePresence>
         </div>
-      ))}
+      )}
     </aside>
     {/* Top fade mask */}
     <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none z-10" style={{ background: "linear-gradient(to bottom, white 0%, transparent 100%)" }} />

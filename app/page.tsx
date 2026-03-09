@@ -1,75 +1,57 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { PredictionCard } from "@/components/predictions/prediction-card";
-import { predictions, formatDateLong } from "@/lib/mock-data";
-import { Prediction } from "@/types";
+import { useTodayFixtures } from "@/lib/hooks/use-fixtures";
 import { dropdownVariants, duration, easing } from "@/lib/animations";
 import { useAuth } from "@/lib/auth-context";
-
-const weeks = Array.from({ length: 38 }, (_, i) => `Week ${i + 1}`);
+import { formatDateLong } from "@/lib/utils";
+import type { ApiEnrichedFixture } from "@/types/api";
 
 export default function HomePage() {
-  const [activeLeague, setActiveLeague] = useState("premier-league");
-  const [weekFilter, setWeekFilter] = useState("Week 29");
-  const [weekDropdownOpen, setWeekDropdownOpen] = useState(false);
-  const weekDropdownRef = useRef<HTMLDivElement>(null);
+  const [activeLeague, setActiveLeague] = useState<string>("all");
   const [hasInteracted, setHasInteracted] = useState(false);
   const { isAuthenticated } = useAuth();
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (weekDropdownRef.current && !weekDropdownRef.current.contains(e.target as Node)) {
-        setWeekDropdownOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // Convert activeLeague to leagueId filter (if not "all")
+  const leagueIdFilter = activeLeague !== "all" ? Number(activeLeague) : undefined;
 
-  const currentWeekIndex = weeks.indexOf(weekFilter);
+  // Fetch today's fixtures with predictions from the API
+  const { data: todayData, isLoading, error } = useTodayFixtures(
+    leagueIdFilter ? { leagueId: leagueIdFilter } : undefined,
+  );
 
-  const goToPrevWeek = () => {
-    if (currentWeekIndex > 0) setWeekFilter(weeks[currentWeekIndex - 1]);
-  };
-
-  const goToNextWeek = () => {
-    if (currentWeekIndex < weeks.length - 1) setWeekFilter(weeks[currentWeekIndex + 1]);
-  };
+  const fixtures = todayData?.data ?? [];
 
   const handleLeagueChange = (slug: string) => {
     setHasInteracted(true);
     setActiveLeague(slug);
   };
 
-  // Get the active league name
+  // Get the active league name from the first fixture
   const activeLeagueName = useMemo(() => {
     if (activeLeague === "all") return "All Leagues";
-    const p = predictions.find((p) => p.league.slug === activeLeague);
-    return p?.league.name || "Premier League";
-  }, [activeLeague]);
+    const match = fixtures.find(
+      (f) => f.fixture.leagueId === Number(activeLeague),
+    );
+    return match?.fixture.leagueName || "All Leagues";
+  }, [activeLeague, fixtures]);
 
-  // Filter predictions by league
-  const filteredPredictions = useMemo(() => {
-    if (activeLeague === "all") return predictions;
-    return predictions.filter((p) => p.league.slug === activeLeague);
-  }, [activeLeague]);
-
-  // Group by date
-  const groupedPredictions = useMemo(() => {
-    const groups: Record<string, Prediction[]> = {};
-    filteredPredictions.forEach((pred) => {
-      if (!groups[pred.matchDate]) groups[pred.matchDate] = [];
-      groups[pred.matchDate].push(pred);
+  // Group fixtures by date
+  const groupedFixtures = useMemo(() => {
+    const groups: Record<string, ApiEnrichedFixture[]> = {};
+    fixtures.forEach((item) => {
+      const dateKey = item.fixture.date.split("T")[0];
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(item);
     });
     return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
-  }, [filteredPredictions]);
+  }, [fixtures]);
 
   return (
     <div className="h-screen flex flex-col bg-white">
@@ -100,210 +82,171 @@ export default function HomePage() {
                   </motion.h1>
                 </AnimatePresence>
 
-                {/* Week selector */}
-                <div className="flex items-center gap-1" ref={weekDropdownRef}>
-                  <button
-                    onClick={goToPrevWeek}
-                    disabled={currentWeekIndex <= 0}
-                    className="p-1.5 text-[#999] hover:text-[#666] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-
-                  <div className="relative">
-                    <button
-                      onClick={() => setWeekDropdownOpen((prev) => !prev)}
-                      className="flex items-center gap-1.5 h-[34px] px-3 text-[13px] font-medium text-[#1a1a2e] bg-white border border-[#e8e8e8] rounded-[8px] hover:border-[#ccc] transition-colors cursor-pointer"
-                    >
-                      {weekFilter}
-                      <motion.div
-                        animate={{ rotate: weekDropdownOpen ? 180 : 0 }}
-                        transition={{ duration: duration.normal, ease: easing.easeInOut }}
-                      >
-                        <ChevronDown className="w-3.5 h-3.5 text-[#999]" />
-                      </motion.div>
-                    </button>
-
-                    <AnimatePresence>
-                      {weekDropdownOpen && (
-                        <motion.div
-                          variants={dropdownVariants}
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          className="absolute right-0 top-[calc(100%+4px)] z-50 w-[140px] max-h-[280px] overflow-y-auto scrollbar-thin bg-white border border-[#e8e8e8] rounded-[10px] shadow-lg py-1"
-                        >
-                          {weeks.map((week) => (
-                            <button
-                              key={week}
-                              onClick={() => {
-                                setWeekFilter(week);
-                                setWeekDropdownOpen(false);
-                              }}
-                              className={`
-                                w-full text-left px-3 py-2 text-[13px] transition-colors cursor-pointer
-                                ${week === weekFilter
-                                  ? "bg-neutral-50 font-semibold text-[#1a1a2e]"
-                                  : "text-[#666] hover:bg-neutral-50 hover:text-[#1a1a2e]"
-                                }
-                              `}
-                            >
-                              {week}
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  <button
-                    onClick={goToNextWeek}
-                    disabled={currentWeekIndex >= weeks.length - 1}
-                    className="p-1.5 text-[#999] hover:text-[#666] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
+                {/* Date label */}
+                <span className="text-[13px] font-medium text-[#808080]">
+                  {todayData?.date
+                    ? formatDateLong(todayData.date)
+                    : "Today"}
+                </span>
               </div>
             </div>
           </div>
 
+          {/* Loading state */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="w-6 h-6 text-[#1552f0] animate-spin mb-3" />
+              <p className="text-[13px] text-[#999]">Loading predictions...</p>
+            </div>
+          )}
+
+          {/* Error state */}
+          {error && !isLoading && (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="text-[40px] mb-3">&#9888;&#65039;</div>
+              <h3 className="text-[16px] font-semibold text-[#1a1a2e] mb-1">
+                Failed to load predictions
+              </h3>
+              <p className="text-[13px] text-[#999]">
+                Please check your connection and try again.
+              </p>
+            </div>
+          )}
+
           {/* Predictions list grouped by date */}
-          <div className="px-10 pt-2 relative">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeLeague}
-                initial={hasInteracted ? { opacity: 0, filter: "blur(4px)" } : false}
-                animate={{ opacity: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, filter: "blur(4px)" }}
-                transition={{ duration: duration.normal, ease: easing.easeOut }}
-              >
-                {(() => {
-                  let cardCount = 0;
-                  return groupedPredictions.map(([date, preds]) => {
-                    const dateCards = preds.map((pred) => {
-                      const index = cardCount++;
-                      const isBlurred = !isAuthenticated && index >= 2;
+          {!isLoading && !error && (
+            <div className="px-10 pt-2 relative">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeLeague}
+                  initial={hasInteracted ? { opacity: 0, filter: "blur(4px)" } : false}
+                  animate={{ opacity: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, filter: "blur(4px)" }}
+                  transition={{ duration: duration.normal, ease: easing.easeOut }}
+                >
+                  {(() => {
+                    let cardCount = 0;
+                    return groupedFixtures.map(([date, items]) => {
+                      const dateCards = items.map((item) => {
+                        const index = cardCount++;
+                        const isBlurred = !isAuthenticated && index >= 2;
+                        return (
+                          <div
+                            key={item.fixture.id}
+                            className={isBlurred ? "select-none pointer-events-none" : ""}
+                            style={isBlurred ? { filter: "blur(8px)", opacity: 0.6 } : undefined}
+                          >
+                            <PredictionCard data={item} />
+                          </div>
+                        );
+                      });
+
                       return (
-                        <div
-                          key={pred.id}
-                          className={isBlurred ? "select-none pointer-events-none" : ""}
-                          style={isBlurred ? { filter: "blur(8px)", opacity: 0.6 } : undefined}
-                        >
-                          <PredictionCard prediction={pred} />
+                        <div key={date}>
+                          <div className="px-1 py-2.5">
+                            <h2 className="text-[14px] font-bold text-[#1a1a2e]">
+                              {formatDateLong(date)}
+                            </h2>
+                          </div>
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
+                            {dateCards}
+                          </div>
                         </div>
                       );
                     });
+                  })()}
+                </motion.div>
+              </AnimatePresence>
 
-                    return (
-                      <div key={date}>
-                        <div className="px-1 py-2.5">
-                          <h2 className="text-[14px] font-bold text-[#1a1a2e]">
-                            {formatDateLong(date)}
-                          </h2>
-                        </div>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
-                          {dateCards}
-                        </div>
-                      </div>
-                    );
-                  });
-                })()}
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Sign up overlay */}
-            {!isAuthenticated && filteredPredictions.length > 2 && (
-              <div className="sticky bottom-0 left-0 right-0 z-10 -mt-32">
-                <div
-                  className="h-40 pointer-events-none"
-                  style={{
-                    background: "linear-gradient(to bottom, transparent 0%, white 70%)",
-                  }}
-                />
-                <div className="bg-white pb-10 pt-2 flex flex-col items-center text-center">
-                  <div className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#e7edfe] mb-3">
-                    <motion.svg
-                      width="20"
-                      height="20"
-                      viewBox="0 -4 24 28"
-                      fill="none"
-                      stroke="#1552f0"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      {/* Lock body — draws in */}
-                      <motion.rect
-                        x="3" y="11" width="18" height="11" rx="2" ry="2"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 1 }}
-                        transition={{ duration: 0.8, ease: easing.easeOut }}
-                      />
-                      {/* Shackle — draws in, then lifts and drops */}
-                      <motion.g
-                        animate={{
-                          translateY: [0, 0, -3, -3, 0, 0],
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                          times: [0, 0.25, 0.4, 0.6, 0.75, 1],
-                        }}
+              {/* Sign up overlay */}
+              {!isAuthenticated && fixtures.length > 2 && (
+                <div className="sticky bottom-0 left-0 right-0 z-10 -mt-32">
+                  <div
+                    className="h-40 pointer-events-none"
+                    style={{
+                      background: "linear-gradient(to bottom, transparent 0%, white 70%)",
+                    }}
+                  />
+                  <div className="bg-white pb-10 pt-2 flex flex-col items-center text-center">
+                    <div className="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#e7edfe] mb-3">
+                      <motion.svg
+                        width="20"
+                        height="20"
+                        viewBox="0 -4 24 28"
+                        fill="none"
+                        stroke="#1552f0"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        <motion.path
-                          d="M7 11V7a5 5 0 0 1 10 0v4"
+                        <motion.rect
+                          x="3" y="11" width="18" height="11" rx="2" ry="2"
                           initial={{ pathLength: 0, opacity: 0 }}
                           animate={{ pathLength: 1, opacity: 1 }}
-                          transition={{ duration: 0.8, ease: easing.easeOut, delay: 0.3 }}
+                          transition={{ duration: 0.8, ease: easing.easeOut }}
                         />
-                      </motion.g>
-                      {/* Keyhole dot */}
-                      <motion.circle
-                        cx="12" cy="16.5" r="1"
-                        fill="#1552f0"
-                        stroke="none"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.3, delay: 0.9, ease: easing.easeOut }}
-                      />
-                    </motion.svg>
-                  </div>
-                  <h3 className="text-[17px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
-                    Sign up to see all predictions
-                  </h3>
-                  <p className="text-[13px] text-[#808080] mt-1 max-w-[340px]">
-                    Create a free account to unlock every AI prediction, live
-                    odds, and trading insights.
-                  </p>
-                  <div className="flex items-center gap-2.5 mt-4">
-                    <Link
-                      href="/sign-in"
-                      className="flex items-center h-[38px] px-5 text-[13px] font-medium text-[#1a1a2e] bg-[#f5f5f5] rounded-[8px] hover:bg-[#ebebeb] transition-colors"
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      href="/sign-up"
-                      className="flex items-center h-[38px] px-5 text-[13px] font-bold text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors"
-                    >
-                      Sign Up Free
-                    </Link>
+                        <motion.g
+                          animate={{
+                            translateY: [0, 0, -3, -3, 0, 0],
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            times: [0, 0.25, 0.4, 0.6, 0.75, 1],
+                          }}
+                        >
+                          <motion.path
+                            d="M7 11V7a5 5 0 0 1 10 0v4"
+                            initial={{ pathLength: 0, opacity: 0 }}
+                            animate={{ pathLength: 1, opacity: 1 }}
+                            transition={{ duration: 0.8, ease: easing.easeOut, delay: 0.3 }}
+                          />
+                        </motion.g>
+                        <motion.circle
+                          cx="12" cy="16.5" r="1"
+                          fill="#1552f0"
+                          stroke="none"
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ duration: 0.3, delay: 0.9, ease: easing.easeOut }}
+                        />
+                      </motion.svg>
+                    </div>
+                    <h3 className="text-[17px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
+                      Sign up to see all predictions
+                    </h3>
+                    <p className="text-[13px] text-[#808080] mt-1 max-w-[340px]">
+                      Create a free account to unlock every AI prediction and data-driven analysis.
+                    </p>
+                    <div className="flex items-center gap-2.5 mt-4">
+                      <Link
+                        href="/sign-in"
+                        className="flex items-center h-[38px] px-5 text-[13px] font-medium text-[#1a1a2e] bg-[#f5f5f5] rounded-[8px] hover:bg-[#ebebeb] transition-colors"
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/sign-up"
+                        className="flex items-center h-[38px] px-5 text-[13px] font-bold text-white bg-[#1552f0] rounded-[8px] hover:bg-[#1247d6] transition-colors"
+                      >
+                        Sign Up Free
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
-          {filteredPredictions.length === 0 && (
+          {!isLoading && !error && fixtures.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <div className="text-[40px] mb-3">&#9917;</div>
               <h3 className="text-[16px] font-semibold text-[#1a1a2e] mb-1">
-                No predictions found
+                No predictions for today
               </h3>
               <p className="text-[13px] text-[#999]">
-                Try selecting a different league.
+                Check back later or try a different league.
               </p>
             </div>
           )}
