@@ -3,6 +3,8 @@ import type {
   ApiPrediction,
   ApiPaginatedResponse,
   ApiAccuracyStats,
+  ApiDailyBreakdown,
+  ApiPerformanceFeedback,
 } from "@/types/api";
 
 // ─── Query parameter types ─────────────────────────────────────────────
@@ -90,16 +92,17 @@ export async function fetchAccuracyStats(): Promise<ApiAccuracyStats> {
 /** GET /api/predictions/daily-breakdown — daily performance breakdown */
 export async function fetchDailyBreakdown(
   date?: string,
-): Promise<unknown> {
-  const { data } = await apiClient.get("/api/predictions/daily-breakdown", {
-    params: date ? { date } : undefined,
-  });
+): Promise<ApiDailyBreakdown> {
+  const { data } = await apiClient.get<ApiDailyBreakdown>(
+    "/api/predictions/daily-breakdown",
+    { params: date ? { date } : undefined },
+  );
   return data;
 }
 
 /** GET /api/predictions/performance-feedback — bias & calibration analysis */
-export async function fetchPerformanceFeedback(): Promise<unknown> {
-  const { data } = await apiClient.get(
+export async function fetchPerformanceFeedback(): Promise<ApiPerformanceFeedback | null> {
+  const { data } = await apiClient.get<ApiPerformanceFeedback | null>(
     "/api/predictions/performance-feedback",
   );
   return data;

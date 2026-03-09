@@ -6,6 +6,7 @@ import type {
   ApiEnrichedFixture,
   ApiListResponse,
   ApiLineup,
+  ApiOddsComparison,
 } from "@/types/api";
 
 // ─── Query parameter types ─────────────────────────────────────────────
@@ -97,8 +98,12 @@ export async function fetchFixtureOdds(id: number): Promise<unknown> {
 }
 
 /** GET /api/fixtures/:id/odds/compare — odds comparison across bookmakers */
-export async function fetchFixtureOddsCompare(id: number): Promise<unknown> {
-  const { data } = await apiClient.get(`/api/fixtures/${id}/odds/compare`);
+export async function fetchFixtureOddsCompare(
+  id: number,
+): Promise<ApiOddsComparison | null> {
+  const { data } = await apiClient.get<ApiOddsComparison | null>(
+    `/api/fixtures/${id}/odds/compare`,
+  );
   return data;
 }
 

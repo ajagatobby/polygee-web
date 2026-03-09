@@ -418,17 +418,157 @@ export interface ApiRefreshResponse {
 // ─── Accuracy ──────────────────────────────────────────────────────────
 
 export interface ApiAccuracyStats {
-  total: number;
+  totalResolved: number;
   correct: number;
-  incorrect: number;
-  pending: number;
   accuracy: number;
-  avgConfidence: number;
-  avgBrierScore: number | null;
+  avgBrierScore: number;
   byType: Record<
     string,
     { total: number; correct: number; accuracy: number }
   >;
+}
+
+// ─── Daily Breakdown ───────────────────────────────────────────────────
+
+export interface ApiDailyBreakdownPrediction {
+  predictionId: number;
+  fixtureId: number;
+  matchDate: string;
+  matchStatus: string;
+  league: { id: number; name: string | null; country: string | null };
+  homeTeam: { id: number; name: string | null; logo: string | null };
+  awayTeam: { id: number; name: string | null; logo: string | null };
+  predicted: {
+    result: string;
+    homeWinProb: number;
+    drawProb: number;
+    awayWinProb: number;
+    homeGoals: number | null;
+    awayGoals: number | null;
+    confidence: number | null;
+  };
+  actual: {
+    result: string | null;
+    homeGoals: number | null;
+    awayGoals: number | null;
+  };
+  wasCorrect: boolean | null;
+  brierScore: number | null;
+  predictionType: string;
+  polymarketLink: string | null;
+  createdAt: string;
+}
+
+export interface ApiResultBreakdown {
+  predicted: number;
+  correct: number;
+  accuracy: number;
+}
+
+export interface ApiDailyBreakdown {
+  date: string;
+  summary: {
+    total: number;
+    resolved: number;
+    correct: number;
+    incorrect: number;
+    pending: number;
+    accuracy: number;
+    avgConfidence: number;
+    avgBrierScore: number | null;
+  };
+  byResult: {
+    home_win: ApiResultBreakdown;
+    draw: ApiResultBreakdown;
+    away_win: ApiResultBreakdown;
+  };
+  predictions: ApiDailyBreakdownPrediction[];
+}
+
+// ─── Performance Feedback ──────────────────────────────────────────────
+
+export interface ApiConfidenceBucket {
+  total: number;
+  correct: number;
+  accuracy: number;
+}
+
+export interface ApiPerformanceFeedback {
+  totalResolved: number;
+  overallAccuracy: number;
+  avgBrierScore: number;
+  byResult: {
+    home_win: ApiResultBreakdown;
+    draw: ApiResultBreakdown;
+    away_win: ApiResultBreakdown;
+  };
+  avgProbabilities: {
+    homeWinProb: number;
+    drawProb: number;
+    awayWinProb: number;
+  };
+  actualDistribution: {
+    homeWinPct: number;
+    drawPct: number;
+    awayWinPct: number;
+  };
+  biasInsights: string[];
+  confidenceCalibration: {
+    highConfidence: ApiConfidenceBucket;
+    medConfidence: ApiConfidenceBucket;
+    lowConfidence: ApiConfidenceBucket;
+  };
+  leagueBreakdown: Record<
+    string,
+    { total: number; correct: number; accuracy: number }
+  >;
+}
+
+// ─── Odds Comparison ───────────────────────────────────────────────────
+
+export interface ApiBookmakerPrice {
+  bookmakerKey: string;
+  bookmakerName: string;
+  price: number;
+  impliedProbability: number;
+  overround: number | null;
+  lastUpdate: string | null;
+}
+
+export interface ApiValueBetOdds {
+  bookmakerKey: string;
+  bookmakerName: string;
+  price: number;
+  edgePercent: number;
+  consensusProbability: number;
+  impliedProbability: number;
+}
+
+export interface ApiOutcomeComparison {
+  outcome: string;
+  bestPrice: { bookmakerKey: string; bookmakerName: string; price: number } | null;
+  worstPrice: { bookmakerKey: string; bookmakerName: string; price: number } | null;
+  spread: number;
+  bookmakerCount: number;
+  consensusProbability: number | null;
+  valueBet: ApiValueBetOdds | null;
+  bookmakers: ApiBookmakerPrice[];
+}
+
+export interface ApiMarketComparison {
+  marketKey: string;
+  bookmakerCount: number;
+  outcomes: ApiOutcomeComparison[];
+  valueBets: ApiValueBetOdds[];
+}
+
+export interface ApiOddsComparison {
+  fixtureId: number;
+  eventId: string;
+  homeTeam: string;
+  awayTeam: string;
+  commenceTime: string;
+  markets: Record<string, ApiMarketComparison>;
 }
 
 // ─── Paginated responses ───────────────────────────────────────────────

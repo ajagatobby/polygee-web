@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, CalendarDays, Crown } from "lucide-react";
+import { BarChart3, CalendarDays, Crown, Activity } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 const navItems = [
   { href: "/", label: "Predictions", icon: BarChart3 },
   { href: "/fixtures", label: "Fixtures", icon: CalendarDays },
+  { href: "/stats", label: "Stats", icon: Activity },
   { href: "/pricing", label: "Pro", icon: Crown },
 ];
 

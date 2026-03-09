@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, X, Bell, BarChart3, CalendarDays, LogOut, TrendingUp, AlertTriangle, Zap, Shirt, CreditCard, Crown } from "lucide-react";
+import { Search, X, Bell, BarChart3, CalendarDays, LogOut, TrendingUp, AlertTriangle, Zap, Shirt, CreditCard, Crown, Activity } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { duration, easing } from "@/lib/animations";
@@ -16,6 +16,7 @@ import type { AlertType } from "@/types/api";
 const navLinks = [
   { href: "/", label: "Predictions", icon: BarChart3 },
   { href: "/fixtures", label: "Fixtures", icon: CalendarDays },
+  { href: "/stats", label: "Stats", icon: Activity },
 ];
 
 export function Header() {
