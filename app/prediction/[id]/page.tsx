@@ -374,8 +374,8 @@ export default function PredictionDetailPage({
                 </motion.div>
               )}
 
-              {/* Value Bets */}
-              {prediction.valueBets && prediction.valueBets.length > 0 && (
+              {/* Value Bets — only show if there are bets with a meaningful outcome */}
+              {prediction.valueBets && prediction.valueBets.filter((vb) => vb.outcome).length > 0 && (
                 <motion.div
                   className="p-4 bg-white border border-[#f0f0f0] rounded-[12px]"
                   whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
@@ -385,7 +385,7 @@ export default function PredictionDetailPage({
                     Value Bets
                   </div>
                   <div className="space-y-2.5">
-                    {prediction.valueBets.map((vb, i) => (
+                    {prediction.valueBets.filter((vb) => vb.outcome).map((vb, i) => (
                       <div key={i} className="flex items-center justify-between text-[12px]">
                         <div>
                           <span className="font-semibold text-[#1a1a2e]">{vb.outcome}</span>
@@ -400,8 +400,8 @@ export default function PredictionDetailPage({
                             </span>
                           )}
                           {vb.edge != null && (
-                            <span className={`font-bold ${vb.edge > 0 ? "text-[#00c853]" : "text-[#ff3d57]"}`}>
-                              {vb.edge > 0 ? "+" : ""}{(Number(vb.edge) * 100).toFixed(1)}%
+                            <span className={`font-bold ${Number(vb.edge) > 0 ? "text-[#00c853]" : "text-[#ff3d57]"}`}>
+                              {Number(vb.edge) > 0 ? "+" : ""}{(Number(vb.edge) * 100).toFixed(1)}%
                             </span>
                           )}
                         </div>
