@@ -374,16 +374,16 @@ export default function PredictionDetailPage({
                 </motion.div>
               )}
 
-              {/* Value Bets — only show if there are bets with a meaningful outcome */}
-              {prediction.valueBets && prediction.valueBets.filter((vb) => vb.outcome).length > 0 && (
-                <motion.div
-                  className="p-4 bg-white border border-[#f0f0f0] rounded-[12px]"
-                  whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
-                  transition={{ duration: duration.fast, ease: easing.ease }}
-                >
-                  <div className="text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em] mb-3">
-                    Value Bets
-                  </div>
+              {/* Value Bets — always show the card, with empty state fallback */}
+              <motion.div
+                className="p-4 bg-white border border-[#f0f0f0] rounded-[12px]"
+                whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+                transition={{ duration: duration.fast, ease: easing.ease }}
+              >
+                <div className="text-[11px] font-semibold text-[#999] uppercase tracking-[0.05em] mb-3">
+                  Value Bets
+                </div>
+                {prediction.valueBets && prediction.valueBets.filter((vb) => vb.outcome).length > 0 ? (
                   <div className="space-y-2.5">
                     {prediction.valueBets.filter((vb) => vb.outcome).map((vb, i) => (
                       <div key={i} className="flex items-center justify-between text-[12px]">
@@ -408,8 +408,15 @@ export default function PredictionDetailPage({
                       </div>
                     ))}
                   </div>
-                </motion.div>
-              )}
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-4 text-center">
+                    <TrendingUp className="w-5 h-5 text-[#ddd] mb-1.5" />
+                    <p className="text-[11px] text-[#bbb] leading-relaxed">
+                      No value bets identified for this match yet.
+                    </p>
+                  </div>
+                )}
+              </motion.div>
             </div>
           </div>
         )}
