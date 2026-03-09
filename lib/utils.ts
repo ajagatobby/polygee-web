@@ -257,6 +257,31 @@ export function getTeamShortName(
 
 // ─── AI pick helpers ───────────────────────────────────────────────────
 
+/**
+ * Clean research content from Perplexity for proper markdown rendering.
+ * - Removes inline citation markers like [1], [2], [3]
+ * - Ensures proper paragraph spacing (double newlines)
+ * - Trims excessive whitespace
+ */
+export function cleanResearchMarkdown(raw: string): string {
+  return (
+    raw
+      // Remove inline citation markers like [1], [2], [1][3], etc.
+      .replace(/\[(\d+)\]/g, "")
+      // Remove multiple consecutive citation markers with optional spaces
+      .replace(/(\s*\[\d+\])+/g, "")
+      // Ensure headings have blank line before them (## needs \n\n before it)
+      .replace(/([^\n])\n(#{1,3}\s)/g, "$1\n\n$2")
+      // Ensure paragraphs have proper double-newline spacing
+      // (single newline followed by non-whitespace, non-list, non-heading = paragraph break)
+      .replace(/([.!?])\n(?=[A-Z])/g, "$1\n\n")
+      // Collapse 3+ consecutive newlines into 2
+      .replace(/\n{3,}/g, "\n\n")
+      // Trim leading/trailing whitespace
+      .trim()
+  );
+}
+
 /** Determine the AI pick from probabilities */
 export function getAiPick(
   homeWinProb: string | null,

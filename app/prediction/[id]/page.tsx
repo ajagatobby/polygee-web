@@ -33,6 +33,7 @@ import {
   getAiPick,
   getTeamShortName,
   getLeagueLogo,
+  cleanResearchMarkdown,
 } from "@/lib/utils";
 import { useTeamColor } from "@/lib/hooks/use-team-color";
 import { duration, easing } from "@/lib/animations";
@@ -569,9 +570,9 @@ export default function PredictionDetailPage({
               <Lightbulb className="w-4 h-4 text-[#1552f0]" />
               <h3 className="text-[14px] font-bold text-[#1a1a2e]">Research</h3>
             </div>
-            <div className="prose prose-sm max-w-none text-[#666] prose-headings:text-[#1a1a2e] prose-headings:font-bold prose-headings:tracking-[-0.01em] prose-h2:text-[14px] prose-h2:mt-4 prose-h2:mb-2 prose-h3:text-[13px] prose-h3:mt-3 prose-h3:mb-1.5 prose-p:text-[13px] prose-p:leading-relaxed prose-p:my-1.5 prose-strong:text-[#1a1a2e] prose-strong:font-semibold prose-ul:my-1.5 prose-ul:text-[13px] prose-ol:my-1.5 prose-ol:text-[13px] prose-li:my-0.5 prose-li:leading-relaxed prose-hr:my-3 prose-hr:border-[#f0f0f0] prose-table:text-[12px] prose-th:text-[#1a1a2e] prose-th:font-semibold prose-td:py-1.5">
+            <div className="research-prose">
               <Markdown remarkPlugins={[remarkGfm]}>
-                {prediction.researchContext.combinedResearch}
+                {cleanResearchMarkdown(prediction.researchContext.combinedResearch)}
               </Markdown>
             </div>
             {/* Citations */}
@@ -579,17 +580,26 @@ export default function PredictionDetailPage({
               <div className="mt-4 pt-3 border-t border-[#f0f0f0]">
                 <p className="text-[10px] font-semibold text-[#999] uppercase tracking-[0.05em] mb-2">Sources</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {prediction.researchContext.citations.map((url, i) => (
-                    <a
-                      key={i}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[11px] text-[#1552f0] bg-[#1552f0]/5 hover:bg-[#1552f0]/10 px-2 py-1 rounded-md truncate max-w-[250px] transition-colors"
-                    >
-                      {new URL(url).hostname.replace('www.', '')}
-                    </a>
-                  ))}
+                  {prediction.researchContext.citations.map((url, i) => {
+                    let hostname = url;
+                    try {
+                      hostname = new URL(url).hostname.replace('www.', '');
+                    } catch {
+                      // Not a valid URL — show as-is truncated
+                      hostname = url.length > 40 ? url.slice(0, 40) + '...' : url;
+                    }
+                    return (
+                      <a
+                        key={i}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] text-[#1552f0] bg-[#1552f0]/5 hover:bg-[#1552f0]/10 px-2 py-1 rounded-md truncate max-w-[250px] transition-colors"
+                      >
+                        {hostname}
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -603,7 +613,7 @@ export default function PredictionDetailPage({
               <Brain className="w-4 h-4 text-[#1552f0]" />
               <h3 className="text-[14px] font-bold text-[#1a1a2e]">AI Analysis</h3>
             </div>
-            <div className="prose prose-sm max-w-none text-[#666] prose-headings:text-[#1a1a2e] prose-headings:font-bold prose-headings:tracking-[-0.01em] prose-h2:text-[14px] prose-h2:mt-4 prose-h2:mb-2 prose-h3:text-[13px] prose-h3:mt-3 prose-h3:mb-1.5 prose-p:text-[13px] prose-p:leading-relaxed prose-p:my-1.5 prose-strong:text-[#1a1a2e] prose-strong:font-semibold prose-ul:my-1.5 prose-ul:text-[13px] prose-ol:my-1.5 prose-ol:text-[13px] prose-li:my-0.5 prose-li:leading-relaxed prose-hr:my-3 prose-hr:border-[#f0f0f0] prose-table:text-[12px] prose-th:text-[#1a1a2e] prose-th:font-semibold prose-td:py-1.5">
+            <div className="research-prose">
               <Markdown remarkPlugins={[remarkGfm]}>
                 {prediction.detailedAnalysis}
               </Markdown>
