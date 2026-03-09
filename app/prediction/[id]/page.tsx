@@ -17,6 +17,8 @@ import {
   CalendarDays,
 } from "lucide-react";
 import { motion } from "motion/react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Header } from "@/components/layout/header";
 import { PriceButton } from "@/components/ui/price-button";
 import { useFixturePrediction } from "@/lib/hooks/use-fixtures";
@@ -487,8 +489,10 @@ export default function PredictionDetailPage({
               <Brain className="w-4 h-4 text-[#1552f0]" />
               <h3 className="text-[14px] font-bold text-[#1a1a2e]">Detailed Analysis</h3>
             </div>
-            <div className="text-[13px] text-[#666] leading-relaxed whitespace-pre-line">
-              {prediction.detailedAnalysis}
+            <div className="prose prose-sm max-w-none text-[#666] prose-headings:text-[#1a1a2e] prose-headings:font-bold prose-headings:tracking-[-0.01em] prose-h2:text-[14px] prose-h2:mt-4 prose-h2:mb-2 prose-h3:text-[13px] prose-h3:mt-3 prose-h3:mb-1.5 prose-p:text-[13px] prose-p:leading-relaxed prose-p:my-1.5 prose-strong:text-[#1a1a2e] prose-strong:font-semibold prose-ul:my-1.5 prose-ul:text-[13px] prose-ol:my-1.5 prose-ol:text-[13px] prose-li:my-0.5 prose-li:leading-relaxed prose-hr:my-3 prose-hr:border-[#f0f0f0] prose-table:text-[12px] prose-th:text-[#1a1a2e] prose-th:font-semibold prose-td:py-1.5">
+              <Markdown remarkPlugins={[remarkGfm]}>
+                {prediction.detailedAnalysis}
+              </Markdown>
             </div>
           </div>
         )}
