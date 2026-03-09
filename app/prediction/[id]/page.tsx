@@ -51,6 +51,18 @@ export default function PredictionDetailPage({
     !isNaN(fixtureId) && fixtureId > 0,
   );
 
+  // Team colors: hooks must be called unconditionally (before any early returns)
+  const homeColor = useTeamColor(
+    enriched?.homeTeam?.id ?? 0,
+    enriched?.homeTeam?.logo,
+    enriched?.homeTeam?.teamColors?.player?.primary,
+  );
+  const awayColor = useTeamColor(
+    enriched?.awayTeam?.id ?? 0,
+    enriched?.awayTeam?.logo,
+    enriched?.awayTeam?.teamColors?.player?.primary,
+  );
+
   // Auth loading state
   if (authLoading) {
     return (
@@ -159,10 +171,6 @@ export default function PredictionDetailPage({
   const { fixture, homeTeam, awayTeam, prediction } = enriched;
   const isLive = isMatchLive(fixture.status);
   const isFinished = isMatchFinished(fixture.status);
-
-  // Team colors: prefer API kit > logo extraction > static map > default
-  const homeColor = useTeamColor(homeTeam.id, homeTeam.logo, homeTeam.teamColors?.player?.primary);
-  const awayColor = useTeamColor(awayTeam.id, awayTeam.logo, awayTeam.teamColors?.player?.primary);
 
   // Short names (3-letter code or last word)
   const homeShort = getTeamShortName(homeTeam.shortName, homeTeam.name);
