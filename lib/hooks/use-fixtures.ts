@@ -20,6 +20,9 @@ export function useTodayFixtures(params?: TodayFixturesParams) {
   return useQuery({
     queryKey: fixtureKeys.today(params),
     queryFn: () => fetchTodayFixtures(params),
+    staleTime: 2 * 60 * 1000, // 2 min — predictions don't update very often
+    gcTime: 10 * 60 * 1000, // keep in cache 10 min
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -28,6 +31,8 @@ export function useUpcomingFixtures(params?: UpcomingFixturesParams) {
   return useQuery({
     queryKey: fixtureKeys.upcoming(params),
     queryFn: () => fetchUpcomingFixtures(params),
+    staleTime: 5 * 60 * 1000, // 5 min — not time-sensitive
+    gcTime: 15 * 60 * 1000,
   });
 }
 
@@ -37,8 +42,9 @@ export function useLiveFixtures(enabled = true) {
     queryKey: fixtureKeys.live(),
     queryFn: fetchLiveFixtures,
     enabled,
-    refetchInterval: 30_000, // poll every 30 seconds
+    refetchInterval: 30_000,
     staleTime: 10_000,
+    gcTime: 2 * 60 * 1000,
   });
 }
 
@@ -48,15 +54,19 @@ export function useFixtureDetail(id: number, enabled = true) {
     queryKey: fixtureKeys.detail(id),
     queryFn: () => fetchFixtureById(id),
     enabled: enabled && id > 0,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
 
-/** Fixture with AI prediction */
+/** Fixture with AI prediction — used on prediction detail page */
 export function useFixturePrediction(id: number, enabled = true) {
   return useQuery({
     queryKey: fixtureKeys.prediction(id),
     queryFn: () => fetchFixturePrediction(id),
     enabled: enabled && id > 0,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
 
@@ -66,6 +76,8 @@ export function useFixtureLineups(id: number, enabled = true) {
     queryKey: fixtureKeys.lineups(id),
     queryFn: () => fetchFixtureLineups(id),
     enabled: enabled && id > 0,
+    staleTime: 5 * 60 * 1000, // lineups don't change once set
+    gcTime: 30 * 60 * 1000,
   });
 }
 
@@ -75,6 +87,8 @@ export function useFixtureOdds(id: number, enabled = true) {
     queryKey: fixtureKeys.odds(id),
     queryFn: () => fetchFixtureOdds(id),
     enabled: enabled && id > 0,
+    staleTime: 2 * 60 * 1000, // odds can fluctuate
+    gcTime: 10 * 60 * 1000,
   });
 }
 
@@ -84,5 +98,7 @@ export function useFixtureOddsCompare(id: number, enabled = true) {
     queryKey: fixtureKeys.oddsCompare(id),
     queryFn: () => fetchFixtureOddsCompare(id),
     enabled: enabled && id > 0,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }

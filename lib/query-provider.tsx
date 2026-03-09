@@ -8,20 +8,21 @@ function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        // Data is fresh for 30 seconds — no refetch within this window
+        // Default: data is fresh for 30s — individual hooks override this
         staleTime: 30 * 1000,
-        // Keep unused data in cache for 5 minutes
+        // Default: keep unused data in cache for 5 minutes
         gcTime: 5 * 60 * 1000,
-        // Retry once on failure (not on 4xx)
+        // Retry once on failure, skip 4xx
         retry: (failureCount, error) => {
           if (failureCount >= 1) return false;
-          // Don't retry on client errors (4xx)
           const status = (error as { status?: number })?.status;
           if (status && status >= 400 && status < 500) return false;
           return true;
         },
-        // Refetch on window focus (user returns to tab)
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+        // Refetch on window focus and reconnect
         refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
       },
       mutations: {
         retry: false,
