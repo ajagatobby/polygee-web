@@ -579,15 +579,14 @@ export default function PredictionDetailPage({
           awayTeamLogo={awayTeam.logo}
         />
 
-        {/* Injuries & Suspensions */}
+        {/* Injuries & Suspensions — two-column layout like lineups */}
         {(() => {
-          const allInjuries = [
-            ...(homeTeam.injuries ?? []).map((inj) => ({ ...inj, team: homeShort, teamLogo: homeTeam.logo })),
-            ...(awayTeam.injuries ?? []).map((inj) => ({ ...inj, team: awayShort, teamLogo: awayTeam.logo })),
-          ];
-          if (allInjuries.length === 0) return null;
+          const homeInjuries = homeTeam.injuries ?? [];
+          const awayInjuries = awayTeam.injuries ?? [];
+          const totalCount = homeInjuries.length + awayInjuries.length;
+          if (totalCount === 0) return null;
 
-          const getSeverityColor = (type: string | null) => {
+          const getSeverity = (type: string | null) => {
             const t = (type || "").toLowerCase();
             if (t.includes("missing") || t.includes("out")) return { bg: "#ff3d57", text: "#fff", label: "Out" };
             if (t.includes("doubtful")) return { bg: "#ff9100", text: "#fff", label: "Doubtful" };
@@ -595,98 +594,97 @@ export default function PredictionDetailPage({
             return { bg: "#e8e8e8", text: "#666", label: type || "Unknown" };
           };
 
-          const getImpactLevel = (type: string | null) => {
-            const t = (type || "").toLowerCase();
-            if (t.includes("missing") || t.includes("out")) return "High";
-            if (t.includes("doubtful")) return "Medium";
-            if (t.includes("questionable")) return "Low";
-            return "—";
-          };
+          const renderInjuryList = (
+            injuries: typeof homeInjuries,
+            teamName: string,
+            teamLogo: string | null,
+          ) => (
+            <div className="flex-1 min-w-0">
+              {/* Team header */}
+              <div className="flex items-center gap-2.5 mb-3">
+                {teamLogo ? (
+                  <img src={teamLogo} alt={teamName} className="w-6 h-6 object-contain shrink-0" />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-[#e8e8e8] shrink-0" />
+                )}
+                <div className="text-[13px] font-bold text-[#1a1a2e] truncate">
+                  {teamName}
+                </div>
+                {injuries.length > 0 && (
+                  <span className="text-[10px] font-semibold text-[#ff3d57] bg-[#ff3d57]/8 px-1.5 py-0.5 rounded-full ml-auto shrink-0">
+                    {injuries.length}
+                  </span>
+                )}
+              </div>
 
-          const getImpactColor = (type: string | null) => {
-            const t = (type || "").toLowerCase();
-            if (t.includes("missing") || t.includes("out")) return "text-[#ff3d57]";
-            if (t.includes("doubtful")) return "text-[#ff9100]";
-            if (t.includes("questionable")) return "text-[#ffc107]";
-            return "text-[#999]";
-          };
+              {/* Injury list */}
+              {injuries.length > 0 ? (
+                <div className="space-y-0.5">
+                  {injuries.map((inj, i) => {
+                    const severity = getSeverity(inj.type);
+                    return (
+                      <div
+                        key={`${inj.playerId}-${i}`}
+                        className="flex items-center gap-2 py-1.5 px-2 rounded-[6px] hover:bg-[#fafafa] transition-colors"
+                      >
+                        {/* Player photo */}
+                        <img
+                          src={`https://media.api-sports.io/football/players/${inj.playerId}.png`}
+                          alt={inj.playerName}
+                          className="w-6 h-6 rounded-full object-cover bg-[#f0f0f0] shrink-0"
+                          onError={(e) => {
+                            const el = e.target as HTMLImageElement;
+                            el.src = "";
+                            el.className = "w-6 h-6 rounded-full bg-[#e8e8e8] shrink-0";
+                          }}
+                        />
+                        {/* Name + reason */}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[12px] font-medium text-[#1a1a2e] truncate">
+                            {inj.playerName}
+                          </div>
+                          <div className="text-[10px] text-[#999] truncate">
+                            {inj.reason || "Undisclosed"}
+                          </div>
+                        </div>
+                        {/* Status badge */}
+                        <span
+                          className="text-[9px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shrink-0"
+                          style={{ backgroundColor: severity.bg, color: severity.text }}
+                        >
+                          {severity.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-[11px] text-[#ccc]">No injuries reported</p>
+                </div>
+              )}
+            </div>
+          );
 
           return (
             <div className="bg-white border border-[#f0f0f0] rounded-[12px] mb-6 overflow-hidden">
+              {/* Header */}
               <div className="flex items-center gap-2 px-5 pt-5 pb-3">
                 <ShieldAlert className="w-4 h-4 text-[#ff3d57]" />
                 <h3 className="text-[14px] font-bold text-[#1a1a2e]">Injuries & Suspensions</h3>
                 <span className="text-[10px] font-semibold text-[#ff3d57] bg-[#ff3d57]/8 px-2 py-0.5 rounded-full ml-auto">
-                  {allInjuries.length} player{allInjuries.length !== 1 ? "s" : ""}
+                  {totalCount} player{totalCount !== 1 ? "s" : ""}
                 </span>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-t border-b border-[#f0f0f0] bg-[#fafafa]">
-                      <th className="px-5 py-2.5 text-[10px] font-semibold text-[#999] uppercase tracking-wider">Player</th>
-                      <th className="px-3 py-2.5 text-[10px] font-semibold text-[#999] uppercase tracking-wider">Team</th>
-                      <th className="px-3 py-2.5 text-[10px] font-semibold text-[#999] uppercase tracking-wider">Injury / Reason</th>
-                      <th className="px-3 py-2.5 text-[10px] font-semibold text-[#999] uppercase tracking-wider">Status</th>
-                      <th className="px-3 py-2.5 text-[10px] font-semibold text-[#999] uppercase tracking-wider text-center">Impact</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allInjuries.map((inj, i) => {
-                      const severity = getSeverityColor(inj.type);
-                      const impact = getImpactLevel(inj.type);
-                      const impactColor = getImpactColor(inj.type);
-                      return (
-                        <tr key={`${inj.playerId}-${i}`} className="border-b border-[#f5f5f5] last:border-b-0 hover:bg-[#fafafa] transition-colors">
-                          <td className="px-5 py-3">
-                            <div className="flex items-center gap-2.5">
-                              <img
-                                src={`https://media.api-sports.io/football/players/${inj.playerId}.png`}
-                                alt={inj.playerName}
-                                className="w-7 h-7 rounded-full object-cover bg-[#f0f0f0] shrink-0"
-                                onError={(e) => {
-                                  const el = e.target as HTMLImageElement;
-                                  el.src = "";
-                                  el.className = "w-7 h-7 rounded-full bg-[#e8e8e8] shrink-0";
-                                }}
-                              />
-                              <span className="text-[12px] font-medium text-[#1a1a2e] whitespace-nowrap">
-                                {inj.playerName}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-3 py-3">
-                            <div className="flex items-center gap-1.5">
-                              {inj.teamLogo && (
-                                <img src={inj.teamLogo} alt="" className="w-4 h-4 object-contain" />
-                              )}
-                              <span className="text-[11px] text-[#666]">{inj.team}</span>
-                            </div>
-                          </td>
-                          <td className="px-3 py-3">
-                            <span className="text-[12px] text-[#555]">
-                              {inj.reason || "Undisclosed"}
-                            </span>
-                          </td>
-                          <td className="px-3 py-3">
-                            <span
-                              className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
-                              style={{ backgroundColor: severity.bg, color: severity.text }}
-                            >
-                              {severity.label}
-                            </span>
-                          </td>
-                          <td className="px-3 py-3 text-center">
-                            <span className={`text-[11px] font-semibold ${impactColor}`}>
-                              {impact}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+              {/* Two-column panels */}
+              <div className="flex flex-col md:flex-row">
+                <div className="flex-1 px-5 pb-5 md:border-r md:border-[#f0f0f0]">
+                  {renderInjuryList(homeInjuries, homeTeam.name || "Home", homeTeam.logo)}
+                </div>
+                <div className="flex-1 px-5 pb-5 border-t md:border-t-0 border-[#f0f0f0] pt-4 md:pt-0">
+                  {renderInjuryList(awayInjuries, awayTeam.name || "Away", awayTeam.logo)}
+                </div>
               </div>
             </div>
           );

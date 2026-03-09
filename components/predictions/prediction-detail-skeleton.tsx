@@ -235,46 +235,50 @@ export function PredictionDetailSkeleton() {
         </div>
       </div>
 
-      {/* Injuries table skeleton */}
+      {/* Injuries skeleton — two-column like lineups */}
       <div className="bg-white border border-[#f0f0f0] rounded-[12px] mb-6 overflow-hidden">
         <div className="flex items-center gap-2 px-5 pt-5 pb-3">
           <div className="skeleton w-4 h-4 rounded" />
           <div className="skeleton h-4 w-40 rounded" />
           <div className="skeleton h-[18px] w-16 rounded-full ml-auto" />
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-t border-b border-[#f0f0f0] bg-[#fafafa]">
-                <th className="px-5 py-2.5"><div className="skeleton h-2.5 w-12 rounded" /></th>
-                <th className="px-3 py-2.5"><div className="skeleton h-2.5 w-10 rounded" /></th>
-                <th className="px-3 py-2.5"><div className="skeleton h-2.5 w-20 rounded" /></th>
-                <th className="px-3 py-2.5"><div className="skeleton h-2.5 w-12 rounded" /></th>
-                <th className="px-3 py-2.5 text-center"><div className="skeleton h-2.5 w-12 rounded mx-auto" /></th>
-              </tr>
-            </thead>
-            <tbody>
-              {Array.from({ length: 4 }).map((_, i) => (
-                <tr key={i} className="border-b border-[#f5f5f5] last:border-b-0">
-                  <td className="px-5 py-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="skeleton w-7 h-7 rounded-full shrink-0" />
-                      <div className="skeleton h-3 rounded" style={{ width: `${60 + (i * 19) % 40}px` }} />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <div className="skeleton w-4 h-4 rounded-full" />
-                      <div className="skeleton h-3 w-8 rounded" />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3"><div className="skeleton h-3 w-20 rounded" /></td>
-                  <td className="px-3 py-3"><div className="skeleton h-[18px] w-16 rounded-full" /></td>
-                  <td className="px-3 py-3 text-center"><div className="skeleton h-3 w-10 rounded mx-auto" /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex flex-col md:flex-row">
+          {/* Home side */}
+          <div className="flex-1 px-5 pb-5 md:border-r md:border-[#f0f0f0]">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="skeleton w-6 h-6 rounded-full shrink-0" />
+              <div className="skeleton h-3.5 w-24 rounded" />
+              <div className="skeleton h-[18px] w-5 rounded-full ml-auto" />
+            </div>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-2 py-1.5 px-2">
+                <div className="skeleton w-6 h-6 rounded-full shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="skeleton h-3 rounded mb-1" style={{ width: `${70 + (i * 17) % 40}px` }} />
+                  <div className="skeleton h-2.5 w-16 rounded" />
+                </div>
+                <div className="skeleton h-[18px] w-12 rounded-full shrink-0" />
+              </div>
+            ))}
+          </div>
+          {/* Away side */}
+          <div className="flex-1 px-5 pb-5 border-t md:border-t-0 border-[#f0f0f0] pt-4 md:pt-0">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="skeleton w-6 h-6 rounded-full shrink-0" />
+              <div className="skeleton h-3.5 w-28 rounded" />
+              <div className="skeleton h-[18px] w-5 rounded-full ml-auto" />
+            </div>
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-2 py-1.5 px-2">
+                <div className="skeleton w-6 h-6 rounded-full shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="skeleton h-3 rounded mb-1" style={{ width: `${65 + (i * 23) % 45}px` }} />
+                  <div className="skeleton h-2.5 w-14 rounded" />
+                </div>
+                <div className="skeleton h-[18px] w-14 rounded-full shrink-0" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
