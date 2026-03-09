@@ -564,104 +564,118 @@ export default function PredictionDetailPage({
           </div>
         )}
 
-        {/* Injuries */}
-        {((homeTeam.injuries && homeTeam.injuries.length > 0) ||
-          (awayTeam.injuries && awayTeam.injuries.length > 0)) && (
-          <div className="p-5 bg-white border border-[#f0f0f0] rounded-[12px] mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <ShieldAlert className="w-4 h-4 text-[#ff3d57]" />
-              <h3 className="text-[14px] font-bold text-[#1a1a2e]">Injuries & Suspensions</h3>
-            </div>
+        {/* Injuries & Suspensions */}
+        {(() => {
+          const allInjuries = [
+            ...(homeTeam.injuries ?? []).map((inj) => ({ ...inj, team: homeShort, teamLogo: homeTeam.logo })),
+            ...(awayTeam.injuries ?? []).map((inj) => ({ ...inj, team: awayShort, teamLogo: awayTeam.logo })),
+          ];
+          if (allInjuries.length === 0) return null;
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Home team injuries */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  {homeTeam.logo && (
-                    <img src={homeTeam.logo} alt="" className="w-5 h-5 object-contain" />
-                  )}
-                  <span className="text-[12px] font-semibold text-[#999] uppercase tracking-wide">
-                    {homeShort}
-                  </span>
-                  {homeTeam.injuries && homeTeam.injuries.length > 0 && (
-                    <span className="text-[10px] font-medium text-[#ff3d57] bg-[#ff3d57]/8 px-1.5 py-0.5 rounded-full">
-                      {homeTeam.injuries.length}
-                    </span>
-                  )}
-                </div>
-                {homeTeam.injuries && homeTeam.injuries.length > 0 ? (
-                  <div className="space-y-2">
-                    {homeTeam.injuries.map((inj) => (
-                      <div key={inj.playerId} className="flex items-center gap-2.5">
-                        <img
-                          src={`https://media.api-sports.io/football/players/${inj.playerId}.png`}
-                          alt={inj.playerName}
-                          className="w-8 h-8 rounded-full object-cover bg-[#f0f0f0] shrink-0"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = "none";
-                          }}
-                        />
-                        <div className="min-w-0">
-                          <div className="text-[13px] font-medium text-[#1a1a2e] truncate">
-                            {inj.playerName}
-                          </div>
-                          <div className="text-[11px] text-[#999]">
-                            {inj.reason || inj.type || "Unavailable"}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-[12px] text-[#bbb]">No injuries reported</p>
-                )}
+          const getSeverityColor = (type: string | null) => {
+            const t = (type || "").toLowerCase();
+            if (t.includes("missing") || t.includes("out")) return { bg: "#ff3d57", text: "#fff", label: "Out" };
+            if (t.includes("doubtful")) return { bg: "#ff9100", text: "#fff", label: "Doubtful" };
+            if (t.includes("questionable")) return { bg: "#ffc107", text: "#1a1a2e", label: "Questionable" };
+            return { bg: "#e8e8e8", text: "#666", label: type || "Unknown" };
+          };
+
+          const getImpactLevel = (type: string | null) => {
+            const t = (type || "").toLowerCase();
+            if (t.includes("missing") || t.includes("out")) return "High";
+            if (t.includes("doubtful")) return "Medium";
+            if (t.includes("questionable")) return "Low";
+            return "—";
+          };
+
+          const getImpactColor = (type: string | null) => {
+            const t = (type || "").toLowerCase();
+            if (t.includes("missing") || t.includes("out")) return "text-[#ff3d57]";
+            if (t.includes("doubtful")) return "text-[#ff9100]";
+            if (t.includes("questionable")) return "text-[#ffc107]";
+            return "text-[#999]";
+          };
+
+          return (
+            <div className="bg-white border border-[#f0f0f0] rounded-[12px] mb-6 overflow-hidden">
+              <div className="flex items-center gap-2 px-5 pt-5 pb-3">
+                <ShieldAlert className="w-4 h-4 text-[#ff3d57]" />
+                <h3 className="text-[14px] font-bold text-[#1a1a2e]">Injuries & Suspensions</h3>
+                <span className="text-[10px] font-semibold text-[#ff3d57] bg-[#ff3d57]/8 px-2 py-0.5 rounded-full ml-auto">
+                  {allInjuries.length} player{allInjuries.length !== 1 ? "s" : ""}
+                </span>
               </div>
 
-              {/* Away team injuries */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  {awayTeam.logo && (
-                    <img src={awayTeam.logo} alt="" className="w-5 h-5 object-contain" />
-                  )}
-                  <span className="text-[12px] font-semibold text-[#999] uppercase tracking-wide">
-                    {awayShort}
-                  </span>
-                  {awayTeam.injuries && awayTeam.injuries.length > 0 && (
-                    <span className="text-[10px] font-medium text-[#ff3d57] bg-[#ff3d57]/8 px-1.5 py-0.5 rounded-full">
-                      {awayTeam.injuries.length}
-                    </span>
-                  )}
-                </div>
-                {awayTeam.injuries && awayTeam.injuries.length > 0 ? (
-                  <div className="space-y-2">
-                    {awayTeam.injuries.map((inj) => (
-                      <div key={inj.playerId} className="flex items-center gap-2.5">
-                        <img
-                          src={`https://media.api-sports.io/football/players/${inj.playerId}.png`}
-                          alt={inj.playerName}
-                          className="w-8 h-8 rounded-full object-cover bg-[#f0f0f0] shrink-0"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = "none";
-                          }}
-                        />
-                        <div className="min-w-0">
-                          <div className="text-[13px] font-medium text-[#1a1a2e] truncate">
-                            {inj.playerName}
-                          </div>
-                          <div className="text-[11px] text-[#999]">
-                            {inj.reason || inj.type || "Unavailable"}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-[12px] text-[#bbb]">No injuries reported</p>
-                )}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-t border-b border-[#f0f0f0] bg-[#fafafa]">
+                      <th className="px-5 py-2.5 text-[10px] font-semibold text-[#999] uppercase tracking-wider">Player</th>
+                      <th className="px-3 py-2.5 text-[10px] font-semibold text-[#999] uppercase tracking-wider">Team</th>
+                      <th className="px-3 py-2.5 text-[10px] font-semibold text-[#999] uppercase tracking-wider">Injury / Reason</th>
+                      <th className="px-3 py-2.5 text-[10px] font-semibold text-[#999] uppercase tracking-wider">Status</th>
+                      <th className="px-3 py-2.5 text-[10px] font-semibold text-[#999] uppercase tracking-wider text-center">Impact</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allInjuries.map((inj, i) => {
+                      const severity = getSeverityColor(inj.type);
+                      const impact = getImpactLevel(inj.type);
+                      const impactColor = getImpactColor(inj.type);
+                      return (
+                        <tr key={`${inj.playerId}-${i}`} className="border-b border-[#f5f5f5] last:border-b-0 hover:bg-[#fafafa] transition-colors">
+                          <td className="px-5 py-3">
+                            <div className="flex items-center gap-2.5">
+                              <img
+                                src={`https://media.api-sports.io/football/players/${inj.playerId}.png`}
+                                alt={inj.playerName}
+                                className="w-7 h-7 rounded-full object-cover bg-[#f0f0f0] shrink-0"
+                                onError={(e) => {
+                                  const el = e.target as HTMLImageElement;
+                                  el.src = "";
+                                  el.className = "w-7 h-7 rounded-full bg-[#e8e8e8] shrink-0";
+                                }}
+                              />
+                              <span className="text-[12px] font-medium text-[#1a1a2e] whitespace-nowrap">
+                                {inj.playerName}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-3 py-3">
+                            <div className="flex items-center gap-1.5">
+                              {inj.teamLogo && (
+                                <img src={inj.teamLogo} alt="" className="w-4 h-4 object-contain" />
+                              )}
+                              <span className="text-[11px] text-[#666]">{inj.team}</span>
+                            </div>
+                          </td>
+                          <td className="px-3 py-3">
+                            <span className="text-[12px] text-[#555]">
+                              {inj.reason || "Undisclosed"}
+                            </span>
+                          </td>
+                          <td className="px-3 py-3">
+                            <span
+                              className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
+                              style={{ backgroundColor: severity.bg, color: severity.text }}
+                            >
+                              {severity.label}
+                            </span>
+                          </td>
+                          <td className="px-3 py-3 text-center">
+                            <span className={`text-[11px] font-semibold ${impactColor}`}>
+                              {impact}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Combined Research */}
         {prediction?.researchContext?.combinedResearch && (
