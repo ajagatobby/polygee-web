@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { QueryProvider } from "@/lib/query-provider";
 import { AuthProvider } from "@/lib/auth-context";
+import { SearchProvider } from "@/lib/search-context";
 import "./globals.css";
 
 const inter = Inter({
@@ -52,7 +53,9 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <QueryProvider>
           <AuthProvider>
-            {children}
+            <SearchProvider>
+              {children}
+            </SearchProvider>
           </AuthProvider>
         </QueryProvider>
       </body>

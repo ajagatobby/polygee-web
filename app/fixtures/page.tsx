@@ -11,6 +11,7 @@ import { Tabs } from "@/components/ui/tabs";
 import { useTodayFixtures, useUpcomingFixtures } from "@/lib/hooks/use-fixtures";
 import { useLiveSocket } from "@/lib/hooks/use-live-socket";
 import { dropdownVariants, duration, easing } from "@/lib/animations";
+import { useSearch } from "@/lib/search-context";
 import { formatDateLong, isMatchLive, isMatchFinished, isMatchUpcoming } from "@/lib/utils";
 import type { ApiEnrichedFixture } from "@/types/api";
 
@@ -40,6 +41,7 @@ export default function FixturesPage() {
   const [activeLeague, setActiveLeague] = useState<string>("all");
   const [activeFilter, setActiveFilter] = useState<FixtureFilter>("all");
   const [hasInteracted, setHasInteracted] = useState(false);
+  const { query: searchQuery } = useSearch();
 
   const dateOptions = useMemo(() => getDateOptions(), []);
   const [selectedDate, setSelectedDate] = useState(dateOptions[0].value);
@@ -88,7 +90,20 @@ export default function FixturesPage() {
   const activeQuery = isToday ? todayQuery : upcomingQuery;
   const { data: fixturesResponse, isLoading, error } = activeQuery;
 
-  const allFixtures = fixturesResponse?.data ?? [];
+  const rawFixtures = fixturesResponse?.data ?? [];
+
+  // Client-side search filter by team name
+  const allFixtures = useMemo(() => {
+    if (!searchQuery.trim()) return rawFixtures;
+    const q = searchQuery.toLowerCase().trim();
+    return rawFixtures.filter(
+      (item) =>
+        (item.homeTeam.name ?? "").toLowerCase().includes(q) ||
+        (item.awayTeam.name ?? "").toLowerCase().includes(q) ||
+        (item.homeTeam.shortName ?? "").toLowerCase().includes(q) ||
+        (item.awayTeam.shortName ?? "").toLowerCase().includes(q),
+    );
+  }, [rawFixtures, searchQuery]);
 
   // Client-side status filtering
   const filteredFixtures = useMemo(() => {
@@ -322,7 +337,9 @@ export default function FixturesPage() {
                     No fixtures found
                   </h3>
                   <p className="text-[13px] text-[#999]">
-                    Try selecting a different date or league.
+                    {searchQuery.trim()
+                      ? `No matches found for "${searchQuery.trim()}". Try a different search.`
+                      : "Try selecting a different date or league."}
                   </p>
                 </div>
               )}

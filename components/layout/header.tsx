@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, BarChart3, CalendarDays, LogOut, TrendingUp, AlertTriangle, Zap, Shirt, CreditCard, Crown } from "lucide-react";
-import { useState, useRef } from "react";
+import { Search, X, Bell, BarChart3, CalendarDays, LogOut, TrendingUp, AlertTriangle, Zap, Shirt, CreditCard, Crown } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { duration, easing } from "@/lib/animations";
 import { useAuth } from "@/lib/auth-context";
 import { useUnreadAlerts, useAcknowledgeAlert, useAcknowledgeAllAlerts } from "@/lib/hooks/use-alerts";
 import { timeAgo } from "@/lib/utils";
 import { Logo } from "@/components/ui/logo";
+import { useSearch } from "@/lib/search-context";
 import type { AlertType } from "@/types/api";
 
 const navLinks = [
@@ -20,6 +21,9 @@ const navLinks = [
 export function Header() {
   const pathname = usePathname();
   const { isAuthenticated, isPro, signOut, firebaseUser } = useAuth();
+  const { query: searchQuery, setQuery: setSearchQuery, clear: clearSearch } = useSearch();
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -78,9 +82,36 @@ export function Header() {
           </div>
         </Link>
 
-        {/* Nav links — centered, only when authenticated */}
+        {/* Search */}
+        <div className="hidden sm:block flex-1 max-w-[360px]">
+          <div className="relative">
+            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${searchFocused ? "text-[#1552f0]" : "text-[#999]"}`} />
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search teams..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              className="w-full h-[36px] pl-9 pr-8 text-[13px] bg-[#f5f5f5] rounded-[8px] text-[#1a1a2e] placeholder:text-[#999] focus:outline-none focus:ring-1 focus:ring-[#1552f0]/30 focus:bg-white transition-all"
+              aria-label="Search teams"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => { clearSearch(); searchInputRef.current?.focus(); }}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-[#999] hover:text-[#666] transition-colors cursor-pointer"
+                aria-label="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Nav links — only when authenticated */}
         {isAuthenticated && (
-          <nav className="hidden sm:flex items-center gap-1 ml-auto mr-auto">
+          <nav className="hidden sm:flex items-center gap-1">
             {navLinks.map((link) => {
               const isActive =
                 link.href === "/"

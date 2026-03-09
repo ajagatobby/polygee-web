@@ -12,6 +12,7 @@ import { useTodayFixtures } from "@/lib/hooks/use-fixtures";
 import { useLiveSocket } from "@/lib/hooks/use-live-socket";
 import { dropdownVariants, duration, easing } from "@/lib/animations";
 import { useAuth } from "@/lib/auth-context";
+import { useSearch } from "@/lib/search-context";
 import { formatDateLong } from "@/lib/utils";
 import type { ApiEnrichedFixture } from "@/types/api";
 
@@ -19,6 +20,7 @@ export default function HomePage() {
   const [activeLeague, setActiveLeague] = useState<string>("all");
   const [hasInteracted, setHasInteracted] = useState(false);
   const { isAuthenticated, isPro } = useAuth();
+  const { query: searchQuery } = useSearch();
 
   // Convert activeLeague to leagueId filter (if not "all")
   const leagueIdFilter = activeLeague !== "all" ? Number(activeLeague) : undefined;
@@ -28,7 +30,20 @@ export default function HomePage() {
     leagueIdFilter ? { leagueId: leagueIdFilter } : undefined,
   );
 
-  const fixtures = todayData?.data ?? [];
+  const rawFixtures = todayData?.data ?? [];
+
+  // Client-side search filter by team name
+  const fixtures = useMemo(() => {
+    if (!searchQuery.trim()) return rawFixtures;
+    const q = searchQuery.toLowerCase().trim();
+    return rawFixtures.filter(
+      (item) =>
+        (item.homeTeam.name ?? "").toLowerCase().includes(q) ||
+        (item.awayTeam.name ?? "").toLowerCase().includes(q) ||
+        (item.homeTeam.shortName ?? "").toLowerCase().includes(q) ||
+        (item.awayTeam.shortName ?? "").toLowerCase().includes(q),
+    );
+  }, [rawFixtures, searchQuery]);
 
   // Connect to live WebSocket — patches TanStack Query cache for real-time score updates
   useLiveSocket({ enabled: true });
@@ -273,10 +288,12 @@ export default function HomePage() {
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <div className="text-[40px] mb-3">&#9917;</div>
               <h3 className="text-[16px] font-semibold text-[#1a1a2e] mb-1">
-                No predictions for today
+                {searchQuery.trim() ? "No matches found" : "No predictions for today"}
               </h3>
               <p className="text-[13px] text-[#999]">
-                Check back later or try a different league.
+                {searchQuery.trim()
+                  ? `No results for "${searchQuery.trim()}". Try a different team name.`
+                  : "Check back later or try a different league."}
               </p>
             </div>
           )}
