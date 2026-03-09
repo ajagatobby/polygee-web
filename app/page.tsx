@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { PredictionCard } from "@/components/predictions/prediction-card";
+import { PredictionCardSkeleton } from "@/components/predictions/prediction-card-skeleton";
 import { useTodayFixtures } from "@/lib/hooks/use-fixtures";
 import { useLiveSocket } from "@/lib/hooks/use-live-socket";
 import { dropdownVariants, duration, easing } from "@/lib/animations";
@@ -116,11 +117,17 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Loading state */}
+          {/* Loading state — skeleton cards */}
           {isLoading && (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="w-6 h-6 text-[#1552f0] animate-spin mb-3" />
-              <p className="text-[13px] text-[#999]">Loading predictions...</p>
+            <div className="px-4 md:px-6 lg:px-10 pt-2">
+              <div className="px-1 py-2.5">
+                <div className="skeleton h-4 w-32 rounded" />
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <PredictionCardSkeleton key={i} />
+                ))}
+              </div>
             </div>
           )}
 

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { FixtureCard } from "@/components/fixtures/fixture-card";
+import { FixtureCardSkeleton } from "@/components/fixtures/fixture-card-skeleton";
 import { Tabs } from "@/components/ui/tabs";
 import { useTodayFixtures, useUpcomingFixtures } from "@/lib/hooks/use-fixtures";
 import { useLiveSocket } from "@/lib/hooks/use-live-socket";
@@ -269,11 +270,14 @@ export default function FixturesPage() {
             />
           </div>
 
-          {/* Loading state */}
+          {/* Loading state — skeleton grid */}
           {isLoading && (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="w-6 h-6 text-[#1552f0] animate-spin mb-3" />
-              <p className="text-[13px] text-[#999]">Loading fixtures...</p>
+            <div className="px-4 md:px-6 lg:px-10 pt-4 pb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <FixtureCardSkeleton key={i} />
+                ))}
+              </div>
             </div>
           )}
 

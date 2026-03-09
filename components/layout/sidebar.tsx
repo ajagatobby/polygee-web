@@ -1,10 +1,11 @@
 "use client";
 
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { useLeagues } from "@/lib/hooks/use-leagues";
+import { SidebarLeaguesSkeleton } from "@/components/layout/sidebar-skeleton";
 import { sidebarExpand, duration, easing } from "@/lib/animations";
 
 interface SidebarProps {
@@ -52,12 +53,8 @@ export function Sidebar({ activeLeague, onLeagueChange }: SidebarProps) {
         </div>
       </button>
 
-      {/* Loading state */}
-      {isLoading && (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-4 h-4 text-[#999] animate-spin" />
-        </div>
-      )}
+      {/* Loading state — skeleton */}
+      {isLoading && <SidebarLeaguesSkeleton />}
 
       {/* Soccer parent with collapsible leagues */}
       {!isLoading && leagues.length > 0 && (
