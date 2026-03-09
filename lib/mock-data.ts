@@ -6,7 +6,7 @@ export const leagues: League[] = [
   { id: "ll", name: "La Liga", country: "Spain", logo: "https://media.api-sports.io/football/leagues/140.png", slug: "la-liga" },
   { id: "bl", name: "Bundesliga", country: "Germany", logo: "https://media.api-sports.io/football/leagues/78.png", slug: "bundesliga" },
   { id: "sa", name: "Serie A", country: "Italy", logo: "https://media.api-sports.io/football/leagues/135.png", slug: "serie-a" },
-  { id: "l1", name: "Ligue 1", country: "France", logo: "https://media.api-sports.io/football/leagues/61.png", slug: "ligue-1" },
+  { id: "l1", name: "Ligue 1", country: "France", logo: "/leagues/ligue-1.png", slug: "ligue-1" },
   { id: "ucl", name: "Champions League", country: "Europe", logo: "https://media.api-sports.io/football/leagues/2.png", slug: "champions-league" },
 ];
 
@@ -32,7 +32,7 @@ export const sidebarLeagues: SidebarLeague[] = [
       { id: "ll", name: "La Liga", slug: "la-liga", logo: "https://media.api-sports.io/football/leagues/140.png", count: 53 },
       { id: "bl", name: "Bundesliga", slug: "bundesliga", logo: "https://media.api-sports.io/football/leagues/78.png", count: 48 },
       { id: "sa", name: "Serie A", slug: "serie-a", logo: "https://media.api-sports.io/football/leagues/135.png", count: 41 },
-      { id: "l1", name: "Ligue 1", slug: "ligue-1", logo: "https://media.api-sports.io/football/leagues/61.png", count: 48 },
+      { id: "l1", name: "Ligue 1", slug: "ligue-1", logo: "/leagues/ligue-1.png", count: 48 },
       { id: "mls", name: "MLS", slug: "mls", logo: "https://media.api-sports.io/football/leagues/253.png", count: 90 },
       { id: "pl", name: "EPL", slug: "premier-league", logo: "https://media.api-sports.io/football/leagues/39.png", count: 20 },
       { id: "ere", name: "Eredivisie", slug: "eredivisie", logo: "https://media.api-sports.io/football/leagues/88.png", count: 34 },
