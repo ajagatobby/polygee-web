@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Bell, BarChart3, CalendarDays, Target, Settings, Trophy, HelpCircle, LogOut, CircleDot, ClipboardList, TrendingUp } from "lucide-react";
+import { Search, Bell, BarChart3, CalendarDays, Target, Settings, Trophy, HelpCircle, LogOut, CircleDot, ClipboardList, TrendingUp, AlertTriangle, Zap, Users, Shirt } from "lucide-react";
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { duration, easing } from "@/lib/animations";
 import { ConnectPolymarketModal } from "@/components/ui/connect-polymarket-modal";
 import { DepositModal } from "@/components/ui/deposit-modal";
 import { useAuth } from "@/lib/auth-context";
+import { useUnreadAlerts, useAcknowledgeAlert, useAcknowledgeAllAlerts } from "@/lib/hooks/use-alerts";
+import { timeAgo } from "@/lib/utils";
+import type { AlertType } from "@/types/api";
 
 const navLinks = [
   { href: "/", label: "Predictions", icon: BarChart3 },
@@ -50,13 +53,23 @@ export function Header() {
     notifTimeoutRef.current = setTimeout(() => setNotifOpen(false), 150);
   };
 
-  const notifications = [
-    { id: 1, title: "Trade Executed", description: "Bought 'Arsenal Win' at $0.62", time: "2m ago", unread: true },
-    { id: 2, title: "Price Alert", description: "Liverpool vs Chelsea moved to $0.74", time: "15m ago", unread: true },
-    { id: 3, title: "Prediction Settled", description: "Man City vs Tottenham resolved — You won!", time: "1h ago", unread: false },
-    { id: 4, title: "New Market", description: "Champions League Final now available", time: "3h ago", unread: false },
-    { id: 5, title: "Budget Updated", description: "Trading budget set to $50.00", time: "5h ago", unread: false },
-  ];
+  // Real alerts from API
+  const { data: unreadData } = useUnreadAlerts(isAuthenticated);
+  const acknowledgeOne = useAcknowledgeAlert();
+  const acknowledgeAll = useAcknowledgeAllAlerts();
+
+  const alerts = unreadData?.data ?? [];
+  const unreadCount = unreadData?.count ?? 0;
+
+  const alertTypeIcon = (type: AlertType) => {
+    switch (type) {
+      case "high_confidence": return Zap;
+      case "value_bet": return TrendingUp;
+      case "live_event": return AlertTriangle;
+      case "lineup_change": return Shirt;
+      default: return Bell;
+    }
+  };
 
   return (
     <>
@@ -165,8 +178,10 @@ export function Header() {
               >
                 <button className="relative p-2 text-[#666] hover:text-[#333] transition-colors cursor-pointer">
                   <Bell className="w-[18px] h-[18px]" />
-                  {notifications.some((n) => n.unread) && (
-                    <span className="absolute top-1.5 right-1.5 w-[7px] h-[7px] rounded-full bg-[#ff3b30] ring-2 ring-white" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 min-w-[16px] h-[16px] flex items-center justify-center rounded-full bg-[#ff3b30] ring-2 ring-white text-[9px] font-bold text-white px-1">
+                      {unreadCount > 99 ? "99+" : unreadCount}
+                    </span>
                   )}
                 </button>
 
@@ -177,62 +192,97 @@ export function Header() {
                       animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                       exit={{ opacity: 0, scale: 0.97, y: -4, filter: "blur(4px)" }}
                       transition={{ duration: duration.normal, ease: easing.easeOut }}
-                      className="absolute right-0 top-[calc(100%+8px)] w-[320px] bg-white border border-[#e8e8e8] rounded-[12px] shadow-lg overflow-hidden z-50"
+                      className="absolute right-0 top-[calc(100%+8px)] w-[340px] bg-white border border-[#e8e8e8] rounded-[12px] shadow-lg overflow-hidden z-50"
                       style={{ transformOrigin: "top right" }}
                     >
                       {/* Header */}
                       <div className="flex items-center justify-between px-4 pt-4 pb-2.5">
-                        <h3 className="text-[14px] font-bold text-[#1a1a2e]">Notifications</h3>
-                        {notifications.some((n) => n.unread) && (
-                          <span className="text-[11px] font-medium text-[#1552f0] cursor-pointer hover:underline">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-[14px] font-bold text-[#1a1a2e]">Notifications</h3>
+                          {unreadCount > 0 && (
+                            <span className="flex items-center justify-center min-w-[20px] h-[20px] rounded-full bg-[#ff3b30] text-white text-[10px] font-bold px-1.5">
+                              {unreadCount}
+                            </span>
+                          )}
+                        </div>
+                        {unreadCount > 0 && (
+                          <button
+                            onClick={() => acknowledgeAll.mutate()}
+                            disabled={acknowledgeAll.isPending}
+                            className="text-[11px] font-medium text-[#1552f0] cursor-pointer hover:underline disabled:opacity-50"
+                          >
                             Mark all read
-                          </span>
+                          </button>
                         )}
                       </div>
 
                       <div className="h-px bg-[#f0f0f0]" />
 
                       {/* Notification list */}
-                      <div className="max-h-[320px] overflow-y-auto scrollbar-thin">
-                        {notifications.map((notif) => (
-                          <button
-                            key={notif.id}
-                            className={`
-                              flex gap-3 w-full px-4 py-3 text-left transition-colors cursor-pointer
-                              ${notif.unread ? "bg-[#f7f9ff] hover:bg-[#eef2ff]" : "hover:bg-[#f7f7f7]"}
-                            `}
-                          >
-                            {/* Unread dot */}
-                            <div className="shrink-0 pt-1.5">
-                              <div
-                                className={`w-[6px] h-[6px] rounded-full ${
-                                  notif.unread ? "bg-[#1552f0]" : "bg-transparent"
-                                }`}
-                              />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className={`text-[13px] text-[#1a1a2e] truncate ${notif.unread ? "font-semibold" : "font-medium"}`}>
-                                {notif.title}
-                              </p>
-                              <p className="text-[12px] text-[#808080] mt-0.5 truncate">
-                                {notif.description}
-                              </p>
-                            </div>
-                            <span className="shrink-0 text-[11px] text-[#bbb] pt-0.5">
-                              {notif.time}
-                            </span>
-                          </button>
-                        ))}
+                      <div className="max-h-[360px] overflow-y-auto scrollbar-thin">
+                        {alerts.length === 0 ? (
+                          <div className="px-4 py-8 text-center">
+                            <Bell className="w-6 h-6 text-[#ccc] mx-auto mb-2" />
+                            <p className="text-[13px] text-[#999]">No notifications</p>
+                          </div>
+                        ) : (
+                          alerts.map((alert) => {
+                            const Icon = alertTypeIcon(alert.type);
+                            const severityColor =
+                              alert.severity === "critical" ? "#ff3b30"
+                              : alert.severity === "high" ? "#ff9100"
+                              : alert.severity === "medium" ? "#1552f0"
+                              : "#808080";
+
+                            return (
+                              <button
+                                key={alert.id}
+                                onClick={() => {
+                                  if (!alert.acknowledged) {
+                                    acknowledgeOne.mutate(alert.id);
+                                  }
+                                }}
+                                className={`
+                                  flex gap-3 w-full px-4 py-3 text-left transition-colors cursor-pointer
+                                  ${!alert.acknowledged ? "bg-[#f7f9ff] hover:bg-[#eef2ff]" : "hover:bg-[#f7f7f7]"}
+                                `}
+                              >
+                                {/* Icon */}
+                                <div className="shrink-0 mt-0.5">
+                                  <div
+                                    className="w-[28px] h-[28px] rounded-full flex items-center justify-center"
+                                    style={{ backgroundColor: severityColor + "14" }}
+                                  >
+                                    <Icon className="w-3.5 h-3.5" style={{ color: severityColor }} />
+                                  </div>
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className={`text-[13px] text-[#1a1a2e] truncate ${!alert.acknowledged ? "font-semibold" : "font-medium"}`}>
+                                    {alert.title}
+                                  </p>
+                                  <p className="text-[12px] text-[#808080] mt-0.5 line-clamp-2">
+                                    {alert.message}
+                                  </p>
+                                </div>
+                                <span className="shrink-0 text-[11px] text-[#bbb] pt-0.5 whitespace-nowrap">
+                                  {timeAgo(alert.createdAt)}
+                                </span>
+                              </button>
+                            );
+                          })
+                        )}
                       </div>
 
-                      <div className="h-px bg-[#f0f0f0]" />
-
-                      {/* Footer */}
-                      <div className="px-4 py-2.5">
-                        <button className="w-full text-center text-[12px] font-medium text-[#1552f0] hover:underline cursor-pointer">
-                          View all notifications
-                        </button>
-                      </div>
+                      {alerts.length > 0 && (
+                        <>
+                          <div className="h-px bg-[#f0f0f0]" />
+                          <div className="px-4 py-2.5">
+                            <button className="w-full text-center text-[12px] font-medium text-[#1552f0] hover:underline cursor-pointer">
+                              View all notifications
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
