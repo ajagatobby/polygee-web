@@ -570,7 +570,7 @@ export default function PredictionDetailPage({
               <Lightbulb className="w-4 h-4 text-[#1552f0]" />
               <h3 className="text-[14px] font-bold text-[#1a1a2e]">Research</h3>
             </div>
-            <div className="research-prose">
+            <div className="prose prose-sm max-w-none research-prose">
               <Markdown remarkPlugins={[remarkGfm]}>
                 {cleanResearchMarkdown(prediction.researchContext.combinedResearch)}
               </Markdown>
@@ -613,7 +613,7 @@ export default function PredictionDetailPage({
               <Brain className="w-4 h-4 text-[#1552f0]" />
               <h3 className="text-[14px] font-bold text-[#1a1a2e]">AI Analysis</h3>
             </div>
-            <div className="research-prose">
+            <div className="prose prose-sm max-w-none research-prose">
               <Markdown remarkPlugins={[remarkGfm]}>
                 {prediction.detailedAnalysis}
               </Markdown>
