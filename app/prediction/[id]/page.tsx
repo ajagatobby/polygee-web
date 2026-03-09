@@ -15,6 +15,7 @@ import {
   Loader2,
   Gavel,
   CalendarDays,
+  ShieldAlert,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Markdown from "react-markdown";
@@ -560,6 +561,105 @@ export default function PredictionDetailPage({
                 </ul>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Injuries */}
+        {((homeTeam.injuries && homeTeam.injuries.length > 0) ||
+          (awayTeam.injuries && awayTeam.injuries.length > 0)) && (
+          <div className="p-5 bg-white border border-[#f0f0f0] rounded-[12px] mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <ShieldAlert className="w-4 h-4 text-[#ff3d57]" />
+              <h3 className="text-[14px] font-bold text-[#1a1a2e]">Injuries & Suspensions</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Home team injuries */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  {homeTeam.logo && (
+                    <img src={homeTeam.logo} alt="" className="w-5 h-5 object-contain" />
+                  )}
+                  <span className="text-[12px] font-semibold text-[#999] uppercase tracking-wide">
+                    {homeShort}
+                  </span>
+                  {homeTeam.injuries && homeTeam.injuries.length > 0 && (
+                    <span className="text-[10px] font-medium text-[#ff3d57] bg-[#ff3d57]/8 px-1.5 py-0.5 rounded-full">
+                      {homeTeam.injuries.length}
+                    </span>
+                  )}
+                </div>
+                {homeTeam.injuries && homeTeam.injuries.length > 0 ? (
+                  <div className="space-y-2">
+                    {homeTeam.injuries.map((inj) => (
+                      <div key={inj.playerId} className="flex items-center gap-2.5">
+                        <img
+                          src={`https://media.api-sports.io/football/players/${inj.playerId}.png`}
+                          alt={inj.playerName}
+                          className="w-8 h-8 rounded-full object-cover bg-[#f0f0f0] shrink-0"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = "none";
+                          }}
+                        />
+                        <div className="min-w-0">
+                          <div className="text-[13px] font-medium text-[#1a1a2e] truncate">
+                            {inj.playerName}
+                          </div>
+                          <div className="text-[11px] text-[#999]">
+                            {inj.reason || inj.type || "Unavailable"}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[12px] text-[#bbb]">No injuries reported</p>
+                )}
+              </div>
+
+              {/* Away team injuries */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  {awayTeam.logo && (
+                    <img src={awayTeam.logo} alt="" className="w-5 h-5 object-contain" />
+                  )}
+                  <span className="text-[12px] font-semibold text-[#999] uppercase tracking-wide">
+                    {awayShort}
+                  </span>
+                  {awayTeam.injuries && awayTeam.injuries.length > 0 && (
+                    <span className="text-[10px] font-medium text-[#ff3d57] bg-[#ff3d57]/8 px-1.5 py-0.5 rounded-full">
+                      {awayTeam.injuries.length}
+                    </span>
+                  )}
+                </div>
+                {awayTeam.injuries && awayTeam.injuries.length > 0 ? (
+                  <div className="space-y-2">
+                    {awayTeam.injuries.map((inj) => (
+                      <div key={inj.playerId} className="flex items-center gap-2.5">
+                        <img
+                          src={`https://media.api-sports.io/football/players/${inj.playerId}.png`}
+                          alt={inj.playerName}
+                          className="w-8 h-8 rounded-full object-cover bg-[#f0f0f0] shrink-0"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = "none";
+                          }}
+                        />
+                        <div className="min-w-0">
+                          <div className="text-[13px] font-medium text-[#1a1a2e] truncate">
+                            {inj.playerName}
+                          </div>
+                          <div className="text-[11px] text-[#999]">
+                            {inj.reason || inj.type || "Unavailable"}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[12px] text-[#bbb]">No injuries reported</p>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
