@@ -12,6 +12,7 @@ import {
   getStatusLabel,
   getAiPick,
   getTeamColor,
+  getTeamShortName,
 } from "@/lib/utils";
 import { duration, easing } from "@/lib/animations";
 
@@ -30,6 +31,10 @@ export function PredictionCard({ data }: PredictionCardProps) {
   const drawProb = probToPercent(prediction?.drawProb);
   const awayProb = probToPercent(prediction?.awayWinProb);
 
+  // Team colors: prefer API kit colors, then static map
+  const homeColor = getTeamColor(homeTeam.id, homeTeam.teamColors?.player?.primary);
+  const awayColor = getTeamColor(awayTeam.id, awayTeam.teamColors?.player?.primary);
+
   // AI pick (highest probability outcome)
   const aiPick = prediction
     ? getAiPick(
@@ -41,23 +46,23 @@ export function PredictionCard({ data }: PredictionCardProps) {
 
   const aiPickLabel =
     aiPick?.team === "home"
-      ? (homeTeam.name?.split(" ").pop() || "Home")
+      ? getTeamShortName(homeTeam.shortName, homeTeam.name)
       : aiPick?.team === "away"
-        ? (awayTeam.name?.split(" ").pop() || "Away")
+        ? getTeamShortName(awayTeam.shortName, awayTeam.name)
         : "Draw";
 
   const aiPickColor =
     aiPick?.team === "home"
-      ? getTeamColor(homeTeam.id)
+      ? homeColor
       : aiPick?.team === "away"
-        ? getTeamColor(awayTeam.id)
+        ? awayColor
         : "#808080";
 
   const confidence = prediction?.confidence ?? 0;
 
-  // Short team names (last word of name)
-  const homeShort = homeTeam.name?.split(" ").pop() || "Home";
-  const awayShort = awayTeam.name?.split(" ").pop() || "Away";
+  // Short team names (3-letter code or last word)
+  const homeShort = getTeamShortName(homeTeam.shortName, homeTeam.name);
+  const awayShort = getTeamShortName(awayTeam.shortName, awayTeam.name);
 
   return (
     <div className="pb-2 w-full">
@@ -186,8 +191,8 @@ export function PredictionCard({ data }: PredictionCardProps) {
                     <span
                       className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shrink-0"
                       style={{
-                        backgroundColor: getTeamColor(homeTeam.id) + "18",
-                        color: getTeamColor(homeTeam.id),
+                        backgroundColor: homeColor + "18",
+                        color: homeColor,
                       }}
                     >
                       AI Pick
@@ -220,8 +225,8 @@ export function PredictionCard({ data }: PredictionCardProps) {
                     <span
                       className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shrink-0"
                       style={{
-                        backgroundColor: getTeamColor(awayTeam.id) + "18",
-                        color: getTeamColor(awayTeam.id),
+                        backgroundColor: awayColor + "18",
+                        color: awayColor,
                       }}
                     >
                       AI Pick
@@ -239,7 +244,7 @@ export function PredictionCard({ data }: PredictionCardProps) {
                     label={homeShort}
                     price={homeProb}
                     color="custom"
-                    customColor={getTeamColor(homeTeam.id)}
+                    customColor={homeColor}
                     size="sm"
                   />
                   <PriceButton
@@ -253,7 +258,7 @@ export function PredictionCard({ data }: PredictionCardProps) {
                     label={awayShort}
                     price={awayProb}
                     color="custom"
-                    customColor={getTeamColor(awayTeam.id)}
+                    customColor={awayColor}
                     size="sm"
                     dimmed
                   />

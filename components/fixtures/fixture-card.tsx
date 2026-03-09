@@ -9,6 +9,7 @@ import {
   isMatchLive,
   isMatchFinished,
   getStatusLabel,
+  getTeamShortName,
 } from "@/lib/utils";
 import { duration, easing } from "@/lib/animations";
 
@@ -75,9 +76,9 @@ export function FixtureCard({ data }: FixtureCardProps) {
   const isCompleted = isMatchFinished(fixture.status);
   const [subscribed, setSubscribed] = useState(false);
 
-  // Short team names (last word of name)
-  const homeShort = homeTeam.name?.split(" ").pop() || "Home";
-  const awayShort = awayTeam.name?.split(" ").pop() || "Away";
+  // Short team names (3-letter code or last word)
+  const homeShort = getTeamShortName(homeTeam.shortName, homeTeam.name);
+  const awayShort = getTeamShortName(awayTeam.shortName, awayTeam.name);
 
   return (
     <div className="pb-2 w-full">

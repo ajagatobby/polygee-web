@@ -19,7 +19,7 @@ import {
 import { motion } from "motion/react";
 import { Header } from "@/components/layout/header";
 import { PriceButton } from "@/components/ui/price-button";
-import { useFixtureDetail } from "@/lib/hooks/use-fixtures";
+import { useFixturePrediction } from "@/lib/hooks/use-fixtures";
 import {
   probToPercent,
   formatFullDate,
@@ -29,6 +29,7 @@ import {
   getStatusLabel,
   getAiPick,
   getTeamColor,
+  getTeamShortName,
   getLeagueLogo,
 } from "@/lib/utils";
 import { duration, easing } from "@/lib/animations";
@@ -41,7 +42,7 @@ export default function PredictionDetailPage({
   const { id } = use(params);
   const fixtureId = parseInt(id, 10);
 
-  const { data: detail, isLoading, error } = useFixtureDetail(
+  const { data: enriched, isLoading, error } = useFixturePrediction(
     fixtureId,
     !isNaN(fixtureId) && fixtureId > 0,
   );
@@ -60,7 +61,7 @@ export default function PredictionDetailPage({
   }
 
   // Error / not found
-  if (error || !detail) {
+  if (error || !enriched) {
     return (
       <div className="min-h-screen bg-white">
         <Header />
@@ -83,22 +84,17 @@ export default function PredictionDetailPage({
     );
   }
 
-  const { fixture, prediction } = detail;
+  const { fixture, homeTeam, awayTeam, prediction } = enriched;
   const isLive = isMatchLive(fixture.status);
   const isFinished = isMatchFinished(fixture.status);
 
-  // Team info from the fixture (ApiFixture has homeTeamId/awayTeamId but not team names inline)
-  // The detail endpoint returns the full fixture — we use the prediction for team names if available
-  const homeTeamLogo = `https://media.api-sports.io/football/teams/${fixture.homeTeamId}.png`;
-  const awayTeamLogo = `https://media.api-sports.io/football/teams/${fixture.awayTeamId}.png`;
+  // Team colors: prefer API kit colors, then static map
+  const homeColor = getTeamColor(homeTeam.id, homeTeam.teamColors?.player?.primary);
+  const awayColor = getTeamColor(awayTeam.id, awayTeam.teamColors?.player?.primary);
 
-  // Team names: ApiFixtureDetail doesn't include team names directly,
-  // but the prediction might have them. Fall back to IDs.
-  const homeTeamName = prediction?.homeTeamName || `Team ${fixture.homeTeamId}`;
-  const awayTeamName = prediction?.awayTeamName || `Team ${fixture.awayTeamId}`;
-
-  const homeShort = homeTeamName.split(" ").pop() || "Home";
-  const awayShort = awayTeamName.split(" ").pop() || "Away";
+  // Short names (3-letter code or last word)
+  const homeShort = getTeamShortName(homeTeam.shortName, homeTeam.name);
+  const awayShort = getTeamShortName(awayTeam.shortName, awayTeam.name);
 
   // Probabilities
   const homeProb = probToPercent(prediction?.homeWinProb);
@@ -160,7 +156,7 @@ export default function PredictionDetailPage({
 
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-[28px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
-              {homeTeamName} vs {awayTeamName}
+              {homeTeam.name || "Home"} vs {awayTeam.name || "Away"}
             </h1>
             <button className="p-2 text-[#999] hover:text-[#666] transition-colors cursor-pointer">
               <Share2 className="w-[18px] h-[18px]" />
@@ -170,10 +166,14 @@ export default function PredictionDetailPage({
           {/* Teams display */}
           <div className="flex items-center gap-8 py-5 px-6 bg-white rounded-[12px] border border-[#f0f0f0]">
             <div className="flex items-center gap-3 flex-1">
-              <img src={homeTeamLogo} alt={homeTeamName} className="w-10 h-10 object-contain" />
+              {homeTeam.logo ? (
+                <img src={homeTeam.logo} alt={homeTeam.name || ""} className="w-10 h-10 object-contain" />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-[#e8e8e8]" />
+              )}
               <div>
                 <div className="text-[16px] font-bold text-[#1a1a2e]">
-                  {homeTeamName}
+                  {homeTeam.name || "Home"}
                 </div>
                 <div className="text-[12px] text-[#999]">
                   Home
@@ -197,13 +197,17 @@ export default function PredictionDetailPage({
             <div className="flex items-center gap-3 flex-1 justify-end">
               <div className="text-right">
                 <div className="text-[16px] font-bold text-[#1a1a2e]">
-                  {awayTeamName}
+                  {awayTeam.name || "Away"}
                 </div>
                 <div className="text-[12px] text-[#999]">
                   Away
                 </div>
               </div>
-              <img src={awayTeamLogo} alt={awayTeamName} className="w-10 h-10 object-contain" />
+              {awayTeam.logo ? (
+                <img src={awayTeam.logo} alt={awayTeam.name || ""} className="w-10 h-10 object-contain" />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-[#e8e8e8]" />
+              )}
             </div>
           </div>
         </div>
@@ -231,7 +235,7 @@ export default function PredictionDetailPage({
                     label={homeShort}
                     price={homeProb}
                     color="custom"
-                    customColor={getTeamColor(fixture.homeTeamId)}
+                    customColor={homeColor}
                     size="md"
                   />
                   <PriceButton
@@ -245,7 +249,7 @@ export default function PredictionDetailPage({
                     label={awayShort}
                     price={awayProb}
                     color="custom"
-                    customColor={getTeamColor(fixture.awayTeamId)}
+                    customColor={awayColor}
                     size="md"
                     dimmed
                   />
@@ -264,7 +268,11 @@ export default function PredictionDetailPage({
                   </div>
                   <div className="flex items-center justify-center gap-4 py-4">
                     <div className="text-center">
-                      <img src={homeTeamLogo} alt={homeTeamName} className="w-8 h-8 object-contain mx-auto mb-2" />
+                      {homeTeam.logo ? (
+                        <img src={homeTeam.logo} alt={homeTeam.name || ""} className="w-8 h-8 object-contain mx-auto mb-2" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-[#e8e8e8] mx-auto mb-2" />
+                      )}
                       <div className="text-[28px] font-bold text-[#1a1a2e]">
                         {prediction.predictedHomeGoals ?? "-"}
                       </div>
@@ -272,7 +280,11 @@ export default function PredictionDetailPage({
                     </div>
                     <div className="text-[20px] font-bold text-[#ccc]">-</div>
                     <div className="text-center">
-                      <img src={awayTeamLogo} alt={awayTeamName} className="w-8 h-8 object-contain mx-auto mb-2" />
+                      {awayTeam.logo ? (
+                        <img src={awayTeam.logo} alt={awayTeam.name || ""} className="w-8 h-8 object-contain mx-auto mb-2" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-[#e8e8e8] mx-auto mb-2" />
+                      )}
                       <div className="text-[28px] font-bold text-[#1a1a2e]">
                         {prediction.predictedAwayGoals ?? "-"}
                       </div>
@@ -348,7 +360,7 @@ export default function PredictionDetailPage({
                 <div className="flex-1">
                   <div className="text-[13px] font-semibold text-[#1a1a2e] mb-1">
                     {aiPick
-                      ? `AI Pick: ${aiPick.team === "home" ? homeTeamName : aiPick.team === "away" ? awayTeamName : "Draw"}`
+                      ? `AI Pick: ${aiPick.team === "home" ? homeTeam.name : aiPick.team === "away" ? awayTeam.name : "Draw"}`
                       : "No prediction"}
                   </div>
                   <p className="text-[12px] text-[#999] leading-relaxed">

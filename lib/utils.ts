@@ -196,9 +196,31 @@ export const TEAM_COLORS: Record<number, string> = {
 
 export const DEFAULT_TEAM_COLOR = "#1552f0";
 
-/** Get team color by team ID, falls back to default blue */
-export function getTeamColor(teamId: number): string {
+/**
+ * Get team color — prefers API kit colors from lineups, then static map, then default.
+ * `kitColors` comes from ApiTeamSummary.teamColors.player.primary (hex with leading #).
+ */
+export function getTeamColor(
+  teamId: number,
+  kitPrimaryColor?: string | null,
+): string {
+  // Prefer API kit color if it looks like a valid hex color
+  if (kitPrimaryColor && /^#?[0-9a-fA-F]{6}$/.test(kitPrimaryColor)) {
+    return kitPrimaryColor.startsWith("#")
+      ? kitPrimaryColor
+      : `#${kitPrimaryColor}`;
+  }
   return TEAM_COLORS[teamId] || DEFAULT_TEAM_COLOR;
+}
+
+/** Get the short display name for a team (3-letter code or last word of name) */
+export function getTeamShortName(
+  shortName: string | null | undefined,
+  fullName: string | null | undefined,
+): string {
+  if (shortName) return shortName;
+  if (fullName) return fullName.split(" ").pop() || fullName;
+  return "TBD";
 }
 
 // ─── AI pick helpers ───────────────────────────────────────────────────

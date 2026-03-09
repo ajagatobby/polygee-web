@@ -17,11 +17,19 @@ export interface ApiTeam {
   updatedAt: string;
 }
 
+/** Team kit colors from lineup data (jersey primary, number, border) */
+export interface ApiTeamColors {
+  player: { primary: string; number: string; border: string };
+  goalkeeper: { primary: string; number: string; border: string };
+}
+
 /** Slim team shape returned inline in fixture responses */
 export interface ApiTeamSummary {
   id: number;
   name: string | null;
+  shortName: string | null;
   logo: string | null;
+  teamColors?: ApiTeamColors | null;
   injuries?: ApiInjurySummary[];
 }
 
