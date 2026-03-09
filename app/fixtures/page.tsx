@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -184,7 +184,29 @@ export default function FixturesPage() {
             <div className="px-4 md:px-6 lg:px-10 pt-5 pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CalendarDays className="w-5 h-5 text-[#1552f0]" />
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Back face shadow */}
+                    <rect x="3.5" y="5.5" width="17" height="16" rx="3" fill="#1552f0" opacity="0.12" />
+                    {/* Main body */}
+                    <rect x="2.5" y="4" width="17" height="16" rx="3" fill="#1552f0" />
+                    {/* Top header band */}
+                    <rect x="2.5" y="4" width="17" height="6" rx="3" fill="#1247d6" />
+                    {/* Calendar ring left */}
+                    <rect x="7" y="2" width="2" height="4" rx="1" fill="#fff" />
+                    {/* Calendar ring right */}
+                    <rect x="13" y="2" width="2" height="4" rx="1" fill="#fff" />
+                    {/* Grid dots row 1 */}
+                    <rect x="6" y="13" width="2.5" height="2" rx="0.5" fill="#fff" opacity="0.9" />
+                    <rect x="10" y="13" width="2.5" height="2" rx="0.5" fill="#fff" opacity="0.6" />
+                    <rect x="14" y="13" width="2.5" height="2" rx="0.5" fill="#fff" opacity="0.4" />
+                    {/* Grid dots row 2 */}
+                    <rect x="6" y="17" width="2.5" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    <rect x="10" y="17" width="2.5" height="2" rx="0.5" fill="#fff" opacity="0.3" />
+                    {/* 3D right edge */}
+                    <path d="M19.5 7v10a3 3 0 0 1-3 3h-1l2.5-1.5V8.5L19.5 7Z" fill="#0e3fc2" opacity="0.5" />
+                    {/* Highlight */}
+                    <rect x="3" y="4.5" width="8" height="1" rx="0.5" fill="#fff" opacity="0.15" />
+                  </svg>
                   <h1 className="text-[26px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
                     Fixtures
                   </h1>
