@@ -11,77 +11,9 @@ import {
   isMatchLive,
   getStatusLabel,
   getAiPick,
+  getTeamColor,
 } from "@/lib/utils";
 import { duration, easing } from "@/lib/animations";
-
-// ─── Team color mapping by team ID ─────────────────────────────────────
-// Static color map for popular teams. Falls back to a default blue.
-const TEAM_COLORS: Record<number, string> = {
-  // Premier League
-  33: "#EF0107", // Arsenal
-  35: "#6C1D45", // Aston Villa
-  36: "#e30613", // Bournemouth
-  55: "#EE2737", // Brentford
-  63: "#0086D4", // Brighton
-  38: "#005daa", // Burnley
-  39: "#034694", // Chelsea
-  40: "#1B458F", // Crystal Palace
-  45: "#003399", // Everton
-  66: "#0057B8", // Fulham
-  71: "#A7D3F3", // Ipswich
-  46: "#CC0000", // Leicester City
-  47: "#C8102E", // Liverpool
-  49: "#6CABDD", // Manchester City
-  50: "#DA291C", // Manchester United
-  34: "#241F20", // Newcastle
-  65: "#d71920", // Nottingham Forest
-  41: "#e53233", // Southampton
-  51: "#132257", // Tottenham
-  48: "#7A263A", // West Ham
-  76: "#FBEE23", // Wolverhampton
-
-  // La Liga
-  529: "#A50044", // Barcelona
-  541: "#FEBE10", // Real Madrid
-  530: "#CE1126", // Atletico Madrid
-  536: "#005BAB", // Sevilla
-  533: "#005999", // Villarreal
-  532: "#2B579A", // Real Sociedad
-  531: "#E30613", // Athletic Bilbao
-  534: "#0070B8", // Las Palmas
-  543: "#FBBA00", // Real Betis
-
-  // Serie A
-  489: "#E30613", // AC Milan
-  496: "#0068A8", // Juventus
-  487: "#75B8E8", // Lazio
-  492: "#12A0D7", // Napoli
-  505: "#10519D", // Inter Milan
-  497: "#970038", // Roma
-  499: "#482E92", // Fiorentina
-  500: "#005EB8", // Atalanta
-
-  // Bundesliga
-  157: "#DC052D", // Bayern Munich
-  165: "#FDE100", // Borussia Dortmund
-  173: "#004D2C", // RB Leipzig
-  169: "#E32221", // Bayer Leverkusen
-  163: "#E32221", // Freiburg
-  161: "#1D9053", // Wolfsburg
-
-  // Ligue 1
-  85: "#004170", // Paris Saint-Germain
-  91: "#E30613", // Monaco
-  80: "#ED1C24", // Lyon
-  81: "#009FE3", // Marseille
-  79: "#DA291C", // Lille
-};
-
-const DEFAULT_TEAM_COLOR = "#1552f0";
-
-function getTeamColor(teamId: number): string {
-  return TEAM_COLORS[teamId] || DEFAULT_TEAM_COLOR;
-}
 
 // ─── Component ─────────────────────────────────────────────────────────
 

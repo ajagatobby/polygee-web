@@ -1,14 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Tv, Bell, BellOff } from "lucide-react";
+import { MapPin, Bell, BellOff } from "lucide-react";
 import { motion } from "motion/react";
-import { Fixture } from "@/types";
-import { formatDate } from "@/lib/mock-data";
+import type { ApiEnrichedFixture } from "@/types/api";
+import {
+  formatTime,
+  isMatchLive,
+  isMatchFinished,
+  getStatusLabel,
+} from "@/lib/utils";
 import { duration, easing } from "@/lib/animations";
 
 interface FixtureCardProps {
-  fixture: Fixture;
+  data: ApiEnrichedFixture;
 }
 
 // 3D outcome button matching PriceButton style — label only, no percentage
@@ -19,7 +24,6 @@ function OutcomeButton({
 }: {
   label: string;
   color: "custom" | "gray";
-  customColor?: string;
   dimmed?: boolean;
 }) {
   const [tapState, setTapState] = useState<"rest" | "pressed">("rest");
@@ -65,10 +69,15 @@ function OutcomeButton({
   );
 }
 
-export function FixtureCard({ fixture }: FixtureCardProps) {
-  const isLive = fixture.status === "live";
-  const isCompleted = fixture.status === "completed";
+export function FixtureCard({ data }: FixtureCardProps) {
+  const { fixture, homeTeam, awayTeam } = data;
+  const isLive = isMatchLive(fixture.status);
+  const isCompleted = isMatchFinished(fixture.status);
   const [subscribed, setSubscribed] = useState(false);
+
+  // Short team names (last word of name)
+  const homeShort = homeTeam.name?.split(" ").pop() || "Home";
+  const awayShort = awayTeam.name?.split(" ").pop() || "Away";
 
   return (
     <div className="pb-2 w-full">
@@ -96,42 +105,43 @@ export function FixtureCard({ fixture }: FixtureCardProps) {
                       </div>
                       <p className="text-xs text-red-500 uppercase ml-1 font-bold">Live</p>
                     </div>
+                    <p className="text-xs font-semibold text-[#1a1a2e]">
+                      {getStatusLabel(fixture.status, fixture.elapsed)}
+                    </p>
                   </>
                 ) : isCompleted ? (
-                  <p className="text-xs font-bold text-[#999]">FT</p>
+                  <p className="text-xs font-bold text-[#999]">
+                    {getStatusLabel(fixture.status, fixture.elapsed)}
+                  </p>
                 ) : (
-                  <p className="text-xs font-semibold text-[#1a1a2e]">{fixture.matchTime}</p>
+                  <p className="text-xs font-semibold text-[#1a1a2e]">
+                    {formatTime(fixture.date)}
+                  </p>
                 )}
               </div>
 
               {/* League */}
               <span className="text-xs text-[#808080] font-semibold whitespace-nowrap shrink-0">
-                {fixture.league.name}
+                {fixture.leagueName}
               </span>
 
-              {/* Matchday badge */}
-              {fixture.matchday > 0 && (
+              {/* Round badge */}
+              {fixture.round && (
                 <span className="flex items-center h-[20px] px-1.5 rounded text-[10px] font-semibold text-[#999] bg-[#f5f5f5] shrink-0">
-                  MD {fixture.matchday}
-                </span>
-              )}
-
-              {/* Broadcast */}
-              {fixture.broadcast && (
-                <span className="flex items-center gap-1 text-[10px] text-[#bbb] shrink-0">
-                  <Tv className="w-3 h-3" />
-                  {fixture.broadcast}
+                  {fixture.round}
                 </span>
               )}
 
               {/* Venue */}
-              <span className="hidden sm:flex items-center gap-1 text-[10px] text-[#bbb] min-w-0 shrink-0">
-                <MapPin className="w-3 h-3 shrink-0" />
-                <span className="truncate max-w-[100px]">{fixture.venue}</span>
-              </span>
+              {fixture.venueName && (
+                <span className="hidden sm:flex items-center gap-1 text-[10px] text-[#bbb] min-w-0 shrink-0">
+                  <MapPin className="w-3 h-3 shrink-0" />
+                  <span className="truncate max-w-[100px]">{fixture.venueName}</span>
+                </span>
+              )}
             </div>
 
-            {/* Subscribe button — matches Game View pill style */}
+            {/* Subscribe button */}
             <div className="flex overflow-visible gap-1 shrink-0">
               <button
                 onClick={() => setSubscribed((prev) => !prev)}
@@ -157,7 +167,7 @@ export function FixtureCard({ fixture }: FixtureCardProps) {
 
           {/* Main content: teams + 3 outcome buttons */}
           <div className="flex w-full gap-3 flex-row">
-            {/* Teams + Scores (left side) — same grid as prediction card */}
+            {/* Teams + Scores (left side) */}
             <div className="flex justify-between lg:min-w-0 lg:flex-1 lg:shrink-0">
               <div
                 className="grid gap-x-3 items-center lg:self-center lg:flex-1 lg:min-w-0 relative w-full"
@@ -172,25 +182,28 @@ export function FixtureCard({ fixture }: FixtureCardProps) {
                   <div className={`flex px-1.5 text-xs font-semibold rounded-sm justify-center items-center h-6 ${
                     isLive ? "bg-red-50 text-[#ff3b30]" : "bg-[#f0f0f0] text-[#1a1a2e]"
                   }`}>
-                    {fixture.homeScore}
+                    {fixture.goalsHome ?? 0}
                   </div>
                 )}
                 <div className="relative overflow-hidden w-6 h-6 flex items-center justify-center self-center">
-                  <span className="text-[18px] leading-none">{fixture.homeTeam.logo}</span>
+                  {homeTeam.logo ? (
+                    <img
+                      src={homeTeam.logo}
+                      alt={homeTeam.name || ""}
+                      className="w-6 h-6 object-contain"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-[#e8e8e8]" />
+                  )}
                 </div>
                 <div className="flex flex-1 items-center min-w-0 max-w-full gap-[5px] overflow-hidden">
                   <span className={`text-sm font-semibold whitespace-nowrap truncate ${
-                    isCompleted && fixture.homeScore !== undefined && fixture.awayScore !== undefined
-                      ? fixture.homeScore > fixture.awayScore ? "text-[#1a1a2e]" : "text-[#bbb]"
+                    isCompleted && fixture.goalsHome != null && fixture.goalsAway != null
+                      ? fixture.goalsHome > fixture.goalsAway ? "text-[#1a1a2e]" : "text-[#bbb]"
                       : "text-[#1a1a2e]"
                   }`}>
-                    {fixture.homeTeam.name}
+                    {homeTeam.name || "Home"}
                   </span>
-                  {fixture.homeTeam.record && (
-                    <span className="text-xs font-normal text-[#808080] whitespace-nowrap">
-                      {fixture.homeTeam.record}
-                    </span>
-                  )}
                 </div>
 
                 {/* Away team row */}
@@ -198,33 +211,36 @@ export function FixtureCard({ fixture }: FixtureCardProps) {
                   <div className={`flex px-1.5 text-xs font-semibold rounded-sm justify-center items-center h-6 ${
                     isLive ? "bg-red-50 text-[#ff3b30]" : "bg-[#f0f0f0] text-[#1a1a2e]"
                   }`}>
-                    {fixture.awayScore}
+                    {fixture.goalsAway ?? 0}
                   </div>
                 )}
                 <div className="relative overflow-hidden w-6 h-6 flex items-center justify-center self-center">
-                  <span className="text-[18px] leading-none">{fixture.awayTeam.logo}</span>
+                  {awayTeam.logo ? (
+                    <img
+                      src={awayTeam.logo}
+                      alt={awayTeam.name || ""}
+                      className="w-6 h-6 object-contain"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-[#e8e8e8]" />
+                  )}
                 </div>
                 <div className="flex flex-1 items-center min-w-0 max-w-full gap-[5px] overflow-hidden">
                   <span className={`text-sm font-semibold whitespace-nowrap truncate ${
-                    isCompleted && fixture.homeScore !== undefined && fixture.awayScore !== undefined
-                      ? fixture.awayScore > fixture.homeScore ? "text-[#1a1a2e]" : "text-[#bbb]"
+                    isCompleted && fixture.goalsHome != null && fixture.goalsAway != null
+                      ? fixture.goalsAway > fixture.goalsHome ? "text-[#1a1a2e]" : "text-[#bbb]"
                       : "text-[#1a1a2e]"
                   }`}>
-                    {fixture.awayTeam.name}
+                    {awayTeam.name || "Away"}
                   </span>
-                  {fixture.awayTeam.record && (
-                    <span className="text-xs font-normal text-[#808080] whitespace-nowrap">
-                      {fixture.awayTeam.record}
-                    </span>
-                  )}
                 </div>
               </div>
             </div>
 
-            {/* 3 outcome buttons: Home Win / Draw / Away Win — same stack as prediction card */}
+            {/* 3 outcome buttons: Home Win / Draw / Away Win */}
             <div className="flex flex-col gap-2 shrink-0 w-[130px]">
               <OutcomeButton
-                label={fixture.homeTeam.shortName}
+                label={homeShort}
                 color="custom"
               />
               <OutcomeButton
@@ -233,7 +249,7 @@ export function FixtureCard({ fixture }: FixtureCardProps) {
                 dimmed
               />
               <OutcomeButton
-                label={fixture.awayTeam.shortName}
+                label={awayShort}
                 color="custom"
                 dimmed
               />
