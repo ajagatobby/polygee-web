@@ -13,7 +13,6 @@ import {
   AlertTriangle,
   Lightbulb,
   TrendingUp,
-  Loader2,
   Gavel,
   CalendarDays,
   ShieldAlert,
@@ -22,6 +21,7 @@ import { motion } from "motion/react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Header } from "@/components/layout/header";
+import { PredictionDetailSkeleton } from "@/components/predictions/prediction-detail-skeleton";
 import { PriceButton } from "@/components/ui/price-button";
 import { useAuth } from "@/lib/auth-context";
 import { useFixturePrediction } from "@/lib/hooks/use-fixtures";
@@ -72,10 +72,7 @@ export default function PredictionDetailPage({
     return (
       <div className="min-h-screen bg-[#fafafa]">
         <Header />
-        <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 text-[#1552f0] animate-spin mb-3" />
-          <p className="text-[13px] text-[#999]">Loading...</p>
-        </div>
+        <PredictionDetailSkeleton />
       </div>
     );
   }
@@ -140,10 +137,7 @@ export default function PredictionDetailPage({
     return (
       <div className="min-h-screen bg-[#fafafa]">
         <Header />
-        <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 text-[#1552f0] animate-spin mb-3" />
-          <p className="text-[13px] text-[#999]">Loading match details...</p>
-        </div>
+        <PredictionDetailSkeleton />
       </div>
     );
   }
