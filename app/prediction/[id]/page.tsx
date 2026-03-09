@@ -23,6 +23,7 @@ import remarkGfm from "remark-gfm";
 import { Header } from "@/components/layout/header";
 import { PredictionDetailSkeleton } from "@/components/predictions/prediction-detail-skeleton";
 import { MatchLineups } from "@/components/predictions/match-lineups";
+import { OddsComparison } from "@/components/predictions/odds-comparison";
 import { PriceButton } from "@/components/ui/price-button";
 import { useAuth } from "@/lib/auth-context";
 import { useFixturePrediction } from "@/lib/hooks/use-fixtures";
@@ -567,6 +568,9 @@ export default function PredictionDetailPage({
             )}
           </div>
         )}
+
+        {/* Odds Comparison */}
+        <OddsComparison fixtureId={fixtureId} />
 
         {/* Lineups */}
         <MatchLineups
