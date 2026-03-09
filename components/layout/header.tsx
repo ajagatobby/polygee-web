@@ -20,7 +20,7 @@ export function Header() {
   const pathname = usePathname();
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const { isAuthenticated, signOut, firebaseUser } = useAuth();
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [depositModalOpen, setDepositModalOpen] = useState(false);
   const [isPolymarketConnected, setIsPolymarketConnected] = useState(false);
@@ -259,9 +259,15 @@ export function Header() {
                     >
                       {/* User info */}
                       <div className="flex items-center gap-2.5 px-4 pt-4 pb-3">
-                        <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shrink-0" />
+                        {firebaseUser?.photoURL ? (
+                          <img src={firebaseUser.photoURL} alt="" className="w-[36px] h-[36px] rounded-full shrink-0 object-cover" />
+                        ) : (
+                          <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shrink-0" />
+                        )}
                         <div className="min-w-0">
-                          <p className="text-[13px] font-semibold text-[#1a1a2e] truncate">0x9BBA6B71...</p>
+                          <p className="text-[13px] font-semibold text-[#1a1a2e] truncate">
+                            {firebaseUser?.displayName || firebaseUser?.email || "User"}
+                          </p>
                         </div>
                         <button className="ml-auto shrink-0 p-1 text-[#999] hover:text-[#1a1a2e] transition-colors cursor-pointer">
                           <Settings className="w-4 h-4" />
@@ -391,9 +397,10 @@ export function Header() {
                 Cancel
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
                   setLogoutModalOpen(false);
                   setIsPolymarketConnected(false);
+                  await signOut();
                 }}
                 className="flex-1 h-[40px] text-[13px] font-bold text-white bg-[#ff3b30] rounded-[10px] hover:bg-[#e6352b] transition-colors cursor-pointer"
               >

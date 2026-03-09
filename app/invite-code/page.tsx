@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { Ticket, ArrowLeft, CheckCircle2 } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
 import { easing, duration } from "@/lib/animations";
 
 const CODE_LENGTH = 6;
@@ -15,7 +14,6 @@ const VALID_CODES = ["POLY01", "BETA22", "EARLY1", "VIP123", "LAUNCH"];
 
 export default function InviteCodePage() {
   const router = useRouter();
-  const { setIsAuthenticated } = useAuth();
   const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(""));
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const [error, setError] = useState("");
@@ -103,7 +101,7 @@ export default function InviteCodePage() {
       setIsVerified(true);
       // Brief pause to show success, then authenticate and navigate
       await new Promise((r) => setTimeout(r, 1000));
-      setIsAuthenticated(true);
+      // Invite code verified — redirect to home
       router.push("/");
     } else {
       setError("Invalid invite code. Please check and try again.");

@@ -10,19 +10,46 @@ import { easing, duration } from "@/lib/animations";
 
 export default function SignInPage() {
   const router = useRouter();
-  const { setIsAuthenticated } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isValid = email.trim().length > 0 && password.trim().length > 0;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid) return;
-    setIsAuthenticated(true);
-    router.push("/");
+    if (!isValid || isSubmitting) return;
+    setError("");
+    setIsSubmitting(true);
+    try {
+      await signIn(email, password);
+      router.push("/");
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code;
+      if (code === "auth/user-not-found" || code === "auth/wrong-password" || code === "auth/invalid-credential") {
+        setError("Invalid email or password.");
+      } else if (code === "auth/too-many-requests") {
+        setError("Too many attempts. Please try again later.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError("");
+    try {
+      await signInWithGoogle();
+      router.push("/");
+    } catch {
+      setError("Google sign-in failed. Please try again.");
+    }
   };
 
   return (
@@ -164,17 +191,26 @@ export default function SignInPage() {
               </div>
             </div>
 
+            {/* Error */}
+            {error && (
+              <p className="text-[12px] text-[#ff3b30] mb-4">{error}</p>
+            )}
+
             {/* Submit */}
             <button
               type="submit"
-              disabled={!isValid}
-              className={`w-full h-[44px] text-[14px] font-bold text-white rounded-[10px] transition-all cursor-pointer ${
-                isValid
+              disabled={!isValid || isSubmitting}
+              className={`w-full h-[44px] text-[14px] font-bold text-white rounded-[10px] transition-all cursor-pointer flex items-center justify-center ${
+                isValid && !isSubmitting
                   ? "bg-[#1552f0] hover:bg-[#1247d6]"
                   : "bg-[#1552f0]/40 cursor-not-allowed"
               }`}
             >
-              Sign In
+              {isSubmitting ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                "Sign In"
+              )}
             </button>
           </form>
 
@@ -186,7 +222,11 @@ export default function SignInPage() {
           </div>
 
           {/* Google */}
-          <button className="w-full h-[44px] flex items-center justify-center gap-2.5 text-[14px] font-medium text-[#1a1a2e] bg-white border border-[#e8e8e8] rounded-[10px] hover:bg-[#f7f7f7] hover:border-[#ddd] transition-colors cursor-pointer">
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            className="w-full h-[44px] flex items-center justify-center gap-2.5 text-[14px] font-medium text-[#1a1a2e] bg-white border border-[#e8e8e8] rounded-[10px] hover:bg-[#f7f7f7] hover:border-[#ddd] transition-colors cursor-pointer"
+          >
             <svg width="18" height="18" viewBox="0 0 48 48">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
               <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>

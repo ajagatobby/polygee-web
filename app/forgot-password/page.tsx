@@ -4,19 +4,33 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 import { easing, duration } from "@/lib/animations";
 
 export default function ForgotPasswordPage() {
+  const { resetPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [focused, setFocused] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isValid = email.trim().length > 0 && email.includes("@");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid) return;
-    setSent(true);
+    if (!isValid || isSubmitting) return;
+    setError("");
+    setIsSubmitting(true);
+    try {
+      await resetPassword(email);
+      setSent(true);
+    } catch {
+      // Always show success to prevent email enumeration
+      setSent(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -125,17 +139,26 @@ export default function ForgotPasswordPage() {
                   </div>
                 </div>
 
+                {/* Error */}
+                {error && (
+                  <p className="text-[12px] text-[#ff3b30] mb-4">{error}</p>
+                )}
+
                 {/* Submit */}
                 <button
                   type="submit"
-                  disabled={!isValid}
-                  className={`w-full h-[44px] text-[14px] font-bold text-white rounded-[10px] transition-all cursor-pointer ${
-                    isValid
+                  disabled={!isValid || isSubmitting}
+                  className={`w-full h-[44px] text-[14px] font-bold text-white rounded-[10px] transition-all cursor-pointer flex items-center justify-center ${
+                    isValid && !isSubmitting
                       ? "bg-[#1552f0] hover:bg-[#1247d6]"
                       : "bg-[#1552f0]/40 cursor-not-allowed"
                   }`}
                 >
-                  Send Reset Link
+                  {isSubmitting ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    "Send Reset Link"
+                  )}
                 </button>
               </form>
             </motion.div>
