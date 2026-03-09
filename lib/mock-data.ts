@@ -35,7 +35,7 @@ export const sidebarLeagues: SidebarLeague[] = [
       { id: "l1", name: "Ligue 1", slug: "ligue-1", logo: "/leagues/ligue-1.png", count: 48 },
       { id: "mls", name: "MLS", slug: "mls", logo: "https://media.api-sports.io/football/leagues/253.png", count: 90 },
       { id: "pl", name: "EPL", slug: "premier-league", logo: "https://media.api-sports.io/football/leagues/39.png", count: 20 },
-      { id: "ere", name: "Eredivisie", slug: "eredivisie", logo: "https://media.api-sports.io/football/leagues/88.png", count: 34 },
+      { id: "ere", name: "Eredivisie", slug: "eredivisie", logo: "/leagues/eredivisie.png", count: 34 },
       { id: "spl", name: "Saudi Pro League", slug: "saudi-pro-league", logo: "https://media.api-sports.io/football/leagues/307.png", count: 33 },
       { id: "tur", name: "Super Lig", slug: "super-lig", logo: "https://media.api-sports.io/football/leagues/203.png", count: 51 },
       { id: "uel", name: "UEL", slug: "europa-league", logo: "https://media.api-sports.io/football/leagues/3.png", count: 32 },
