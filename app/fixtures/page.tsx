@@ -360,7 +360,7 @@ export default function FixturesPage() {
                 <div className="flex flex-col items-center justify-center py-24 text-center">
                   {/* 3D calendar icon */}
                   <div className="mb-5">
-                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="88" height="88" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                       {/* Shadow */}
                       <ellipse cx="32" cy="60" rx="20" ry="3" fill="#000" opacity="0.06" />
                       {/* Back face for depth */}
