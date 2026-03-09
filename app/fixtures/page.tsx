@@ -184,7 +184,7 @@ export default function FixturesPage() {
             <div className="px-4 md:px-6 lg:px-10 pt-5 pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     {/* Back face shadow */}
                     <rect x="3.5" y="5.5" width="17" height="16" rx="3" fill="#1552f0" opacity="0.12" />
                     {/* Main body */}
