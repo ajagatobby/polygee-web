@@ -1,6 +1,6 @@
 /**
  * Exact-replica skeleton of FixtureCard.
- * Matches the real card's layout, sizes, and spacing pixel-for-pixel.
+ * Matches the real card's layout: top bar + Club A vs Club B.
  */
 export function FixtureCardSkeleton() {
   return (
@@ -14,26 +14,25 @@ export function FixtureCardSkeleton() {
         <div className="skeleton h-3 w-10 rounded" />
       </div>
 
-      {/* Teams */}
+      {/* Club A vs Club B */}
       <div className="px-4 pb-4">
-        <div className="space-y-2.5">
+        <div className="flex items-center">
           {/* Home team */}
-          <div className="flex items-center gap-2.5">
-            <div className="skeleton w-8 h-8 rounded-full shrink-0" />
-            <div className="skeleton h-4 w-28 rounded" />
-          </div>
-          {/* Away team */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 flex-1 min-w-0">
             <div className="skeleton w-8 h-8 rounded-full shrink-0" />
             <div className="skeleton h-4 w-24 rounded" />
           </div>
-        </div>
 
-        {/* Outcome buttons */}
-        <div className="flex items-center gap-2 mt-3.5 pt-3.5 border-t border-[#f0f0f0]">
-          <div className="skeleton flex-1 h-[36px] rounded-[8px]" />
-          <div className="skeleton flex-1 h-[36px] rounded-[8px]" />
-          <div className="skeleton flex-1 h-[36px] rounded-[8px]" />
+          {/* VS */}
+          <div className="shrink-0 mx-3">
+            <div className="skeleton h-4 w-6 rounded mx-auto" />
+          </div>
+
+          {/* Away team */}
+          <div className="flex items-center gap-2.5 flex-1 min-w-0 justify-end">
+            <div className="skeleton h-4 w-20 rounded" />
+            <div className="skeleton w-8 h-8 rounded-full shrink-0" />
+          </div>
         </div>
       </div>
     </div>
