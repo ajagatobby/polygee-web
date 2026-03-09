@@ -22,6 +22,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Header } from "@/components/layout/header";
 import { PredictionDetailSkeleton } from "@/components/predictions/prediction-detail-skeleton";
+import { MatchLineups } from "@/components/predictions/match-lineups";
 import { PriceButton } from "@/components/ui/price-button";
 import { useAuth } from "@/lib/auth-context";
 import { useFixturePrediction } from "@/lib/hooks/use-fixtures";
@@ -166,7 +167,7 @@ export default function PredictionDetailPage({
     );
   }
 
-  const { fixture, homeTeam, awayTeam, prediction } = enriched;
+  const { fixture, homeTeam, awayTeam, prediction, lineups } = enriched;
   const isLive = isMatchLive(fixture.status);
   const isFinished = isMatchFinished(fixture.status);
 
@@ -566,6 +567,17 @@ export default function PredictionDetailPage({
             )}
           </div>
         )}
+
+        {/* Lineups */}
+        <MatchLineups
+          lineups={lineups ?? []}
+          homeTeamId={homeTeam.id}
+          awayTeamId={awayTeam.id}
+          homeTeamName={homeTeam.name || "Home"}
+          awayTeamName={awayTeam.name || "Away"}
+          homeTeamLogo={homeTeam.logo}
+          awayTeamLogo={awayTeam.logo}
+        />
 
         {/* Injuries & Suspensions */}
         {(() => {

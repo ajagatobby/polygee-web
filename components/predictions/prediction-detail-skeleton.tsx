@@ -184,6 +184,57 @@ export function PredictionDetailSkeleton() {
         </div>
       </div>
 
+      {/* Lineups skeleton */}
+      <div className="bg-white border border-[#f0f0f0] rounded-[12px] mb-6 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center gap-2 px-5 pt-5 pb-3">
+          <div className="skeleton w-4 h-4 rounded" />
+          <div className="skeleton h-4 w-16 rounded" />
+          <div className="skeleton h-3 w-28 rounded ml-auto" />
+        </div>
+
+        {/* Two columns */}
+        <div className="flex flex-col md:flex-row">
+          {/* Home side */}
+          <div className="flex-1 px-5 pb-5 md:border-r md:border-[#f0f0f0]">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="skeleton w-6 h-6 rounded-full shrink-0" />
+              <div>
+                <div className="skeleton h-3.5 w-24 rounded mb-1" />
+                <div className="skeleton h-3 w-12 rounded" />
+              </div>
+            </div>
+            {Array.from({ length: 11 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-2 py-1.5 px-2">
+                <div className="skeleton w-5 h-3 rounded shrink-0" />
+                <div className="skeleton w-6 h-6 rounded-full shrink-0" />
+                <div className="skeleton h-3 rounded flex-1" style={{ maxWidth: `${80 + (i * 13) % 50}px` }} />
+                <div className="skeleton h-[18px] w-8 rounded shrink-0" />
+              </div>
+            ))}
+          </div>
+
+          {/* Away side */}
+          <div className="flex-1 px-5 pb-5 border-t md:border-t-0 border-[#f0f0f0] pt-4 md:pt-0">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="skeleton w-6 h-6 rounded-full shrink-0" />
+              <div>
+                <div className="skeleton h-3.5 w-28 rounded mb-1" />
+                <div className="skeleton h-3 w-12 rounded" />
+              </div>
+            </div>
+            {Array.from({ length: 11 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-2 py-1.5 px-2">
+                <div className="skeleton w-5 h-3 rounded shrink-0" />
+                <div className="skeleton w-6 h-6 rounded-full shrink-0" />
+                <div className="skeleton h-3 rounded flex-1" style={{ maxWidth: `${75 + (i * 17) % 55}px` }} />
+                <div className="skeleton h-[18px] w-8 rounded shrink-0" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Injuries table skeleton */}
       <div className="bg-white border border-[#f0f0f0] rounded-[12px] mb-6 overflow-hidden">
         <div className="flex items-center gap-2 px-5 pt-5 pb-3">
