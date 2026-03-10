@@ -9,6 +9,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { PredictionCard } from "@/components/predictions/prediction-card";
 import { PredictionCardSkeleton } from "@/components/predictions/prediction-card-skeleton";
+import { LeagueTabs } from "@/components/ui/league-tabs";
 import { useTodayFixtures } from "@/lib/hooks/use-fixtures";
 import { useLiveSocket } from "@/lib/hooks/use-live-socket";
 import { dropdownVariants, duration, easing } from "@/lib/animations";
@@ -23,28 +24,35 @@ export default function HomePage() {
   const { isAuthenticated, isPro } = useAuth();
   const { query: searchQuery } = useSearch();
 
-  // Convert activeLeague to leagueId filter (if not "all")
-  const leagueIdFilter = activeLeague !== "all" ? Number(activeLeague) : undefined;
-
-  // Fetch today's fixtures with predictions from the API
-  const { data: todayData, isLoading, error, refetch } = useTodayFixtures(
-    leagueIdFilter ? { leagueId: leagueIdFilter } : undefined,
-  );
+  // Always fetch ALL fixtures — we filter client-side so league tabs can show counts
+  const { data: todayData, isLoading, error, refetch } = useTodayFixtures();
 
   const rawFixtures = todayData?.data ?? [];
 
-  // Client-side search filter by team name
+  // Client-side league + search filtering
   const fixtures = useMemo(() => {
-    if (!searchQuery.trim()) return rawFixtures;
-    const q = searchQuery.toLowerCase().trim();
-    return rawFixtures.filter(
-      (item) =>
-        (item.homeTeam.name ?? "").toLowerCase().includes(q) ||
-        (item.awayTeam.name ?? "").toLowerCase().includes(q) ||
-        (item.homeTeam.shortName ?? "").toLowerCase().includes(q) ||
-        (item.awayTeam.shortName ?? "").toLowerCase().includes(q),
-    );
-  }, [rawFixtures, searchQuery]);
+    let filtered = rawFixtures;
+
+    // League filter
+    if (activeLeague !== "all") {
+      const leagueId = Number(activeLeague);
+      filtered = filtered.filter((item) => item.fixture.leagueId === leagueId);
+    }
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (item) =>
+          (item.homeTeam.name ?? "").toLowerCase().includes(q) ||
+          (item.awayTeam.name ?? "").toLowerCase().includes(q) ||
+          (item.homeTeam.shortName ?? "").toLowerCase().includes(q) ||
+          (item.awayTeam.shortName ?? "").toLowerCase().includes(q),
+      );
+    }
+
+    return filtered;
+  }, [rawFixtures, activeLeague, searchQuery]);
 
   // Connect to live WebSocket — patches TanStack Query cache for real-time score updates
   useLiveSocket({ enabled: true });
@@ -116,6 +124,16 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+
+          {/* League filter tabs */}
+          {!isLoading && rawFixtures.length > 0 && (
+            <LeagueTabs
+              fixtures={rawFixtures}
+              activeLeague={activeLeague}
+              onLeagueChange={handleLeagueChange}
+              layoutId="predictions-league"
+            />
+          )}
 
           {/* Loading state — skeleton cards */}
           {isLoading && (

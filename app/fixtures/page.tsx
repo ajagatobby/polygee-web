@@ -9,6 +9,7 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { FixtureCard } from "@/components/fixtures/fixture-card";
 import { FixtureCardSkeleton } from "@/components/fixtures/fixture-card-skeleton";
 import { Tabs } from "@/components/ui/tabs";
+import { LeagueTabs } from "@/components/ui/league-tabs";
 import { useTodayFixtures, useUpcomingFixtures } from "@/lib/hooks/use-fixtures";
 import { useLiveSocket } from "@/lib/hooks/use-live-socket";
 import { dropdownVariants, duration, easing } from "@/lib/animations";
@@ -65,26 +66,16 @@ export default function FixturesPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Convert activeLeague to leagueId filter
-  const leagueIdFilter = activeLeague !== "all" ? Number(activeLeague) : undefined;
-
   // For "today" we use the today endpoint; for other dates we use upcoming with a date filter
   const isToday = selectedDate === dateOptions[0].value;
 
-  const todayQuery = useTodayFixtures(
-    isToday
-      ? {
-          leagueId: leagueIdFilter,
-        }
-      : undefined,
-  );
+  const todayQuery = useTodayFixtures(isToday ? {} : undefined);
 
   const upcomingQuery = useUpcomingFixtures(
     !isToday
       ? {
           from: selectedDate,
           to: selectedDate,
-          leagueId: leagueIdFilter,
         }
       : undefined,
   );
@@ -94,18 +85,30 @@ export default function FixturesPage() {
 
   const rawFixtures = fixturesResponse?.data ?? [];
 
-  // Client-side search filter by team name
+  // Client-side league + search filtering
   const allFixtures = useMemo(() => {
-    if (!searchQuery.trim()) return rawFixtures;
-    const q = searchQuery.toLowerCase().trim();
-    return rawFixtures.filter(
-      (item) =>
-        (item.homeTeam.name ?? "").toLowerCase().includes(q) ||
-        (item.awayTeam.name ?? "").toLowerCase().includes(q) ||
-        (item.homeTeam.shortName ?? "").toLowerCase().includes(q) ||
-        (item.awayTeam.shortName ?? "").toLowerCase().includes(q),
-    );
-  }, [rawFixtures, searchQuery]);
+    let filtered = rawFixtures;
+
+    // League filter
+    if (activeLeague !== "all") {
+      const leagueId = Number(activeLeague);
+      filtered = filtered.filter((item) => item.fixture.leagueId === leagueId);
+    }
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (item) =>
+          (item.homeTeam.name ?? "").toLowerCase().includes(q) ||
+          (item.awayTeam.name ?? "").toLowerCase().includes(q) ||
+          (item.homeTeam.shortName ?? "").toLowerCase().includes(q) ||
+          (item.awayTeam.shortName ?? "").toLowerCase().includes(q),
+      );
+    }
+
+    return filtered;
+  }, [rawFixtures, activeLeague, searchQuery]);
 
   // Client-side status filtering
   const filteredFixtures = useMemo(() => {
@@ -292,6 +295,16 @@ export default function FixturesPage() {
               className="px-4 md:px-6 lg:px-10"
             />
           </div>
+
+          {/* League filter tabs */}
+          {!isLoading && rawFixtures.length > 0 && (
+            <LeagueTabs
+              fixtures={rawFixtures}
+              activeLeague={activeLeague}
+              onLeagueChange={handleLeagueChange}
+              layoutId="fixtures-league"
+            />
+          )}
 
           {/* Loading state — skeleton grid */}
           {isLoading && (
